@@ -1,0 +1,32 @@
+# QuickShop Reremake FindItem AddOn
+
+# Requires finditem.use permission node
+# Color codes are supported
+# If you want to keep a field empty, make it as ""
+# NEVER leave it empty without quotes, or bad things will happen!
+# Do /finditem reload to reload this config (Requires finditem.reload permission node)
+
+# Prefix that will be shown in chat for any message from this plugin
+PluginPrefix: "&a&l[Shop Search] &r"
+
+# Below messages will be prefixed with the above specified prefix
+FindItemCommand:
+  IncorrectUsageMessage: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item name}"
+  InvalidMaterialMessage: "&cYou provided an invalid item! &fTry selecting from autofill."
+  UnsafeShopAreaMessage: "&cThe area around the shop is unsafe!"
+
+# {ITEM_TYPE} - Displays item type
+# {ITEM_NAME} - Displays name of the item
+# {ITEM_PRICE} - Displays price of item set by shop owner
+# {SHOP_STOCK} - Displays remaining stock
+# {SHOP_LOC} - Displays shop coordinates
+# {SHOP_WORLD} - Displays the world name the shop is in
+searched-shop-lore:
+  - ""
+  - "&fPrice: &a{ITEM_PRICE}"
+  - ""
+
+# Enabling this will spam your console with logs from the plugin
+# Set this to true only for debugging purposes
+# If set to false, some error messages can still get through if they require immediate attention
+debug-mode: false

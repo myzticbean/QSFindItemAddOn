@@ -1,0 +1,12 @@
+name: FindItemAddOn
+version: ${project.version}
+main: me.ronsane.finditemaddon.finditemaddon.FindItemAddOn
+api-version: 1.13
+authors: [ ronsane ]
+depend:
+  - QuickShop
+  - Vault
+  - Essentials
+
+commands:
+  finditem:
