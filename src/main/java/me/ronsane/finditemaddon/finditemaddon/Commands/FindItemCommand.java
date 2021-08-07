@@ -9,12 +9,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 
 public class FindItemCommand implements CommandExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, String label, String[] args) {
         if(label.equalsIgnoreCase("finditem")) {
             if (!(sender instanceof Player)) {
                 if(args.length == 1){
@@ -57,9 +58,9 @@ public class FindItemCommand implements CommandExecutor {
                     }
                     else {
                         player.sendMessage(FindItemAddOn.PluginPrefix + CommonUtils.parseColors("&7Searching..."));
+                        boolean isBuying = args[0].equalsIgnoreCase("to-buy");
                         Material mat = Material.getMaterial(args[1]);
                         if(mat != null) {
-                            boolean isBuying = args[0].equalsIgnoreCase("to-buy");
                             Inventory inv = SearchHandler.searchForShops(mat, isBuying);
                             if(inv != null) {
                                 player.openInventory(inv);
@@ -69,8 +70,14 @@ public class FindItemCommand implements CommandExecutor {
                             }
                         }
                         else {
-                            // Invalid Material
-                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.InvalidMaterialMessage"))));
+                            Inventory inv = SearchHandler.searchForShops(args[1], isBuying);
+                            if(inv != null) {
+                                player.openInventory(inv);
+                            }
+                            else {
+                                // Invalid Material
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.InvalidMaterialMessage"))));
+                            }
                         }
                     }
                 }

@@ -14,4 +14,20 @@ public class CommonUtils {
     public static void sendPlayerActionBar(Player player, String msg) {
         player.spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(parseColors(msg)));
     }
+
+    public static String capitalizeFirstLetters(String str) {
+        char[] array = str.toCharArray();
+
+        // Uppercase first letter.
+        array[0] = Character.toUpperCase(array[0]);
+
+        // Uppercase all letters that follow a whitespace character.
+        for (int i = 1; i < array.length; i++) {
+            if (Character.isWhitespace(array[i - 1])) {
+                array[i] = Character.toUpperCase(array[i]);
+            }
+        }
+
+        return new String(array);
+    }
 }

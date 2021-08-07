@@ -6,6 +6,7 @@ import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventInventoryClick;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventPlayerCommandSend;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.EnchantmentUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
