@@ -6,7 +6,7 @@
 
     <groupId>me.ronsane.FindItemAddOn</groupId>
     <artifactId>FindItemAddOn</artifactId>
-    <version>1.0-Release</version>
+    <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>FindItemAddOn</name>
