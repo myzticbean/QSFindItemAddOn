@@ -22,8 +22,10 @@ import org.maxgamer.quickshop.shop.Shop;
 import java.util.*;
 
 public class FoundShopsGUI {
+
     private static Inventory foundShopsGUI;
 
+    @Deprecated
     public static Inventory createGUI(List<Shop> shopsList) {
         NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
         foundShopsGUI = Bukkit.createInventory(null, 54, "Shops found (Showing Top "+ shopsList.size() +")");
@@ -113,6 +115,7 @@ public class FoundShopsGUI {
         return foundShopsGUI;
     }
 
+    @Deprecated
     public static void onFoundShopsGUIInvClick(InventoryClickEvent event) {
         if(!event.getInventory().equals(foundShopsGUI)) { return; }
 
@@ -143,7 +146,7 @@ public class FoundShopsGUI {
                     player.teleport(locToTeleport);
                 }
                 else {
-                    player.sendMessage(FindItemAddOn.PluginPrefix + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
+                    player.sendMessage(FindItemAddOn.PluginInGamePrefix + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
                 }
                 player.closeInventory();
             }

@@ -3,7 +3,7 @@
 # Requires finditem.use permission node
 # Color codes are supported
 # If you want to keep a field empty, make it as ""
-# NEVER leave it empty without quotes, or bad things will happen!
+# DON'T leave it empty without quotes, or bad things will happen!
 # Do /finditem reload to reload this config (Requires finditem.reload permission node)
 
 # Prefix that will be shown in chat for any message from this plugin

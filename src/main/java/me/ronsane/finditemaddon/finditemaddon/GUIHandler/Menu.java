@@ -25,6 +25,7 @@ public abstract class Menu implements InventoryHolder {
     public Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
         ItemMeta FILLER_GLASS_meta = this.FILLER_GLASS.getItemMeta();
+        assert FILLER_GLASS_meta != null;
         FILLER_GLASS_meta.setDisplayName(" ");
         this.FILLER_GLASS.setItemMeta(FILLER_GLASS_meta);
     }

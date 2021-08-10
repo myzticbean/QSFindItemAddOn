@@ -9,7 +9,6 @@ import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -80,7 +79,7 @@ public class LocationUtils {
     public static Location findSafeLocationAroundShop(Location shopLocation) {
 
         Location roundedShopLoc = LocationUtil.getRoundedDestination(shopLocation);
-        LoggerUtils.logInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
+        LoggerUtils.logDebugInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
         // Creating a list of four block locations in 4 sides of the shop
         List<Location> possibleSafeLocList = new ArrayList<>();
         possibleSafeLocList.add(new Location(
@@ -108,20 +107,20 @@ public class LocationUtils {
                 roundedShopLoc.getZ() - 1
         ));
         for(Location loc_i : possibleSafeLocList) {
-            LoggerUtils.logInfo("Possible safe location: " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
+            LoggerUtils.logDebugInfo("Possible safe location: " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
             if(loc_i.getBlock().getType().equals(
                     Material.getMaterial(
                             Objects.requireNonNull(
                                     QuickShop.getInstance().getConfig().getString("shop.sign-material")))
             )) {
-                LoggerUtils.logInfo("Shop sign block found at " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
+                LoggerUtils.logDebugInfo("Shop sign block found at " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
                 // check if the block above is suffocating
                 Location blockAbove = new Location(
                         loc_i.getWorld(),
                         loc_i.getBlockX(),
                         loc_i.getBlockY() + 1,
                         loc_i.getBlockZ());
-                LoggerUtils.logInfo("Block above shop sign: " + blockAbove.getX() + ", " + blockAbove.getY() + ", " + blockAbove.getZ());
+                LoggerUtils.logDebugInfo("Block above shop sign: " + blockAbove.getX() + ", " + blockAbove.getY() + ", " + blockAbove.getZ());
                 if(!isBlockSuffocating(blockAbove)) {
                     Location blockBelow = new Location(
                             loc_i.getWorld(),
@@ -129,27 +128,27 @@ public class LocationUtils {
                             loc_i.getBlockY() - 1,
                             loc_i.getBlockZ()
                     );
-                    LoggerUtils.logInfo("Block below shop sign: " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
+                    LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
                     // check if the block below is not damaging
                     if(!isBlockDamaging(blockBelow)) {
                         loc_i = lookAt(loc_i, roundedShopLoc);
                         return loc_i;
                     }
                     else {
-                        LoggerUtils.logInfo("Block below shop sign found damaging. Block type: " + blockBelow.getBlock().getType());
+                        LoggerUtils.logDebugInfo("Block below shop sign found damaging. Block type: " + blockBelow.getBlock().getType());
                         return null;
                     }
                 }
                 else {
-                    LoggerUtils.logInfo("Block above shop sign found not air. Block type: " + blockAbove.getBlock().getType());
+                    LoggerUtils.logDebugInfo("Block above shop sign found not air. Block type: " + blockAbove.getBlock().getType());
                     return null;
                 }
             }
             else {
-                LoggerUtils.logInfo("Block not shop sign. Block type: " + loc_i.getBlock().getType());
+                LoggerUtils.logDebugInfo("Block not shop sign. Block type: " + loc_i.getBlock().getType());
             }
         }
-        LoggerUtils.logInfo("No safe block found near shop");
+        LoggerUtils.logDebugInfo("No safe block found near shop");
         return null;
     }
 

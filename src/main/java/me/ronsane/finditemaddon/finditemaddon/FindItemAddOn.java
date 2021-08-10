@@ -3,12 +3,13 @@ package me.ronsane.finditemaddon.finditemaddon;
 import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
-import me.ronsane.finditemaddon.finditemaddon.Events.EventInventoryClick;
-import me.ronsane.finditemaddon.finditemaddon.Events.EventPlayerCommandSend;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
+import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
+import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -22,77 +23,78 @@ public final class FindItemAddOn extends JavaPlugin {
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
-    public static String PluginPrefix;
+    public static String PluginInGamePrefix;
     public static Essentials essAPI;
     public static String serverVersion;
+    private final static int bsPLUGIN_METRIC_ID = 12382;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        LoggerUtils.logInfo("Enabling plugin");
+        LoggerUtils.logInfo("Validating config file");
         this.saveDefaultConfig();
-        PluginPrefix = CommonUtils.parseColors(Objects.requireNonNull(getInstance().getConfig().getString("PluginPrefix")) + "&r");
+        PluginInGamePrefix = CommonUtils.parseColors(Objects.requireNonNull(getInstance().getConfig().getString("PluginPrefix")) + "&r");
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
+            LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
             getServer().getPluginManager().disablePlugin(this);
-            Bukkit.getLogger().info(
-                    CommonUtils.parseColors(
-                            "&cQuickShop is required to use this addon. Please install QuickShop and try again!"));
             return;
         }
         else {
-            Bukkit.getLogger().info(PluginPrefix + "QuickShop found");
+            LoggerUtils.logInfo("QuickShop found");
         }
         if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+            LoggerUtils.logError("&cEssentialsX is required to use this addon. Please install EssentialsX and try again!");
             getServer().getPluginManager().disablePlugin(this);
-            Bukkit.getLogger().info(
-                    CommonUtils.parseColors(
-                            "&cEssentialsX is required to use this addon. Please install EssentialsX and try again!"));
             return;
         }
         else {
             essAPI = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-            Bukkit.getLogger().info(PluginPrefix + "Hooked to Essentials");
+            LoggerUtils.logInfo("Hooked to Essentials");
         }
 
-        Bukkit.getLogger().info(PluginPrefix + CommonUtils.parseColors("A QuickShop AddOn by &cronsane"));
-        Bukkit.getLogger().info(PluginPrefix + "Enabling plugin");
+        LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
+
         serverVersion = Bukkit.getServer().getVersion();
-        Bukkit.getLogger().info(PluginPrefix + "Server version found: " + serverVersion);
+        LoggerUtils.logInfo("Server version found: " + serverVersion);
         initCommands();
         initEvents();
         LocationUtils.initDamagingBlocksList();
         LocationUtils.initNonSuffocatingBlocksList();
+
+        // init metrics
+        LoggerUtils.logInfo("Registering bStats metrics");
+        Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        LoggerUtils.logInfo("Bye!");
     }
 
     private void initCommands() {
-        Bukkit.getLogger().info(PluginPrefix + "Registering commands");
+        LoggerUtils.logInfo("Registering commands");
         Objects.requireNonNull(this.getCommand("finditem")).setExecutor(new FindItemCommand());
         Objects.requireNonNull(this.getCommand("finditem")).setTabCompleter(new FindItemCmdTabCompleter());
     }
 
     private void initEvents() {
-        Bukkit.getLogger().info(PluginPrefix + "Registering events");
-//        this.getServer().getPluginManager().registerEvents(new EventInventoryClick(), this);
-        this.getServer().getPluginManager().registerEvents(new EventPlayerCommandSend(), this);
+        LoggerUtils.logInfo("Registering events");
+        this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p){
         PlayerMenuUtility playerMenuUtility;
-
         if(playerMenuUtilityMap.containsKey(p)) {
             return playerMenuUtilityMap.get(p);
         }
         else {
             playerMenuUtility = new PlayerMenuUtility(p);
             playerMenuUtilityMap.put(p, playerMenuUtility);
-
             return playerMenuUtility;
         }
     }

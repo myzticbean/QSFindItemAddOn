@@ -1,7 +1,6 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
-import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
@@ -44,7 +43,7 @@ public class FoundShopsMenu extends PaginatedMenu {
         if(event.getCurrentItem().getType().equals(super.backButton.getType())) {
             if(page == 0) {
                 event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&eYou are already on first page!"));
+                        CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&eYou are already on first page!"));
             }
             else {
                 page = page - 1;
@@ -58,7 +57,7 @@ public class FoundShopsMenu extends PaginatedMenu {
             }
             else {
                 event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&eYou are already on last page!"));
+                        CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&eYou are already on last page!"));
             }
         }
         else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -86,7 +85,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                         player.teleport(locToTeleport);
                     }
                     else {
-                        player.sendMessage(FindItemAddOn.PluginPrefix
+                        player.sendMessage(FindItemAddOn.PluginInGamePrefix
                                 + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
                     }
                     player.closeInventory();

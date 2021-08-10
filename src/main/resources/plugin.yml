@@ -1,4 +1,4 @@
-name: FindItemAddOn
+name: QSFindItemAddOn
 version: ${project.version}
 main: me.ronsane.finditemaddon.finditemaddon.FindItemAddOn
 api-version: 1.13
@@ -10,3 +10,8 @@ depend:
 
 commands:
   finditem:
+    description: Find an item from shops
+    aliases:
+      - searchitem
+      - shopsearch
+      - searchshop
