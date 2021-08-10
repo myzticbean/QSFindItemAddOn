@@ -5,13 +5,16 @@ import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventInventoryClick;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventPlayerCommandSend;
+import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
+import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
-import me.ronsane.finditemaddon.finditemaddon.Utils.EnchantmentUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.util.HashMap;
 import java.util.Objects;
 
 public final class FindItemAddOn extends JavaPlugin {
@@ -22,6 +25,8 @@ public final class FindItemAddOn extends JavaPlugin {
     public static String PluginPrefix;
     public static Essentials essAPI;
     public static String serverVersion;
+
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
 
     @Override
     public void onEnable() {
@@ -73,7 +78,22 @@ public final class FindItemAddOn extends JavaPlugin {
 
     private void initEvents() {
         Bukkit.getLogger().info(PluginPrefix + "Registering events");
-        this.getServer().getPluginManager().registerEvents(new EventInventoryClick(), this);
+//        this.getServer().getPluginManager().registerEvents(new EventInventoryClick(), this);
         this.getServer().getPluginManager().registerEvents(new EventPlayerCommandSend(), this);
+        this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
+    }
+
+    public static PlayerMenuUtility getPlayerMenuUtility(Player p){
+        PlayerMenuUtility playerMenuUtility;
+
+        if(playerMenuUtilityMap.containsKey(p)) {
+            return playerMenuUtilityMap.get(p);
+        }
+        else {
+            playerMenuUtility = new PlayerMenuUtility(p);
+            playerMenuUtilityMap.put(p, playerMenuUtility);
+
+            return playerMenuUtility;
+        }
     }
 }
