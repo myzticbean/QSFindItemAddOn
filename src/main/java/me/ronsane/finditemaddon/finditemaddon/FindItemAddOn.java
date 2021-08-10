@@ -6,6 +6,7 @@ import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventInventoryClick;
 import me.ronsane.finditemaddon.finditemaddon.Events.EventPlayerCommandSend;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
+import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import org.bukkit.Bukkit;
@@ -77,8 +78,9 @@ public final class FindItemAddOn extends JavaPlugin {
 
     private void initEvents() {
         Bukkit.getLogger().info(PluginPrefix + "Registering events");
-        this.getServer().getPluginManager().registerEvents(new EventInventoryClick(), this);
+//        this.getServer().getPluginManager().registerEvents(new EventInventoryClick(), this);
         this.getServer().getPluginManager().registerEvents(new EventPlayerCommandSend(), this);
+        this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p){

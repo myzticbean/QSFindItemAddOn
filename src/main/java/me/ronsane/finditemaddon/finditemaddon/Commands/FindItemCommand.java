@@ -1,16 +1,22 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
+import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.SearchHandler;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.maxgamer.quickshop.shop.Shop;
 
+import java.util.List;
 import java.util.Objects;
 
 public class FindItemCommand implements CommandExecutor {
@@ -19,7 +25,7 @@ public class FindItemCommand implements CommandExecutor {
         if(label.equalsIgnoreCase("finditem")) {
             if (!(sender instanceof Player)) {
                 if(args.length == 1){
-                    if(args[0].equalsIgnoreCase("reloadconfig")) {
+                    if(args[0].equalsIgnoreCase("reload")) {
                         if(sender.hasPermission("finditem.reload")) {
                             FindItemAddOn.getInstance().reloadConfig();
                             sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&aConfig reloaded!"));
@@ -29,7 +35,7 @@ public class FindItemCommand implements CommandExecutor {
                         }
                     }
                     else {
-                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&CIncorrect usage! Try &e/finditem &freloadconfig"));
+                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&CIncorrect usage! Try &e/finditem &freload"));
                     }
                 }
                 else {
@@ -53,31 +59,51 @@ public class FindItemCommand implements CommandExecutor {
                             }
                         }
                         else {
-                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&CIncorrect usage! Try &e/finditem &freloadconfig"));
+                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + "&CIncorrect usage! Try &e/finditem &freload"));
                         }
                     }
                     else {
                         player.sendMessage(FindItemAddOn.PluginPrefix + CommonUtils.parseColors("&7Searching..."));
                         boolean isBuying = args[0].equalsIgnoreCase("to-buy");
                         Material mat = Material.getMaterial(args[1]);
+
                         if(mat != null) {
-                            Inventory inv = SearchHandler.searchForShops(mat, isBuying);
-                            if(inv != null) {
-                                player.openInventory(inv);
+                            LoggerUtils.logInfo("Material found: " + mat.toString());
+                            List<Shop> searchResult = QuickShopAPIHandler.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                            if(searchResult.size() > 0) {
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);
+                                menu.open(searchResult);
                             }
                             else {
                                 player.sendMessage(FindItemAddOn.PluginPrefix + CommonUtils.parseColors("&7No shops found!"));
                             }
+//                            Inventory inv = SearchHandler.searchForShops(mat, isBuying);
+//                            if(inv != null) {
+//                                player.openInventory(inv);
+//                            }
+//                            else {
+//                                player.sendMessage(FindItemAddOn.PluginPrefix + CommonUtils.parseColors("&7No shops found!"));
+//                            }
                         }
                         else {
-                            Inventory inv = SearchHandler.searchForShops(args[1], isBuying);
-                            if(inv != null) {
-                                player.openInventory(inv);
+                            LoggerUtils.logInfo("Material not found! Performing query based search..");
+                            List<Shop> searchResult = QuickShopAPIHandler.findItemBasedOnDisplayNameFromAllShops(args[1], isBuying);
+                            if(searchResult.size() > 0) {
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);
+                                menu.open(searchResult);
                             }
                             else {
                                 // Invalid Material
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.InvalidMaterialMessage"))));
                             }
+//                            Inventory inv = SearchHandler.searchForShops(args[1], isBuying);
+//                            if(inv != null) {
+//                                player.openInventory(inv);
+//                            }
+//                            else {
+//                                // Invalid Material
+//                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginPrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.InvalidMaterialMessage"))));
+//                            }
                         }
                     }
                 }

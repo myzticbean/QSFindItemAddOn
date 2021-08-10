@@ -50,7 +50,6 @@ public class FoundShopsGUI {
                         }
                     }
                 }
-
                 // checking if item has applied enchants and if enchantments not hidden
                 if(shop.getItem().getItemMeta().hasEnchants()) {
                     if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_ENCHANTS)) {
@@ -61,7 +60,7 @@ public class FoundShopsGUI {
                         }
                     }
                 }
-
+                // checking if item is Potion and if Potion effects not hidden
                 if(shop.getItem().getItemMeta() instanceof PotionMeta) {
                     if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
                         PotionMeta potionMeta = (PotionMeta) shop.getItem().getItemMeta();
@@ -73,7 +72,6 @@ public class FoundShopsGUI {
                                 + CommonUtils.capitalizeFirstLetters(StringUtils.replace(potionData.getType().name().toLowerCase(), "_", " "))));
                     }
                 }
-
                 // if lore exists
                 if(shop.getItem().getItemMeta().hasLore()) {
                     List<String> shopItemLore = shop.getItem().getItemMeta().getLore();
