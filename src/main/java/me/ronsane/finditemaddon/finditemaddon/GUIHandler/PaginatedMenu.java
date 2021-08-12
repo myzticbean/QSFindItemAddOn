@@ -1,6 +1,5 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
@@ -47,8 +46,10 @@ public abstract class PaginatedMenu extends Menu {
         }
         int backButtonCMD;
         try {
-            backButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD);
-            backButton_meta.setCustomModelData(backButtonCMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD)) {
+                backButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD);
+                backButton_meta.setCustomModelData(backButtonCMD);
+            }
         }
         catch (NumberFormatException e) {
             LoggerUtils.logDebugInfo("Invalid Custom Model Data for Back Button in config.yml");
@@ -66,8 +67,10 @@ public abstract class PaginatedMenu extends Menu {
         }
         int nextButtonCMD;
         try {
-            nextButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD);
-            nextButton_meta.setCustomModelData(nextButtonCMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD)) {
+                nextButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD);
+                nextButton_meta.setCustomModelData(nextButtonCMD);
+            }
         }
         catch (NumberFormatException e) {
             LoggerUtils.logDebugInfo("Invalid Custom Model Data for Next Button in config.yml");
@@ -85,8 +88,10 @@ public abstract class PaginatedMenu extends Menu {
         }
         int closeInvButtonCMD;
         try {
-            closeInvButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD);
-            closeInv_meta.setCustomModelData(closeInvButtonCMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD)) {
+                closeInvButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD);
+                closeInv_meta.setCustomModelData(closeInvButtonCMD);
+            }
         }
         catch (NumberFormatException e) {
             LoggerUtils.logDebugInfo("Invalid Custom Model Data for Close Button in config.yml");

@@ -1,6 +1,5 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;

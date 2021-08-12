@@ -1,6 +1,5 @@
 package me.ronsane.finditemaddon.finditemaddon.Utils;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import org.bukkit.Bukkit;
 

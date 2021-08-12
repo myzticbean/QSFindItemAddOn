@@ -1,9 +1,7 @@
 package me.ronsane.finditemaddon.finditemaddon.ConfigProvider;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
-import org.bukkit.plugin.Plugin;
 
 import java.util.List;
 
@@ -36,10 +34,7 @@ public class ConfigProvider {
     public final Boolean DEBUG_MODE = FindItemAddOn.getInstance().getConfig().getBoolean("debug-mode");
 
     public ConfigProvider() {
-        LoggerUtils.logInfo("ConfigProvider reloaded!");
+        LoggerUtils.logInfo("Config loaded!");
     }
 
-//    public void loadConfigProvider() {
-//        FindItemAddOn.configProvider = new ConfigProvider();
-//    }
 }

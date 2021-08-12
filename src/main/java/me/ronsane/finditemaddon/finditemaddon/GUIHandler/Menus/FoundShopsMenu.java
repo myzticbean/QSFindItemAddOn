@@ -1,12 +1,12 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.EnchantmentUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
 import org.maxgamer.quickshop.shop.Shop;
 
 import java.util.*;
@@ -128,15 +129,21 @@ public class FoundShopsMenu extends PaginatedMenu {
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore;
                     OfflinePlayer offlinePlayer;
+                    Shop shop = foundShops.get(index);
+                    lore = new ArrayList<>();
 
-//                    for(Shop shop : foundShops) {
-                        Shop shop = foundShops.get(index);
-                        lore = new ArrayList<>();
-                        if(shop.getItem().getItemMeta() != null) {
-                            // if custom display name exists
-                            if(!StringUtils.isEmpty(shop.getItem().getItemMeta().getDisplayName())) {
-                                lore.add(CommonUtils.parseColors(shop.getItem().getItemMeta().getDisplayName()));
+                    List<String> shopItemLore = FindItemAddOn.configProvider.SHOP_GUI_ITEM_LORE;
+                    for(String shopItemLore_i : shopItemLore) {
+                        if(shopItemLore_i.contains("{ITEM_LORE}")) {
+                            if(shop.getItem().hasItemMeta()) {
+                                if(shop.getItem().getItemMeta().hasLore()) {
+                                    for(String s : shop.getItem().getItemMeta().getLore()) {
+                                        lore.add(CommonUtils.parseColors(s));
+                                    }
+                                }
                             }
+                        }
+                        else if(shopItemLore_i.contains("{ITEM_ENCHANTS}")) {
                             // If stored enchants exist and if enchantments not hidden
                             if(shop.getItem().getItemMeta() instanceof EnchantmentStorageMeta) {
                                 if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_ENCHANTS)) {
@@ -158,59 +165,82 @@ public class FoundShopsMenu extends PaginatedMenu {
                                     }
                                 }
                             }
+                        }
+                        else if(shopItemLore_i.contains("{ITEM_POTION_EFFECTS}")) {
                             // checking if item is Potion and if Potion effects not hidden
-                            if(shop.getItem().getItemMeta() instanceof PotionMeta) {
-                                if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
-                                    PotionMeta potionMeta = (PotionMeta) shop.getItem().getItemMeta();
-                                    PotionData potionData = potionMeta.getBasePotionData();
-                                    lore.add("");
-                                    lore.add(
-                                            CommonUtils.parseColors("&fPotion Effect: "
-                                                    + "&7"
-                                                    + CommonUtils.capitalizeFirstLetters(StringUtils.replace(potionData.getType().name().toLowerCase(), "_", " "))));
+                            if(shop.getItem().hasItemMeta()) {
+                                if(shop.getItem().getItemMeta() instanceof PotionMeta) {
+                                    if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
+                                        PotionMeta potionMeta = (PotionMeta) shop.getItem().getItemMeta();
+                                        for(PotionEffect potionEffect : potionMeta.getCustomEffects()) {
+                                            lore.add(CommonUtils.parseColors("&7"
+                                                + CommonUtils.capitalizeFirstLetters(
+                                                    StringUtils.replace(potionEffect.getType().toString().toLowerCase(), "_", " "))));
+                                        }
+                                    }
                                 }
                             }
-                            // if lore exists
-                            if(shop.getItem().getItemMeta().hasLore()) {
-                                List<String> shopItemLore = shop.getItem().getItemMeta().getLore();
-                                for(String s_i : shopItemLore) {
-                                    lore.add(CommonUtils.parseColors(s_i));
-                                }
-                            }
-                            lore.add("");
                         }
-                        lore.add(CommonUtils.parseColors("&fPrice: &a" + FindItemAddOn.essAPI.getSettings().getCurrencySymbol() + shop.getPrice()));
-                        if(!shop.isBuying()) {
-                            lore.add(CommonUtils.parseColors("&fStock: &7" + shop.getRemainingStock()));
+                        else {
+                            lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
                         }
-                        offlinePlayer = Bukkit.getOfflinePlayer(shop.getOwner());
-                        lore.add(CommonUtils.parseColors("&fOwner: &7" + offlinePlayer.getName()));
-                        lore.add((CommonUtils.parseColors("&fLocation: &7"
-                                + shop.getLocation().getBlockX() + ", "
-                                + shop.getLocation().getBlockY() + ", ")
-                                + shop.getLocation().getBlockZ()));
-                        lore.add((CommonUtils.parseColors("&fWorld: &7" + Objects.requireNonNull(shop.getLocation().getWorld()).getName())));
-                        if(FindItemAddOn.configProvider.ALLOW_DIRECT_SHOP_TP) {
-                            if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
-                                lore.add("");
-                                lore.add(CommonUtils.parseColors("&6&lClick to teleport to the shop!"));
-                            }
+                    }
+
+                    if(FindItemAddOn.configProvider.ALLOW_DIRECT_SHOP_TP) {
+                        if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
+                            lore.add(CommonUtils.parseColors(FindItemAddOn.configProvider.CLICK_TO_TELEPORT_MSG));
                         }
-                        meta.setLore(lore);
-                        String locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
-                                + shop.getLocation().getBlockX() + ","
-                                + shop.getLocation().getBlockY() + ","
-                                + shop.getLocation().getBlockZ();
-                        meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
-                        // handling custom model data
-                        if(shop.getItem().getItemMeta().hasCustomModelData()) {
-                            meta.setCustomModelData(shop.getItem().getItemMeta().getCustomModelData());
-                        }
-                        item.setItemMeta(meta);
-                        inventory.addItem(item);
+                    }
+                    assert meta != null;
+                    meta.setLore(lore);
+
+                    // storing location data in item persistent storage
+                    String locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
+                            + shop.getLocation().getBlockX() + ","
+                            + shop.getLocation().getBlockY() + ","
+                            + shop.getLocation().getBlockZ();
+                    meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
+
+                    // handling custom model data
+                    if(Objects.requireNonNull(shop.getItem().getItemMeta()).hasCustomModelData()) {
+                        meta.setCustomModelData(shop.getItem().getItemMeta().getCustomModelData());
+                    }
+                    item.setItemMeta(meta);
+                    inventory.addItem(item);
                 }
                 guiSlotCounter++;
             }
         }
+    }
+
+    private String replaceLorePlaceholders(String text, Shop shop) {
+
+        if(text.contains("{ITEM_DISPLAY_NAME}")) {
+            if(shop.getItem().hasItemMeta()) {
+                if(Objects.requireNonNull(shop.getItem().getItemMeta()).hasDisplayName()) {
+                    LoggerUtils.logDebugInfo(shop.getItem().getItemMeta().getDisplayName());
+                    text = text.replace("{ITEM_DISPLAY_NAME}", shop.getItem().getItemMeta().getDisplayName());
+                }
+            }
+        }
+        if(text.contains("{ITEM_PRICE}")) {
+            text = text.replace("{ITEM_PRICE}", FindItemAddOn.essAPI.getSettings().getCurrencySymbol() + shop.getPrice());
+        }
+        if(text.contains("{ITEM_QTY}")) {
+            text = text.replace("{ITEM_QTY}", String.valueOf(shop.getRemainingStock()));
+        }
+        if(text.contains("{SHOP_OWNER}")) {
+            text = text.replace("{SHOP_OWNER}", Objects.requireNonNull(Bukkit.getOfflinePlayer(shop.getOwner()).getName()));
+        }
+        if(text.contains("{SHOP_LOC}")) {
+            text = text.replace("{SHOP_LOC}",
+                    shop.getLocation().getBlockX() + ", "
+                    + shop.getLocation().getBlockY() + ", "
+                    + shop.getLocation().getBlockZ());
+        }
+        if(text.contains("{SHOP_WORLD}")) {
+            text = text.replace("{SHOP_WORLD}", Objects.requireNonNull(shop.getLocation().getWorld()).getName());
+        }
+        return text;
     }
 }

@@ -3,7 +3,6 @@ package me.ronsane.finditemaddon.finditemaddon;
 import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
-import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
