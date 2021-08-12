@@ -1,6 +1,10 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
+import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
+import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -13,48 +17,87 @@ public abstract class PaginatedMenu extends Menu {
     protected int maxItemsPerPage = 45;
     protected int index = 0;
 
-    protected ItemStack backButton = new ItemStack(Material.RED_CONCRETE, 1);
-    protected ItemStack nextButton = new ItemStack(Material.GREEN_CONCRETE, 1);
-    protected ItemStack closeInv = new ItemStack(Material.BARRIER, 1);
+    protected ItemStack backButton;
+    protected ItemStack nextButton;
+    protected ItemStack closeInvButton;
 
     public PaginatedMenu(PlayerMenuUtility playerMenuUtility) {
         super(playerMenuUtility);
 
-        ItemMeta backButton_meta = backButton.getItemMeta();
-        backButton_meta.setDisplayName(CommonUtils.parseColors("&cBack"));
-        backButton.setItemMeta(backButton_meta);
-
-        ItemMeta nextButton_meta = nextButton.getItemMeta();
-        nextButton_meta.setDisplayName(CommonUtils.parseColors("&aNext"));
-        nextButton.setItemMeta(nextButton_meta);
-
-        ItemMeta closeInv_meta = closeInv.getItemMeta();
-        closeInv_meta.setDisplayName(CommonUtils.parseColors("&fClose Search"));
-        closeInv.setItemMeta(closeInv_meta);
+        initMaterialsForBottomBar();
     }
 
     public PaginatedMenu(PlayerMenuUtility playerMenuUtility, List<Shop> searchResult) {
         super(playerMenuUtility);
 
-        ItemMeta backButton_meta = backButton.getItemMeta();
-        backButton_meta.setDisplayName(CommonUtils.parseColors("&cBack"));
-        backButton.setItemMeta(backButton_meta);
-
-        ItemMeta nextButton_meta = nextButton.getItemMeta();
-        nextButton_meta.setDisplayName(CommonUtils.parseColors("&aNext"));
-        nextButton.setItemMeta(nextButton_meta);
-
-        ItemMeta closeInv_meta = closeInv.getItemMeta();
-        closeInv_meta.setDisplayName(CommonUtils.parseColors("&fClose Search"));
-        closeInv.setItemMeta(closeInv_meta);
+        initMaterialsForBottomBar();
 
         super.playerMenuUtility.setPlayerShopSearchResult(searchResult);
+    }
+
+    private void initMaterialsForBottomBar() {
+        Material backButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_MATERIAL);
+        if(backButtonMaterial == null) {
+            backButtonMaterial = Material.RED_CONCRETE;
+        }
+        backButton = new ItemStack(backButtonMaterial);
+        ItemMeta backButton_meta = backButton.getItemMeta();
+        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_TEXT)) {
+            backButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_TEXT));
+        }
+        int backButtonCMD;
+        try {
+            backButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD);
+            backButton_meta.setCustomModelData(backButtonCMD);
+        }
+        catch (NumberFormatException e) {
+            LoggerUtils.logDebugInfo("Invalid Custom Model Data for Back Button in config.yml");
+        }
+        backButton.setItemMeta(backButton_meta);
+
+        Material nextButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_MATERIAL);
+        if(nextButtonMaterial == null) {
+            nextButtonMaterial = Material.GREEN_CONCRETE;
+        }
+        nextButton = new ItemStack(nextButtonMaterial);
+        ItemMeta nextButton_meta = nextButton.getItemMeta();
+        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_TEXT)) {
+            nextButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_TEXT));
+        }
+        int nextButtonCMD;
+        try {
+            nextButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD);
+            nextButton_meta.setCustomModelData(nextButtonCMD);
+        }
+        catch (NumberFormatException e) {
+            LoggerUtils.logDebugInfo("Invalid Custom Model Data for Next Button in config.yml");
+        }
+        nextButton.setItemMeta(nextButton_meta);
+
+        Material closeInvButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_MATERIAL);
+        if(closeInvButtonMaterial == null) {
+            closeInvButtonMaterial = Material.BARRIER;
+        }
+        closeInvButton = new ItemStack(closeInvButtonMaterial);
+        ItemMeta closeInv_meta = closeInvButton.getItemMeta();
+        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_TEXT)) {
+            closeInv_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_TEXT));
+        }
+        int closeInvButtonCMD;
+        try {
+            closeInvButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD);
+            closeInv_meta.setCustomModelData(closeInvButtonCMD);
+        }
+        catch (NumberFormatException e) {
+            LoggerUtils.logDebugInfo("Invalid Custom Model Data for Close Button in config.yml");
+        }
+        closeInvButton.setItemMeta(closeInv_meta);
     }
 
     public void addMenuBottomBar() {
         inventory.setItem(45, backButton);
         inventory.setItem(53, nextButton);
-        inventory.setItem(49, closeInv);
+        inventory.setItem(49, closeInvButton);
 
         inventory.setItem(46, super.FILLER_GLASS);
         inventory.setItem(47, super.FILLER_GLASS);

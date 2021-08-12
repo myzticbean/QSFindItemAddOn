@@ -1,5 +1,6 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
+import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
@@ -64,31 +65,42 @@ public class FoundShopsMenu extends PaginatedMenu {
             event.getWhoClicked().closeInventory();
         }
         else if(event.getCurrentItem().getType().equals(super.playerMenuUtility.getPlayerShopSearchResult().get(0).getItem().getType())) {
-            if(FindItemAddOn.getInstance().getConfig().getBoolean("allow-direct-shop-tp")) {
-                Player player = (Player) event.getWhoClicked();
+            if(FindItemAddOn.configProvider.ALLOW_DIRECT_SHOP_TP) {
+                if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
+                    Player player = (Player) event.getWhoClicked();
 
-                ItemStack item = event.getCurrentItem();
-                ItemMeta meta = item.getItemMeta();
-                NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-                if(!meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                    return;
-                }
-                else {
-                    String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-                    List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
-
-                    World world = Bukkit.getWorld(locDataList.get(0));
-                    int locX = Integer.parseInt(locDataList.get(1)), locY = Integer.parseInt(locDataList.get(2)), locZ = Integer.parseInt(locDataList.get(3));
-                    Location shopLocation = new Location(world, locX, locY, locZ);
-                    Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
-                    if(locToTeleport != null) {
-                        player.teleport(locToTeleport);
+                    ItemStack item = event.getCurrentItem();
+                    ItemMeta meta = item.getItemMeta();
+                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
+                    if(!meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+                        return;
                     }
                     else {
-                        player.sendMessage(FindItemAddOn.PluginInGamePrefix
-                                + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
+                        String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                        List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
+
+                        World world = Bukkit.getWorld(locDataList.get(0));
+                        int locX = Integer.parseInt(locDataList.get(1)), locY = Integer.parseInt(locDataList.get(2)), locZ = Integer.parseInt(locDataList.get(3));
+                        Location shopLocation = new Location(world, locX, locY, locZ);
+                        Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
+                        if(locToTeleport != null) {
+                            player.teleport(locToTeleport);
+                        }
+                        else {
+                            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.UNSAFE_SHOP_AREA_MSG)) {
+                                player.sendMessage(FindItemAddOn.PluginInGamePrefix
+                                        + CommonUtils.parseColors(FindItemAddOn.configProvider.UNSAFE_SHOP_AREA_MSG));
+                            }
+                        }
+                        player.closeInventory();
                     }
-                    player.closeInventory();
+                }
+                else {
+                    if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_TP_NO_PERMISSION_MSG)) {
+                        playerMenuUtility.getOwner()
+                                .sendMessage(FindItemAddOn.PluginInGamePrefix
+                                        + CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_TP_NO_PERMISSION_MSG));
+                    }
                 }
             }
         }
@@ -96,7 +108,7 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     @Override
     public void setMenuItems() {
-
+//        List<String> list = (List<String>) ConfigHandler.SHOP_GUI_ITEM_LORE.getListItems();
     }
 
     @Override
@@ -178,9 +190,11 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 + shop.getLocation().getBlockY() + ", ")
                                 + shop.getLocation().getBlockZ()));
                         lore.add((CommonUtils.parseColors("&fWorld: &7" + Objects.requireNonNull(shop.getLocation().getWorld()).getName())));
-                        if(FindItemAddOn.getInstance().getConfig().getBoolean("allow-direct-shop-tp")) {
-                            lore.add("");
-                            lore.add(CommonUtils.parseColors("&6&lClick to teleport to the shop!"));
+                        if(FindItemAddOn.configProvider.ALLOW_DIRECT_SHOP_TP) {
+                            if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
+                                lore.add("");
+                                lore.add(CommonUtils.parseColors("&6&lClick to teleport to the shop!"));
+                            }
                         }
                         meta.setLore(lore);
                         String locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
@@ -194,9 +208,6 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                         item.setItemMeta(meta);
                         inventory.addItem(item);
-//                        foundShopsGUI.setItem(guiSlotCounter, item);
-//                        guiSlotCounter++;
-//                    }
                 }
                 guiSlotCounter++;
             }

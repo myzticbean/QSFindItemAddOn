@@ -1,5 +1,7 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
+import me.ronsane.finditemaddon.finditemaddon.ConfigHandler.ConfigHandler;
+import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -20,10 +22,17 @@ public abstract class Menu implements InventoryHolder {
 
     protected PlayerMenuUtility playerMenuUtility;
 
-    protected ItemStack FILLER_GLASS = new ItemStack(Material.GRAY_STAINED_GLASS_PANE);
+    protected ItemStack FILLER_GLASS;
 
     public Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
+
+        assert FindItemAddOn.configProvider.SHOP_GUI_FILLER_ITEM != null;
+        Material fillerMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_FILLER_ITEM);
+        if(fillerMaterial == null) {
+            fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
+        }
+        FILLER_GLASS = new ItemStack(fillerMaterial);
         ItemMeta FILLER_GLASS_meta = this.FILLER_GLASS.getItemMeta();
         assert FILLER_GLASS_meta != null;
         FILLER_GLASS_meta.setDisplayName(" ");

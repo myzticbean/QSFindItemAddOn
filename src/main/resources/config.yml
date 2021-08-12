@@ -1,4 +1,4 @@
-# QuickShop Reremake FindItem AddOn
+# QuickShop Reremake Shop Search AddOn
 
 # Requires finditem.use permission node
 # Color codes are supported
@@ -6,18 +6,76 @@
 # DON'T leave it empty without quotes, or bad things will happen!
 # Do /finditem reload to reload this config (Requires finditem.reload permission node)
 
+
 # Prefix that will be shown in chat for any message from this plugin
-PluginPrefix: "&a&l[Shop Search] &r"
+plugin-prefix: "&a&l[Shop Search] &r"
+
 
 # Below messages will be prefixed with the above specified prefix
-FindItemCommand:
-  IncorrectUsageMessage: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
-  InvalidMaterialMessage: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
-  UnsafeShopAreaMessage: "&cThe area around the shop is unsafe!"
+find-item-command:
+  incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
+  invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
+  shop-search-loading-message: "&7Searching..."
+  no-shop-found-message: "&7No shops found!"
+  find-item-command-no-permission-message: "&cNo permission!"
 
-# Set it to true to allow players to teleport to the shop directly
-# when they click on the shop result in GUI
+
+# Shop sorting methods:
+# 1 - Random
+# 2 - Based on prices (lower to higher)
+# 3 - Based on stocks (higher to lower)
+# Enter your choice of method below
+shop-sorting-method: 2
+
+
+# Enable these to show item enchantments and potion effects
+shop-gui-show-item-enchants: true
+shop-gui-show-item-potion-effects: true
+
+
+# Shop Search GUI Item Lore
+# Placeholders for shop-item-lore:
+# {ITEM_DISPLAY_NAME}
+# {ITEM_LORE}
+# {ITEM_PRICE}
+# {ITEM_QTY}
+# {SHOP_OWNER}
+# {SHOP_LOC}
+# {SHOP_WORLD}
+shop-gui-item-lore:
+  - "{ITEM_DISPLAY_NAME}"
+  - "{ITEM_LORE}"
+  - ""
+  - "&fPrice: &7{ITEM_PRICE}"
+  - "&fOwner: &7{SHOP_OWNER}"
+  - "&fLocation: &7{SHOP_LOC}"
+  - "&fWorld: &7{SHOP_WORLD}"
+
+
+# Set 'allow-direct-shop-tp' to true to allow players to teleport to the shop directly
+# when they click on the shop result item in the GUI
+# (Players require finditem.shoptp permission node)
+# When set to false OR if players don't have permission,
+# 'click-to-teleport-message' will not be shown in the lore
 allow-direct-shop-tp: true
+click-to-teleport-message: "&6&lClick to teleport to the shop!"
+shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
+unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
+
+
+shop-gui-back-button-material: "RED_CONCRETE"
+shop-gui-back-button-text: "&7« &cBack"
+shop-gui-next-button-material: "GREEN_CONCRETE"
+shop-gui-next-button-text: "&aNext &7»"
+shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
+shop-gui-close-button-material: "BARRIER"
+shop-gui-close-button-text: "&fClose Search"
+# Enter Item Custom Model Data below, if available, within quotes
+# or leave as "" if not available
+shop-gui-back-button-custom-model-data: ""
+shop-gui-next-button-custom-model-data: ""
+shop-gui-close-button-custom-model-data: ""
+
 
 # Enabling this will spam your console with logs from the plugin
 # Set this to true only for debugging purposes

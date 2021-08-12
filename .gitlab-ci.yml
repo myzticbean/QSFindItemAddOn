@@ -1,8 +1,0 @@
-stages:
-  - build
-
-build-code-job:
-  stage: build
-  script:
-    - echo "Building project..."
-    - mvn clean install
