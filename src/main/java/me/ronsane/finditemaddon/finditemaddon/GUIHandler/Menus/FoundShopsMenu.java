@@ -45,7 +45,7 @@ public class FoundShopsMenu extends PaginatedMenu {
         if(event.getCurrentItem().getType().equals(super.backButton.getType())) {
             if(page == 0) {
                 event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&eYou are already on first page!"));
+                        CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_NAV_FIRST_PAGE_ALERT_MSG));
             }
             else {
                 page = page - 1;
@@ -59,7 +59,7 @@ public class FoundShopsMenu extends PaginatedMenu {
             }
             else {
                 event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&eYou are already on last page!"));
+                        CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_NAV_LAST_PAGE_ALERT_MSG));
             }
         }
         else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -89,7 +89,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                         else {
                             if(!StringUtils.isEmpty(FindItemAddOn.configProvider.UNSAFE_SHOP_AREA_MSG)) {
-                                player.sendMessage(FindItemAddOn.PluginInGamePrefix
+                                player.sendMessage(FindItemAddOn.configProvider.PLUGIN_PREFIX
                                         + CommonUtils.parseColors(FindItemAddOn.configProvider.UNSAFE_SHOP_AREA_MSG));
                             }
                         }
@@ -99,7 +99,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                 else {
                     if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_TP_NO_PERMISSION_MSG)) {
                         playerMenuUtility.getOwner()
-                                .sendMessage(FindItemAddOn.PluginInGamePrefix
+                                .sendMessage(FindItemAddOn.configProvider.PLUGIN_PREFIX
                                         + CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_TP_NO_PERMISSION_MSG));
                     }
                 }
@@ -108,9 +108,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     }
 
     @Override
-    public void setMenuItems() {
-//        List<String> list = (List<String>) ConfigHandler.SHOP_GUI_ITEM_LORE.getListItems();
-    }
+    public void setMenuItems() {}
 
     @Override
     public void setMenuItems(List<Shop> foundShops) {
@@ -134,7 +132,13 @@ public class FoundShopsMenu extends PaginatedMenu {
 
                     List<String> shopItemLore = FindItemAddOn.configProvider.SHOP_GUI_ITEM_LORE;
                     for(String shopItemLore_i : shopItemLore) {
-                        if(shopItemLore_i.contains("{ITEM_LORE}")) {
+                        if(shopItemLore_i.contains("{ITEM_DISPLAY_NAME}")) {
+                            String text = replaceLorePlaceholders(shopItemLore_i, shop);
+                            if(!StringUtils.isEmpty(text)) {
+                                lore.add(CommonUtils.parseColors(text));
+                            }
+                        }
+                        else if(shopItemLore_i.contains("{ITEM_LORE}")) {
                             if(shop.getItem().hasItemMeta()) {
                                 if(shop.getItem().getItemMeta().hasLore()) {
                                     for(String s : shop.getItem().getItemMeta().getLore()) {
@@ -168,14 +172,26 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                         else if(shopItemLore_i.contains("{ITEM_POTION_EFFECTS}")) {
                             // checking if item is Potion and if Potion effects not hidden
+                            LoggerUtils.logDebugInfo("Inside Potion Effects");
                             if(shop.getItem().hasItemMeta()) {
                                 if(shop.getItem().getItemMeta() instanceof PotionMeta) {
                                     if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
                                         PotionMeta potionMeta = (PotionMeta) shop.getItem().getItemMeta();
-                                        for(PotionEffect potionEffect : potionMeta.getCustomEffects()) {
-                                            lore.add(CommonUtils.parseColors("&7"
+                                        // Base potion effect
+                                        LoggerUtils.logDebugInfo("Total potions: " + potionMeta.getCustomEffects().size());
+                                        PotionData potionData = potionMeta.getBasePotionData();
+                                        lore.add(CommonUtils.parseColors("&7"
                                                 + CommonUtils.capitalizeFirstLetters(
-                                                    StringUtils.replace(potionEffect.getType().toString().toLowerCase(), "_", " "))));
+                                                StringUtils.replace(potionData.getType().name().toLowerCase(), "_", " "))));
+                                        // Custom potion effects
+                                        for(PotionEffect potionEffect : potionMeta.getCustomEffects()) {
+                                            LoggerUtils.logDebugInfo("Potion name: " + potionEffect.getType().getName());
+                                            LoggerUtils.logDebugInfo("Potion duration: " + potionEffect.getDuration());
+                                            LoggerUtils.logDebugInfo("Potion amplifier: " + potionEffect.getAmplifier());
+                                            lore.add(CommonUtils.parseColors("&7"
+                                                + CommonUtils.capitalizeFirstLetters(potionEffect.getType().getName().toLowerCase())
+                                                + " " + EnchantmentUtil.toRoman(potionEffect.getAmplifier() + 1)
+                                                + " (" + potionEffect.getDuration() + "sec)"));
                                         }
                                     }
                                 }
@@ -218,9 +234,14 @@ public class FoundShopsMenu extends PaginatedMenu {
         if(text.contains("{ITEM_DISPLAY_NAME}")) {
             if(shop.getItem().hasItemMeta()) {
                 if(Objects.requireNonNull(shop.getItem().getItemMeta()).hasDisplayName()) {
-                    LoggerUtils.logDebugInfo(shop.getItem().getItemMeta().getDisplayName());
                     text = text.replace("{ITEM_DISPLAY_NAME}", shop.getItem().getItemMeta().getDisplayName());
                 }
+                else {
+                    return "";
+                }
+            }
+            else {
+                return "";
             }
         }
         if(text.contains("{ITEM_PRICE}")) {

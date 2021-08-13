@@ -1,7 +1,7 @@
 # QuickShop Reremake Shop Search AddOn
 
 # Requires finditem.use permission node
-# Color codes are supported
+# Color codes are supported below
 # If you want to keep a field empty, make it as ""
 # DON'T leave it empty without quotes, or bad things will happen!
 # Do /finditem reload to reload this config (Requires finditem.reload permission node)
@@ -28,11 +28,6 @@ find-item-command:
 shop-sorting-method: 2
 
 
-# Enable these to show item enchantments and potion effects
-shop-gui-show-item-enchants: true
-shop-gui-show-item-potion-effects: true
-
-
 # Shop Search GUI Item Lore
 # Placeholders for shop-item-lore:
 # {ITEM_DISPLAY_NAME}   -> Item custom display name
@@ -48,6 +43,9 @@ shop-gui-show-item-potion-effects: true
 #    shown if they are available for the item
 # -> {ITEM_LORE} {ITEM_ENCHANTS} {ITEM_POTION_EFFECTS} - Don't put anything
 #    before or after these placeholders as they will get removed
+# -> Please don't put more than one placeholder in a single lore line
+# -> If for some reason you don't want to show the below lore for any item,
+#    set the below field as shop-gui-item-lore: []
 shop-gui-item-lore:
   - "{ITEM_DISPLAY_NAME}"
   - "{ITEM_ENCHANTS}"
@@ -72,9 +70,9 @@ unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
 
 
 shop-gui-back-button-material: "RED_CONCRETE"
-shop-gui-back-button-text: "&7« &cBack"
+shop-gui-back-button-text: "&7&l« &cBack"
 shop-gui-next-button-material: "GREEN_CONCRETE"
-shop-gui-next-button-text: "&aNext &7»"
+shop-gui-next-button-text: "&aNext &7&l»"
 shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
 shop-gui-close-button-material: "BARRIER"
 shop-gui-close-button-text: "&fClose Search"
@@ -83,6 +81,11 @@ shop-gui-close-button-text: "&fClose Search"
 shop-gui-back-button-custom-model-data: ""
 shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
+
+
+# Alert shown when player is already on first/last page and clicks back/next button
+shop-navigation-first-page-alert-message: "&cYou are already on first page!"
+shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 
 
 # Enabling this will spam your console with logs from the plugin
