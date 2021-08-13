@@ -1,7 +1,10 @@
-# FindItem AddOn For QuickShop
+# Shop Search AddOn For QuickShop
 
 An unofficial add-on for the QuickShop Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
+
+![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.17.1-brightgreen)
+![Ver](https://img.shields.io/spiget/version/95104?label=version)
 
 **Features:**
 - Search items based on buying/selling shops
@@ -32,4 +35,4 @@ Note that you need Java 16 to build this project. Make sure you have Java 16 ins
 
 **Issue Tracking**
 
-Please create a new issue [here](https://github.com/ronsanecodes/QSFindItemAddOn/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
+Please create a new issue [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
