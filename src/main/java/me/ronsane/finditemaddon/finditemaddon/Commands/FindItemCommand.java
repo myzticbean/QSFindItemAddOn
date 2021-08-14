@@ -1,10 +1,12 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
+import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -16,7 +18,6 @@ import org.maxgamer.quickshop.shop.Shop;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 public class FindItemCommand implements CommandExecutor {
 
@@ -38,42 +39,46 @@ public class FindItemCommand implements CommandExecutor {
                     if(args[0].equalsIgnoreCase("reload")) {
                         if(sender.hasPermission("finditem.reload")) {
                             FindItemAddOn.getInstance().reloadConfig();
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&aConfig reloaded!"));
+                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&aConfig reloaded!"));
                         }
                         else {
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&cNo permission!"));
+                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&cNo permission!"));
                         }
                     }
                     else {
-                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&CIncorrect usage! Try &e/finditem &freload"));
+                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
                     }
                 }
                 else {
-                    sender.sendMessage(FindItemAddOn.PluginInGamePrefix + "This command can only be run from in game");
+                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "This command can only be run from in game"));
                 }
             }
             else {
                 Player player = (Player) sender;
                 if(player.hasPermission("finditem.use")) {
                     if(args.length < 1 || args.length > 2) {
-                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.IncorrectUsageMessage"))));
+                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.FIND_ITEM_CMD_INCORRECT_USAGE_MSG));
                     }
                     else if(args.length == 1){
                         if(args[0].equalsIgnoreCase("reload")) {
                             if(player.hasPermission("finditem.reload")) {
                                 FindItemAddOn.getInstance().reloadConfig();
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&aConfig reloaded!"));
+                                FindItemAddOn.configProvider = new ConfigProvider();
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&aConfig reloaded!"));
                             }
                             else {
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&cNo permission!"));
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&cNo permission!"));
                             }
                         }
                         else {
-                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + "&CIncorrect usage! Try &e/finditem &freload"));
+                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
                         }
                     }
                     else {
-                        player.sendMessage(FindItemAddOn.PluginInGamePrefix + CommonUtils.parseColors("&7Searching..."));
+                        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_SEARCH_LOADING_MSG)) {
+                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_SEARCH_LOADING_MSG));
+                        }
+
                         boolean isBuying = args[0].equalsIgnoreCase("to-buy");
                         Material mat = Material.getMaterial(args[1]);
                         if(mat != null) {
@@ -84,7 +89,9 @@ public class FindItemCommand implements CommandExecutor {
                                 menu.open(searchResult);
                             }
                             else {
-                                player.sendMessage(FindItemAddOn.PluginInGamePrefix + CommonUtils.parseColors("&7No shops found!"));
+                                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.NO_SHOP_FOUND_MSG)) {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.NO_SHOP_FOUND_MSG));
+                                }
                             }
                         }
                         else {
@@ -96,14 +103,18 @@ public class FindItemCommand implements CommandExecutor {
                             }
                             else {
                                 // Invalid Material
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.PluginInGamePrefix + Objects.requireNonNull(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.InvalidMaterialMessage"))));
+                                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                                }
                             }
                         }
                     }
                 }
                 else {
                     // No Permission
-                    player.sendMessage(FindItemAddOn.PluginInGamePrefix + CommonUtils.parseColors("&cNo permission!"));
+                    if(!StringUtils.isEmpty(FindItemAddOn.configProvider.FIND_ITEM_CMD_NO_PERMISSION_MSG)) {
+                        player.sendMessage(FindItemAddOn.configProvider.PLUGIN_PREFIX + CommonUtils.parseColors(FindItemAddOn.configProvider.FIND_ITEM_CMD_NO_PERMISSION_MSG));
+                    }
                 }
             }
         }

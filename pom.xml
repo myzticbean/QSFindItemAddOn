@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.ronsane.FindItemAddOn</groupId>
-    <artifactId>FindItemAddOn</artifactId>
-    <version>1.2-SNAPSHOT</version>
+    <artifactId>QSFindItemAddOn</artifactId>
+    <version>1.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
-    <name>FindItemAddOn</name>
+    <name>QSFindItemAddOn</name>
 
     <properties>
         <java.version>16</java.version>
@@ -54,10 +54,6 @@
 
     <repositories>
         <repository>
-            <id>papermc-repo</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
-        <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
@@ -85,7 +81,7 @@
         <dependency>
             <groupId>org.maxgamer</groupId>
             <artifactId>QuickShop</artifactId>
-            <version>4.0.9.7</version>
+            <version>4.0.9.9</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

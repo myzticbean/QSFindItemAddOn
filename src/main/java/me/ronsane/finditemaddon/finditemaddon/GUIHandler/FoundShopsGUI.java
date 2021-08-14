@@ -146,7 +146,7 @@ public class FoundShopsGUI {
                     player.teleport(locToTeleport);
                 }
                 else {
-                    player.sendMessage(FindItemAddOn.PluginInGamePrefix + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
+                    player.sendMessage(FindItemAddOn.configProvider.PLUGIN_PREFIX + CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("FindItemCommand.UnsafeShopAreaMessage")));
                 }
                 player.closeInventory();
             }
