@@ -44,8 +44,11 @@ public class FoundShopsMenu extends PaginatedMenu {
     public void handleMenu(InventoryClickEvent event) {
         if(event.getCurrentItem().getType().equals(super.backButton.getType())) {
             if(page == 0) {
-                event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_NAV_FIRST_PAGE_ALERT_MSG));
+                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_NAV_FIRST_PAGE_ALERT_MSG)) {
+                    event.getWhoClicked().sendMessage(
+                            CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX
+                                    + FindItemAddOn.configProvider.SHOP_NAV_FIRST_PAGE_ALERT_MSG));
+                }
             }
             else {
                 page = page - 1;
@@ -58,8 +61,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                 super.open(super.playerMenuUtility.getPlayerShopSearchResult());
             }
             else {
-                event.getWhoClicked().sendMessage(
-                        CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_NAV_LAST_PAGE_ALERT_MSG));
+                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_NAV_LAST_PAGE_ALERT_MSG)) {
+                    event.getWhoClicked().sendMessage(
+                            CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_NAV_LAST_PAGE_ALERT_MSG));
+                }
             }
         }
         else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
@@ -126,80 +131,20 @@ public class FoundShopsMenu extends PaginatedMenu {
                     ItemStack item = new ItemStack(foundShops.get(0).getItem().getType());
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore;
-                    OfflinePlayer offlinePlayer;
                     Shop shop = foundShops.get(index);
                     lore = new ArrayList<>();
 
+                    if(shop.getItem().hasItemMeta()) {
+                        meta = shop.getItem().getItemMeta();
+                        if(shop.getItem().getItemMeta().hasLore()) {
+                            for(String s : shop.getItem().getItemMeta().getLore()) {
+                                lore.add(CommonUtils.parseColors(s));
+                            }
+                        }
+                    }
                     List<String> shopItemLore = FindItemAddOn.configProvider.SHOP_GUI_ITEM_LORE;
                     for(String shopItemLore_i : shopItemLore) {
-                        if(shopItemLore_i.contains("{ITEM_DISPLAY_NAME}")) {
-                            String text = replaceLorePlaceholders(shopItemLore_i, shop);
-                            if(!StringUtils.isEmpty(text)) {
-                                lore.add(CommonUtils.parseColors(text));
-                            }
-                        }
-                        else if(shopItemLore_i.contains("{ITEM_LORE}")) {
-                            if(shop.getItem().hasItemMeta()) {
-                                if(shop.getItem().getItemMeta().hasLore()) {
-                                    for(String s : shop.getItem().getItemMeta().getLore()) {
-                                        lore.add(CommonUtils.parseColors(s));
-                                    }
-                                }
-                            }
-                        }
-                        else if(shopItemLore_i.contains("{ITEM_ENCHANTS}")) {
-                            // If stored enchants exist and if enchantments not hidden
-                            if(shop.getItem().getItemMeta() instanceof EnchantmentStorageMeta) {
-                                if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_ENCHANTS)) {
-                                    EnchantmentStorageMeta enchantmentStorageMeta = (EnchantmentStorageMeta) shop.getItem().getItemMeta();
-                                    Map<Enchantment, Integer> enchantmentsMap = enchantmentStorageMeta.getStoredEnchants();
-                                    for(Enchantment enchantment: enchantmentsMap.keySet()) {
-                                        lore.add(CommonUtils.parseColors("&7" + EnchantmentUtil.mapBukkitEnchantment(enchantment) + " "
-                                                + EnchantmentUtil.toRoman(enchantmentsMap.get(enchantment))));
-                                    }
-                                }
-                            }
-                            // checking if item has applied enchants and if enchantments not hidden
-                            if(shop.getItem().getItemMeta().hasEnchants()) {
-                                if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_ENCHANTS)) {
-                                    Map<Enchantment, Integer> shopItemEnchants = shop.getItem().getItemMeta().getEnchants();
-                                    for(Enchantment enchantment: shopItemEnchants.keySet()) {
-                                        lore.add(CommonUtils.parseColors("&7" + EnchantmentUtil.mapBukkitEnchantment(enchantment) + " "
-                                                + EnchantmentUtil.toRoman(shopItemEnchants.get(enchantment))));
-                                    }
-                                }
-                            }
-                        }
-                        else if(shopItemLore_i.contains("{ITEM_POTION_EFFECTS}")) {
-                            // checking if item is Potion and if Potion effects not hidden
-                            LoggerUtils.logDebugInfo("Inside Potion Effects");
-                            if(shop.getItem().hasItemMeta()) {
-                                if(shop.getItem().getItemMeta() instanceof PotionMeta) {
-                                    if(!shop.getItem().getItemMeta().getItemFlags().contains(ItemFlag.HIDE_POTION_EFFECTS)) {
-                                        PotionMeta potionMeta = (PotionMeta) shop.getItem().getItemMeta();
-                                        // Base potion effect
-                                        LoggerUtils.logDebugInfo("Total potions: " + potionMeta.getCustomEffects().size());
-                                        PotionData potionData = potionMeta.getBasePotionData();
-                                        lore.add(CommonUtils.parseColors("&7"
-                                                + CommonUtils.capitalizeFirstLetters(
-                                                StringUtils.replace(potionData.getType().name().toLowerCase(), "_", " "))));
-                                        // Custom potion effects
-                                        for(PotionEffect potionEffect : potionMeta.getCustomEffects()) {
-                                            LoggerUtils.logDebugInfo("Potion name: " + potionEffect.getType().getName());
-                                            LoggerUtils.logDebugInfo("Potion duration: " + potionEffect.getDuration());
-                                            LoggerUtils.logDebugInfo("Potion amplifier: " + potionEffect.getAmplifier());
-                                            lore.add(CommonUtils.parseColors("&7"
-                                                + CommonUtils.capitalizeFirstLetters(potionEffect.getType().getName().toLowerCase())
-                                                + " " + EnchantmentUtil.toRoman(potionEffect.getAmplifier() + 1)
-                                                + " (" + potionEffect.getDuration() + "sec)"));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else {
-                            lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
-                        }
+                        lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
                     }
 
                     if(FindItemAddOn.configProvider.ALLOW_DIRECT_SHOP_TP) {
@@ -231,24 +176,11 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     private String replaceLorePlaceholders(String text, Shop shop) {
 
-        if(text.contains("{ITEM_DISPLAY_NAME}")) {
-            if(shop.getItem().hasItemMeta()) {
-                if(Objects.requireNonNull(shop.getItem().getItemMeta()).hasDisplayName()) {
-                    text = text.replace("{ITEM_DISPLAY_NAME}", shop.getItem().getItemMeta().getDisplayName());
-                }
-                else {
-                    return "";
-                }
-            }
-            else {
-                return "";
-            }
-        }
         if(text.contains("{ITEM_PRICE}")) {
             text = text.replace("{ITEM_PRICE}", FindItemAddOn.essAPI.getSettings().getCurrencySymbol() + shop.getPrice());
         }
-        if(text.contains("{ITEM_QTY}")) {
-            text = text.replace("{ITEM_QTY}", String.valueOf(shop.getRemainingStock()));
+        if(text.contains("{SHOP_STOCK}")) {
+            text = text.replace("{SHOP_STOCK}", String.valueOf(shop.getRemainingStock()));
         }
         if(text.contains("{SHOP_OWNER}")) {
             text = text.replace("{SHOP_OWNER}", Objects.requireNonNull(Bukkit.getOfflinePlayer(shop.getOwner()).getName()));

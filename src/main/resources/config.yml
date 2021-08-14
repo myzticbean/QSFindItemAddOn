@@ -30,29 +30,18 @@ shop-sorting-method: 2
 
 # Shop Search GUI Item Lore
 # Placeholders for shop-item-lore:
-# {ITEM_DISPLAY_NAME}   -> Item custom display name
-# {ITEM_LORE}           -> Item lore
-# {ITEM_ENCHANTS}       -> List of item enchantments
-# {ITEM_POTION_EFFECTS} -> List of potion effects (Potion item)
 # {ITEM_PRICE}          -> Item price in shop
-# {ITEM_QTY}            -> Remaining stock in shop
+# {SHOP_STOCK}          -> Remaining stock in shop
 # {SHOP_OWNER}          -> Owner of shop
 # {SHOP_LOC}            -> Shop coordinates
 # {SHOP_WORLD}          -> Name of the world the shop is in
-# -> Item display name, lore, enchants, potion effects will only be
-#    shown if they are available for the item
-# -> {ITEM_LORE} {ITEM_ENCHANTS} {ITEM_POTION_EFFECTS} - Don't put anything
-#    before or after these placeholders as they will get removed
 # -> Please don't put more than one placeholder in a single lore line
-# -> If for some reason you don't want to show the below lore for any item,
+# -> If you don't want to show the below lore for any item,
 #    set the below field as shop-gui-item-lore: []
 shop-gui-item-lore:
-  - "{ITEM_DISPLAY_NAME}"
-  - "{ITEM_ENCHANTS}"
-  - "{ITEM_POTION_EFFECTS}"
-  - "{ITEM_LORE}"
   - ""
   - "&fPrice: &a{ITEM_PRICE}"
+  - "&fStock: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
