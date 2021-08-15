@@ -14,14 +14,12 @@ public class PlayerWarpsUtil {
     public Warp findNearestWarp(Location shopLocation) {
         List<Warp> allWarps = PlayerWarpsPlugin.getAPI().getPlayerWarps(false);
         Map<Double, Warp> warpDistanceMap = new TreeMap<>();
-        allWarps.parallelStream().forEach((warp) -> {
-            warpDistanceMap.put(CommonUtils.calculateDistance2D(
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    warp.getWarpLocation().getX(),
-                    warp.getWarpLocation().getY()
-            ), warp);
-        });
+        allWarps.forEach((warp) -> warpDistanceMap.put(CommonUtils.calculateDistance2D(
+                shopLocation.getX(),
+                shopLocation.getY(),
+                warp.getWarpLocation().getX(),
+                warp.getWarpLocation().getY()
+        ), warp));
         return warpDistanceMap.entrySet().iterator().next().getValue();
     }
 

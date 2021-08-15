@@ -100,13 +100,13 @@
             <version>6.8.2</version>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>me.tks.playerwarp</groupId>
-            <artifactId>PWarp</artifactId>
-            <version>3.0.1</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/PWarp.jar</systemPath>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>me.tks.playerwarp</groupId>-->
+<!--            <artifactId>PWarp</artifactId>-->
+<!--            <version>3.0.1</version>-->
+<!--            <scope>system</scope>-->
+<!--            <systemPath>${basedir}/libs/PWarp.jar</systemPath>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>

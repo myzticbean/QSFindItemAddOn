@@ -31,7 +31,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private final static int bsPLUGIN_METRIC_ID = 12382;
     private static ConfigProvider configProvider;
 
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -66,7 +66,7 @@ public final class FindItemAddOn extends JavaPlugin {
         LocationUtils.initNonSuffocatingBlocksList();
 
         PlayerWarpsPlugin.setup();
-        PWarpPlugin.setup();
+//        PWarpPlugin.setup();
 
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");
