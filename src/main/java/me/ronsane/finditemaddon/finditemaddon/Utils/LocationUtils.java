@@ -211,10 +211,9 @@ public class LocationUtils {
     }
 
     public static void initNonSuffocatingBlocksList() {
-//        List<Material> allMaterials = Arrays.asList(Material.values());
-
         nonSuffocatingBlocks = new ArrayList<>();
         nonSuffocatingBlocks.add(Material.AIR);
+
         // Glass
         nonSuffocatingBlocks.add(Material.GLASS);
         nonSuffocatingBlocks.add(Material.GRAY_STAINED_GLASS);
@@ -233,6 +232,7 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.RED_STAINED_GLASS);
         nonSuffocatingBlocks.add(Material.WHITE_STAINED_GLASS);
         nonSuffocatingBlocks.add(Material.YELLOW_STAINED_GLASS);
+
         // Glass Panes
         nonSuffocatingBlocks.add(Material.GLASS_PANE);
         nonSuffocatingBlocks.add(Material.GRAY_STAINED_GLASS_PANE);
@@ -251,6 +251,7 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.RED_STAINED_GLASS_PANE);
         nonSuffocatingBlocks.add(Material.WHITE_STAINED_GLASS_PANE);
         nonSuffocatingBlocks.add(Material.YELLOW_STAINED_GLASS_PANE);
+
         // Leaves
         nonSuffocatingBlocks.add(Material.ACACIA_LEAVES);
         nonSuffocatingBlocks.add(Material.BIRCH_LEAVES);
@@ -262,6 +263,7 @@ public class LocationUtils {
             nonSuffocatingBlocks.add(Material.AZALEA_LEAVES);
             nonSuffocatingBlocks.add(Material.FLOWERING_AZALEA_LEAVES);
         }
+
         // Slabs
         nonSuffocatingBlocks.add(Material.SANDSTONE_SLAB);
         nonSuffocatingBlocks.add(Material.SMOOTH_SANDSTONE_SLAB);

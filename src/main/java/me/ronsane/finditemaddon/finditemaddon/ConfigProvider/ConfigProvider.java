@@ -14,8 +14,6 @@ public class ConfigProvider {
     public final String NO_SHOP_FOUND_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.no-shop-found-message");
     public final String FIND_ITEM_CMD_NO_PERMISSION_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.find-item-command-no-permission-message");
     public final int SHOP_SORTING_METHOD = FindItemAddOn.getInstance().getConfig().getInt("shop-sorting-method");
-//    public final Boolean SHOP_GUI_SHOW_ITEM_ENCHANTS = FindItemAddOn.getInstance().getConfig().getBoolean("shop-gui-show-item-enchants");
-//    public final Boolean SHOP_GUI_SHOW_ITEM_POTION_EFFECTS = FindItemAddOn.getInstance().getConfig().getBoolean("shop-gui-show-item-potion-effects");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) FindItemAddOn.getInstance().getConfig().getList("shop-gui-item-lore");
     public final Boolean ALLOW_DIRECT_SHOP_TP = FindItemAddOn.getInstance().getConfig().getBoolean("allow-direct-shop-tp");
     public final String CLICK_TO_TELEPORT_MSG = FindItemAddOn.getInstance().getConfig().getString("click-to-teleport-message");

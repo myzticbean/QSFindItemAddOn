@@ -25,7 +25,7 @@ public class QuickShopAPIHandler {
         if(!shopsFound.isEmpty()) {
             int sortingMethod = 2;
             try {
-                sortingMethod = FindItemAddOn.configProvider.SHOP_SORTING_METHOD;
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
             }
             catch(Exception e) {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
@@ -53,7 +53,7 @@ public class QuickShopAPIHandler {
         if(!shopsFound.isEmpty()) {
             int sortingMethod = 2;
             try {
-                sortingMethod = FindItemAddOn.configProvider.SHOP_SORTING_METHOD;
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
             }
             catch(Exception e) {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");

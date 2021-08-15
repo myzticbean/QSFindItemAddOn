@@ -35,19 +35,19 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     private void initMaterialsForBottomBar() {
-        Material backButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_MATERIAL);
+        Material backButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_MATERIAL);
         if(backButtonMaterial == null) {
             backButtonMaterial = Material.RED_CONCRETE;
         }
         backButton = new ItemStack(backButtonMaterial);
         ItemMeta backButton_meta = backButton.getItemMeta();
-        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_TEXT)) {
-            backButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_TEXT));
+        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT)) {
+            backButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT));
         }
         int backButtonCMD;
         try {
-            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD)) {
-                backButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_BACK_BUTTON_CMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_CMD)) {
+                backButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_CMD);
                 backButton_meta.setCustomModelData(backButtonCMD);
             }
         }
@@ -56,19 +56,19 @@ public abstract class PaginatedMenu extends Menu {
         }
         backButton.setItemMeta(backButton_meta);
 
-        Material nextButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_MATERIAL);
+        Material nextButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_MATERIAL);
         if(nextButtonMaterial == null) {
             nextButtonMaterial = Material.GREEN_CONCRETE;
         }
         nextButton = new ItemStack(nextButtonMaterial);
         ItemMeta nextButton_meta = nextButton.getItemMeta();
-        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_TEXT)) {
-            nextButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_TEXT));
+        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT)) {
+            nextButton_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT));
         }
         int nextButtonCMD;
         try {
-            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD)) {
-                nextButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_NEXT_BUTTON_CMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_CMD)) {
+                nextButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_CMD);
                 nextButton_meta.setCustomModelData(nextButtonCMD);
             }
         }
@@ -77,19 +77,19 @@ public abstract class PaginatedMenu extends Menu {
         }
         nextButton.setItemMeta(nextButton_meta);
 
-        Material closeInvButtonMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_MATERIAL);
+        Material closeInvButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_MATERIAL);
         if(closeInvButtonMaterial == null) {
             closeInvButtonMaterial = Material.BARRIER;
         }
         closeInvButton = new ItemStack(closeInvButtonMaterial);
         ItemMeta closeInv_meta = closeInvButton.getItemMeta();
-        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_TEXT)) {
-            closeInv_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_TEXT));
+        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT)) {
+            closeInv_meta.setDisplayName(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT));
         }
         int closeInvButtonCMD;
         try {
-            if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD)) {
-                closeInvButtonCMD = Integer.parseInt(FindItemAddOn.configProvider.SHOP_GUI_CLOSE_BUTTON_CMD);
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_CMD)) {
+                closeInvButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_CMD);
                 closeInv_meta.setCustomModelData(closeInvButtonCMD);
             }
         }

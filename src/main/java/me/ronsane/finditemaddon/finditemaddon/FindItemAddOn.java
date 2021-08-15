@@ -4,6 +4,8 @@ import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
@@ -27,13 +29,14 @@ public final class FindItemAddOn extends JavaPlugin {
     public static Essentials essAPI;
     public static String serverVersion;
     private final static int bsPLUGIN_METRIC_ID = 12382;
-    public static ConfigProvider configProvider;
+    private static ConfigProvider configProvider;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
         this.saveDefaultConfig();
         configProvider = new ConfigProvider();
         PluginInGamePrefix = configProvider.PLUGIN_PREFIX;
@@ -43,7 +46,7 @@ public final class FindItemAddOn extends JavaPlugin {
             return;
         }
         else {
-            LoggerUtils.logInfo("QuickShop found");
+            LoggerUtils.logInfo("Found QuickShop");
         }
         if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
             LoggerUtils.logError("&cEssentialsX is required to use this addon. Please install EssentialsX and try again!");
@@ -52,10 +55,8 @@ public final class FindItemAddOn extends JavaPlugin {
         }
         else {
             essAPI = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-            LoggerUtils.logInfo("Hooked to Essentials");
+            LoggerUtils.logInfo("Found Essentials");
         }
-
-        LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
 
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
@@ -63,6 +64,9 @@ public final class FindItemAddOn extends JavaPlugin {
         initEvents();
         LocationUtils.initDamagingBlocksList();
         LocationUtils.initNonSuffocatingBlocksList();
+
+        PlayerWarpsPlugin.setup();
+        PWarpPlugin.setup();
 
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");
@@ -85,6 +89,14 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("Registering events");
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
+    }
+    
+    public static ConfigProvider getConfigProvider() {
+        return configProvider;
+    }
+
+    public static void initConfigProvider() {
+        configProvider = new ConfigProvider();
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p){
