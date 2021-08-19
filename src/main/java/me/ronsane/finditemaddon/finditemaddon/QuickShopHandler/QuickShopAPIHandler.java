@@ -2,7 +2,9 @@ package me.ronsane.finditemaddon.finditemaddon.QuickShopHandler;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.shop.Shop;
 
@@ -81,5 +83,11 @@ public class QuickShopAPIHandler {
             }
         }
         return shopsFound;
+    }
+
+    public static Material getShopSignMaterial() {
+        return Material.getMaterial(
+                Objects.requireNonNull(
+                        QuickShop.getInstance().getConfig().getString("shop.sign-material")));
     }
 }

@@ -94,8 +94,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                         else {
                             if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG)) {
-                                player.sendMessage(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + CommonUtils.parseColors(FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
                             }
                         }
                         player.closeInventory();
@@ -104,8 +103,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                 else {
                     if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
                         playerMenuUtility.getOwner()
-                                .sendMessage(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + CommonUtils.parseColors(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
+                                .sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
                     }
                 }
             }

@@ -25,7 +25,6 @@ public final class FindItemAddOn extends JavaPlugin {
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
-    public static String PluginInGamePrefix;
     public static Essentials essAPI;
     public static String serverVersion;
     private final static int bsPLUGIN_METRIC_ID = 12382;
@@ -39,7 +38,7 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
         this.saveDefaultConfig();
         configProvider = new ConfigProvider();
-        PluginInGamePrefix = configProvider.PLUGIN_PREFIX;
+
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
             LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
             getServer().getPluginManager().disablePlugin(this);
@@ -62,8 +61,6 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("Server version found: " + serverVersion);
         initCommands();
         initEvents();
-        LocationUtils.initDamagingBlocksList();
-        LocationUtils.initNonSuffocatingBlocksList();
 
         PlayerWarpsPlugin.setup();
 //        PWarpPlugin.setup();

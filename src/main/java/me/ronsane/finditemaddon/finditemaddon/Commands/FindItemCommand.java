@@ -116,7 +116,7 @@ public class FindItemCommand implements CommandExecutor {
                 else {
                     // No Permission
                     if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_NO_PERMISSION_MSG)) {
-                        player.sendMessage(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + CommonUtils.parseColors(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_NO_PERMISSION_MSG));
+                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_NO_PERMISSION_MSG));
                     }
                 }
             }

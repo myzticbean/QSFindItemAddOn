@@ -1,13 +1,14 @@
 package me.ronsane.finditemaddon.finditemaddon.ConfigProvider;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 
 import java.util.List;
 
 public class ConfigProvider {
 
-    public final String PLUGIN_PREFIX = FindItemAddOn.getInstance().getConfig().getString("plugin-prefix");
+    public final String PLUGIN_PREFIX = CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("plugin-prefix"));
     public final String FIND_ITEM_CMD_INCORRECT_USAGE_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.incorrect-usage-message");
     public final String FIND_ITEM_CMD_INVALID_MATERIAL_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.invalid-material-message");
     public final String SHOP_SEARCH_LOADING_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.shop-search-loading-message");
