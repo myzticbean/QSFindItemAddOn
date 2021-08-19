@@ -5,7 +5,7 @@ import org.bukkit.Bukkit;
 
 public class LoggerUtils {
     public static void logDebugInfo(String text) {
-        if(FindItemAddOn.configProvider.DEBUG_MODE) {
+        if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
             Bukkit.getLogger().info(CommonUtils.parseColors("[QSFindItemAddOn] " + text));
         }
     }
@@ -14,5 +14,8 @@ public class LoggerUtils {
     }
     public static void logError(String text) {
         Bukkit.getLogger().severe(CommonUtils.parseColors("[QSFindItemAddOn] &c" + text));
+    }
+    public static void logWarning(String text) {
+        Bukkit.getConsoleSender().sendMessage(CommonUtils.parseColors("[QSFindItemAddOn] &6" + text));
     }
 }

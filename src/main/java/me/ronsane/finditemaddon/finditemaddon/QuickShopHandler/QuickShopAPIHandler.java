@@ -2,46 +2,47 @@ package me.ronsane.finditemaddon.finditemaddon.QuickShopHandler;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.shop.Shop;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 public class QuickShopAPIHandler {
 
     public static List<Shop> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
         List<Shop> shopsFound = new ArrayList<>();
+        assert QuickShopAPI.getShopAPI() != null;
         List<Shop> allShops = QuickShopAPI.getShopAPI().getAllShops();
-        for(Shop shop_i : allShops) {
+        allShops.forEach((shop_i) -> {
             if(shop_i.getItem().getType().equals(item.getType()) && shop_i.getRemainingStock() > 0
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 shopsFound.add(shop_i);
             }
-        }
+        });
         if(!shopsFound.isEmpty()) {
             int sortingMethod = 2;
             try {
-                sortingMethod = FindItemAddOn.configProvider.SHOP_SORTING_METHOD;
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
             }
             catch(Exception e) {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            shopsFound = sortShops(sortingMethod, shopsFound);
+            return sortShops(sortingMethod, shopsFound);
         }
         return shopsFound;
     }
 
     public static List<Shop> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
         List<Shop> shopsFound = new ArrayList<>();
+        assert QuickShopAPI.getShopAPI() != null;
         List<Shop> allShops = QuickShopAPI.getShopAPI().getAllShops();
         for(Shop shop_i : allShops) {
             if(shop_i.getItem().hasItemMeta()) {
-                if(shop_i.getItem().getItemMeta().hasDisplayName()) {
+                if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
                     if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
                             && shop_i.getRemainingStock() > 0
                             && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
@@ -53,13 +54,13 @@ public class QuickShopAPIHandler {
         if(!shopsFound.isEmpty()) {
             int sortingMethod = 2;
             try {
-                sortingMethod = FindItemAddOn.configProvider.SHOP_SORTING_METHOD;
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
             }
             catch(Exception e) {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            shopsFound = sortShops(sortingMethod, shopsFound);
+            return sortShops(sortingMethod, shopsFound);
         }
         return shopsFound;
     }
@@ -82,5 +83,11 @@ public class QuickShopAPIHandler {
             }
         }
         return shopsFound;
+    }
+
+    public static Material getShopSignMaterial() {
+        return Material.getMaterial(
+                Objects.requireNonNull(
+                        QuickShop.getInstance().getConfig().getString("shop.sign-material")));
     }
 }

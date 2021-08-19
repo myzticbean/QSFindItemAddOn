@@ -1,6 +1,5 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
@@ -39,44 +38,48 @@ public class FindItemCommand implements CommandExecutor {
                     if(args[0].equalsIgnoreCase("reload")) {
                         if(sender.hasPermission("finditem.reload")) {
                             FindItemAddOn.getInstance().reloadConfig();
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&aConfig reloaded!"));
+                            FindItemAddOn.initConfigProvider();
+//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                         }
                         else {
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&cNo permission!"));
+//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+                            LoggerUtils.logError("&cNo permission!");
                         }
                     }
                     else {
-                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
+//                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
+                        LoggerUtils.logInfo("&CIncorrect usage! Try &e/finditem &freload");
                     }
                 }
                 else {
-                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "This command can only be run from in game"));
+//                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "This command can only be run from in game"));
+                    LoggerUtils.logInfo("This command can only be run from in game");
                 }
             }
             else {
                 Player player = (Player) sender;
                 if(player.hasPermission("finditem.use")) {
                     if(args.length < 1 || args.length > 2) {
-                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.FIND_ITEM_CMD_INCORRECT_USAGE_MSG));
+                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INCORRECT_USAGE_MSG));
                     }
                     else if(args.length == 1){
                         if(args[0].equalsIgnoreCase("reload")) {
                             if(player.hasPermission("finditem.reload")) {
                                 FindItemAddOn.getInstance().reloadConfig();
-                                FindItemAddOn.configProvider = new ConfigProvider();
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&aConfig reloaded!"));
+                                FindItemAddOn.initConfigProvider();
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                             }
                             else {
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&cNo permission!"));
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
                             }
                         }
                         else {
-                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
+                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
                         }
                     }
                     else {
-                        if(!StringUtils.isEmpty(FindItemAddOn.configProvider.SHOP_SEARCH_LOADING_MSG)) {
-                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.SHOP_SEARCH_LOADING_MSG));
+                        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG)) {
+                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG));
                         }
 
                         boolean isBuying = args[0].equalsIgnoreCase("to-buy");
@@ -89,8 +92,8 @@ public class FindItemCommand implements CommandExecutor {
                                 menu.open(searchResult);
                             }
                             else {
-                                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.NO_SHOP_FOUND_MSG)) {
-                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.NO_SHOP_FOUND_MSG));
+                                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
                                 }
                             }
                         }
@@ -103,8 +106,8 @@ public class FindItemCommand implements CommandExecutor {
                             }
                             else {
                                 // Invalid Material
-                                if(!StringUtils.isEmpty(FindItemAddOn.configProvider.FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
-                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.configProvider.PLUGIN_PREFIX + FindItemAddOn.configProvider.FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
                                 }
                             }
                         }
@@ -112,8 +115,8 @@ public class FindItemCommand implements CommandExecutor {
                 }
                 else {
                     // No Permission
-                    if(!StringUtils.isEmpty(FindItemAddOn.configProvider.FIND_ITEM_CMD_NO_PERMISSION_MSG)) {
-                        player.sendMessage(FindItemAddOn.configProvider.PLUGIN_PREFIX + CommonUtils.parseColors(FindItemAddOn.configProvider.FIND_ITEM_CMD_NO_PERMISSION_MSG));
+                    if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_NO_PERMISSION_MSG)) {
+                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_NO_PERMISSION_MSG));
                     }
                 }
             }

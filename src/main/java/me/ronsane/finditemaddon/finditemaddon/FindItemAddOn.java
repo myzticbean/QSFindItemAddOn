@@ -4,12 +4,14 @@ import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -23,27 +25,27 @@ public final class FindItemAddOn extends JavaPlugin {
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
-    public static String PluginInGamePrefix;
     public static Essentials essAPI;
     public static String serverVersion;
     private final static int bsPLUGIN_METRIC_ID = 12382;
-    public static ConfigProvider configProvider;
+    private static ConfigProvider configProvider;
 
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<Player, PlayerMenuUtility>();
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
     public void onEnable() {
         // Plugin startup logic
+        LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
         this.saveDefaultConfig();
         configProvider = new ConfigProvider();
-        PluginInGamePrefix = configProvider.PLUGIN_PREFIX;
+
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
             LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         else {
-            LoggerUtils.logInfo("QuickShop found");
+            LoggerUtils.logInfo("Found QuickShop");
         }
         if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
             LoggerUtils.logError("&cEssentialsX is required to use this addon. Please install EssentialsX and try again!");
@@ -52,21 +54,29 @@ public final class FindItemAddOn extends JavaPlugin {
         }
         else {
             essAPI = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-            LoggerUtils.logInfo("Hooked to Essentials");
+            LoggerUtils.logInfo("Found Essentials");
         }
-
-        LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
 
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
         initCommands();
         initEvents();
-        LocationUtils.initDamagingBlocksList();
-        LocationUtils.initNonSuffocatingBlocksList();
+
+        PlayerWarpsPlugin.setup();
+//        PWarpPlugin.setup();
 
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");
         Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
+
+        // Check for plugin updates
+        new UpdateChecker(this, 95104).getLatestVersion(version -> {
+            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                LoggerUtils.logInfo("&2Plugin is up to date!");
+            } else {
+                LoggerUtils.logWarning("Plugin has an update! Download the latest version here: &7https://www.spigotmc.org/resources/95104/");
+            }
+        });
     }
 
     @Override
@@ -85,6 +95,14 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("Registering events");
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
+    }
+    
+    public static ConfigProvider getConfigProvider() {
+        return configProvider;
+    }
+
+    public static void initConfigProvider() {
+        configProvider = new ConfigProvider();
     }
 
     public static PlayerMenuUtility getPlayerMenuUtility(Player p){

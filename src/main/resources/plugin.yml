@@ -7,11 +7,25 @@ depend:
   - QuickShop
   - Vault
   - Essentials
+softdepend:
+  - PlayerWarps
+  - PWarp
 
 commands:
   finditem:
-    description: Find an item from shops
+    description: Search for an item from shops
     aliases:
       - searchitem
       - shopsearch
       - searchshop
+
+permissions:
+  finditem.use:
+    description: Enables players to use the /finditem command
+    default: true
+  finditem.reload:
+    description: For OP. Enables use of '/finditem reload' to reload the config
+    default: op
+  finditem.shoptp:
+    description: If 'allow-direct-shop-tp' is enabled in config, players require this permission to be able to teleport
+    default: op

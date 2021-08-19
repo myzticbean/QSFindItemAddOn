@@ -26,8 +26,8 @@ public abstract class Menu implements InventoryHolder {
     public Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
 
-        assert FindItemAddOn.configProvider.SHOP_GUI_FILLER_ITEM != null;
-        Material fillerMaterial = Material.getMaterial(FindItemAddOn.configProvider.SHOP_GUI_FILLER_ITEM);
+        assert FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM != null;
+        Material fillerMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM);
         if(fillerMaterial == null) {
             fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
         }
