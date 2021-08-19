@@ -15,4 +15,7 @@ public class LoggerUtils {
     public static void logError(String text) {
         Bukkit.getLogger().severe(CommonUtils.parseColors("[QSFindItemAddOn] &c" + text));
     }
+    public static void logWarning(String text) {
+        Bukkit.getConsoleSender().sendMessage(CommonUtils.parseColors("[QSFindItemAddOn] &6" + text));
+    }
 }

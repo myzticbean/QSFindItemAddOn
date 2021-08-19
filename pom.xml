@@ -6,7 +6,7 @@
 
     <groupId>me.ronsane.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>1.4-SNAPSHOT</version>
+    <version>1.4</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>

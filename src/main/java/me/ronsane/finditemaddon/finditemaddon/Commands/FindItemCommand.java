@@ -39,18 +39,21 @@ public class FindItemCommand implements CommandExecutor {
                         if(sender.hasPermission("finditem.reload")) {
                             FindItemAddOn.getInstance().reloadConfig();
                             FindItemAddOn.initConfigProvider();
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
+//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                         }
                         else {
-                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+                            LoggerUtils.logError("&cNo permission!");
                         }
                     }
                     else {
-                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
+//                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
+                        LoggerUtils.logInfo("&CIncorrect usage! Try &e/finditem &freload");
                     }
                 }
                 else {
-                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "This command can only be run from in game"));
+//                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "This command can only be run from in game"));
+                    LoggerUtils.logInfo("This command can only be run from in game");
                 }
             }
             else {

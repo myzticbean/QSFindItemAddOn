@@ -4,7 +4,6 @@ import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
-import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
@@ -12,6 +11,7 @@ import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListene
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.UpdateChecker;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -71,6 +71,15 @@ public final class FindItemAddOn extends JavaPlugin {
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");
         Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
+
+        // Check for plugin updates
+        new UpdateChecker(this, 95104).getLatestVersion(version -> {
+            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
+                LoggerUtils.logInfo("&2Plugin is up to date!");
+            } else {
+                LoggerUtils.logWarning("Plugin has an update! Download the latest version here: &7https://www.spigotmc.org/resources/95104/");
+            }
+        });
     }
 
     @Override
