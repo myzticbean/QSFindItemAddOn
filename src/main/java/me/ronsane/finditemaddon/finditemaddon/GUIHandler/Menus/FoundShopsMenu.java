@@ -104,6 +104,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                     if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
                         playerMenuUtility.getOwner()
                                 .sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
+                        event.getWhoClicked().closeInventory();
                     }
                 }
             }

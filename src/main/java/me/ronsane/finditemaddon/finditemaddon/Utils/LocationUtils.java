@@ -29,8 +29,6 @@ public class LocationUtils {
         damagingBlocks.add(Material.SWEET_BERRY_BUSH);
         damagingBlocks.add(Material.WITHER_ROSE);
         damagingBlocks.add(Material.END_PORTAL);
-        damagingBlocks.add(Material.AIR);
-        damagingBlocks.add(QuickShopAPIHandler.getShopSignMaterial());
 
         // Initializing Non Suffocating blocks
         nonSuffocatingBlocks.add(Material.AIR);
@@ -131,64 +129,6 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.PISTON_HEAD);
     }
 
-    @Nullable @Deprecated
-    public static Location findSafeLocationAroundShop(Location shopLocation, Player player) throws Exception {
-        Location possibleSafeLoc = LocationUtil.getSafeDestination(shopLocation);
-        Location blockBelow = new Location(
-                possibleSafeLoc.getWorld(),
-                possibleSafeLoc.getX(),
-                possibleSafeLoc.getY() - 1,
-                possibleSafeLoc.getZ());
-        Location blockBelowIfAir = new Location(
-                possibleSafeLoc.getWorld(),
-                possibleSafeLoc.getX(),
-                possibleSafeLoc.getY() - 2,
-                possibleSafeLoc.getZ());
-        if(blockBelow.getBlock().getType().equals(
-                Material.getMaterial(
-                        Objects.requireNonNull(
-                                QuickShop.getInstance().getConfig().getString("shop.sign-material"))))) {
-            Location blockBelowShopSign = LocationUtil.getRoundedDestination(new Location(
-                    blockBelow.getWorld(),
-                    blockBelow.getBlockX(),
-                    blockBelow.getBlockY() - 1,
-                    blockBelow.getBlockZ()));
-            if(!LocationUtil.isBlockDamaging(
-                    blockBelowShopSign.getWorld(),
-                    blockBelowShopSign.getBlockX(),
-                    blockBelowShopSign.getBlockY(),
-                    blockBelowShopSign.getBlockZ()
-            )) {
-                Location locToTeleport = new Location(
-                        possibleSafeLoc.getWorld(),
-                        possibleSafeLoc.getBlockX(),
-                        possibleSafeLoc.getBlockY(),
-                        possibleSafeLoc.getBlockZ(),
-                        lookAt(player.getLocation(), shopLocation).getYaw(),
-                        lookAt(player.getLocation(), shopLocation).getPitch()
-                );
-                return locToTeleport;
-            }
-            else {
-                return null;
-            }
-        }
-        else if(!blockBelowIfAir.getBlock().getType().equals(Material.AIR)){
-            Location locToTeleport = new Location(
-                    possibleSafeLoc.getWorld(),
-                    possibleSafeLoc.getBlockX(),
-                    possibleSafeLoc.getBlockY(),
-                    possibleSafeLoc.getBlockZ(),
-                    lookAt(player.getLocation(), shopLocation).getYaw(),
-                    lookAt(player.getLocation(), shopLocation).getPitch()
-            );
-            return locToTeleport;
-        }
-        else {
-            return null;
-        }
-    }
-
     @Nullable
     public static Location findSafeLocationAroundShop(Location shopLocation) {
 
@@ -241,10 +181,18 @@ public class LocationUtils {
                                 loc_i.getBlockY() - i,
                                 loc_i.getBlockZ()
                         );
-                        LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
-                        if(!isBlockDamaging(blockBelow)) {
+                        LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getBlock().getType() + " " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
+                        if(blockBelow.getBlock().getType().equals(Material.AIR)
+                            || blockBelow.getBlock().getType().equals(QuickShopAPIHandler.getShopSignMaterial())) {
+                            // do nothing and let the loop run
+                            LoggerUtils.logDebugInfo("Shop or Air found below");
+                        }
+                        else if(!isBlockDamaging(blockBelow)) {
                             LoggerUtils.logDebugInfo("Safe block found!");
                             safeLocFound = true;
+                            break;
+                        }
+                        else {
                             break;
                         }
                     }
@@ -260,22 +208,6 @@ public class LocationUtils {
                     else {
                         return null;
                     }
-//                    Location blockBelow = new Location(
-//                            loc_i.getWorld(),
-//                            loc_i.getBlockX(),
-//                            loc_i.getBlockY() - 1,
-//                            loc_i.getBlockZ()
-//                    );
-//                    LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
-                    // check if the block below is not damaging
-//                    if(!isBlockDamaging(blockBelow)) {
-//                        loc_i = lookAt(loc_i, roundedShopLoc);
-//                        return loc_i;
-//                    }
-//                    else {
-//                        LoggerUtils.logDebugInfo("Block below shop sign found damaging. Block type: " + blockBelow.getBlock().getType());
-//                        return null;
-//                    }
                 }
                 else {
                     LoggerUtils.logDebugInfo("Block above shop sign found not air. Block type: " + blockAbove.getBlock().getType());
