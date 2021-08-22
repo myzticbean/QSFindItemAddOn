@@ -1,15 +1,15 @@
 package me.ronsane.finditemaddon.finditemaddon.Utils;
 
-import com.earth2me.essentials.utils.LocationUtil;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.entity.Player;
+import org.bukkit.World;
 import org.jetbrains.annotations.Nullable;
-import org.maxgamer.quickshop.QuickShop;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
 
 public class LocationUtils {
 
@@ -132,7 +132,7 @@ public class LocationUtils {
     @Nullable
     public static Location findSafeLocationAroundShop(Location shopLocation) {
 
-        Location roundedShopLoc = LocationUtil.getRoundedDestination(shopLocation);
+        Location roundedShopLoc = getRoundedDestination(shopLocation);
         LoggerUtils.logDebugInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
         // Creating a list of four block locations in 4 sides of the shop
         List<Location> possibleSafeLocList = new ArrayList<>();
@@ -197,7 +197,7 @@ public class LocationUtils {
                         }
                     }
                     if(safeLocFound) {
-                        loc_i = lookAt(LocationUtil.getRoundedDestination(new Location(
+                        loc_i = lookAt(getRoundedDestination(new Location(
                                 blockBelow.getWorld(),
                                 blockBelow.getX(),
                                 blockBelow.getY() + 1,
@@ -264,5 +264,13 @@ public class LocationUtils {
 
     private static boolean isBlockSuffocating(Location loc) {
         return !nonSuffocatingBlocks.contains(loc.getBlock().getType());
+    }
+
+    private static Location getRoundedDestination(final Location loc) {
+        World world = loc.getWorld();
+        int x = loc.getBlockX();
+        int y = (int)Math.round(loc.getY());
+        int z = loc.getBlockZ();
+        return new Location(world, (double)x + 0.5D, (double)y, (double)z + 0.5D, loc.getYaw(), loc.getPitch());
     }
 }

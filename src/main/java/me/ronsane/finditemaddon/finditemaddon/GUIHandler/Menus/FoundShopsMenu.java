@@ -4,22 +4,14 @@ import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
-import me.ronsane.finditemaddon.finditemaddon.Utils.EnchantmentUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
-import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
 import org.maxgamer.quickshop.shop.Shop;
 
 import java.util.*;
@@ -32,7 +24,12 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     @Override
     public String getMenuName() {
-        return "Shops";
+        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_GUI_TITLE)) {
+            return CommonUtils.parseColors(FindItemAddOn.getConfigProvider().SHOP_SEARCH_GUI_TITLE);
+        }
+        else {
+            return CommonUtils.parseColors("&l» &rShops");
+        }
     }
 
     @Override
@@ -176,7 +173,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     private String replaceLorePlaceholders(String text, Shop shop) {
 
         if(text.contains("{ITEM_PRICE}")) {
-            text = text.replace("{ITEM_PRICE}", FindItemAddOn.essAPI.getSettings().getCurrencySymbol() + shop.getPrice());
+            text = text.replace("{ITEM_PRICE}", String.valueOf(shop.getPrice()));
         }
         if(text.contains("{SHOP_STOCK}")) {
             text = text.replace("{SHOP_STOCK}", String.valueOf(shop.getRemainingStock()));

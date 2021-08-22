@@ -39,20 +39,16 @@ public class FindItemCommand implements CommandExecutor {
                         if(sender.hasPermission("finditem.reload")) {
                             FindItemAddOn.getInstance().reloadConfig();
                             FindItemAddOn.initConfigProvider();
-//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                         }
                         else {
-//                            sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
                             LoggerUtils.logError("&cNo permission!");
                         }
                     }
                     else {
-//                        sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));
                         LoggerUtils.logInfo("&CIncorrect usage! Try &e/finditem &freload");
                     }
                 }
                 else {
-//                    sender.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "This command can only be run from in game"));
                     LoggerUtils.logInfo("This command can only be run from in game");
                 }
             }
@@ -81,8 +77,14 @@ public class FindItemCommand implements CommandExecutor {
                         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG)) {
                             player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG));
                         }
-
-                        boolean isBuying = args[0].equalsIgnoreCase("to-buy");
+                        boolean isBuying;
+                        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
+                                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
+                            isBuying = args[0].equalsIgnoreCase("to-buy");
+                        }
+                        else {
+                            isBuying = args[0].equalsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
+                        }
                         Material mat = Material.getMaterial(args[1]);
                         if(mat != null) {
                             LoggerUtils.logDebugInfo("Material found: " + mat.toString());

@@ -1,5 +1,7 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
+import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -20,8 +22,22 @@ public class FindItemCmdTabCompleter implements TabCompleter {
             }
         }
         if(buyOrSellList.isEmpty()) {
-            buyOrSellList.add("TO-BUY");
-            buyOrSellList.add("TO-SELL");
+            // to-buy
+            if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
+                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
+                buyOrSellList.add("TO-BUY");
+            }
+            else {
+                buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
+            }
+            // to-sell
+            if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
+                    || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
+                buyOrSellList.add("TO-SELL");
+            }
+            else {
+                buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
+            }
         }
 
         List<String> result = new ArrayList<>();

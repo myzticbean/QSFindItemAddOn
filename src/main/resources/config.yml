@@ -18,6 +18,11 @@ find-item-command:
   shop-search-loading-message: "&7Searching..."
   no-shop-found-message: "&7No shops found!"
   find-item-command-no-permission-message: "&cNo permission!"
+  # Below are tab-autocompletes for categorizing between buying/selling shops
+  # There cannot be spaces in between
+  # NEEDS A SERVER RESTART IF CHANGED
+  to-buy-autocomplete: "TO-BUY"
+  to-sell-autocomplete: "TO-SELL"
 
 
 # Shop sorting methods:
@@ -27,6 +32,7 @@ find-item-command:
 # Enter your choice of method below
 shop-sorting-method: 2
 
+shop-search-gui-title: "&l» &rShops"
 
 # Shop Search GUI Item Lore
 # Placeholders for shop-item-lore:
@@ -40,11 +46,12 @@ shop-sorting-method: 2
 #    set the below field as shop-gui-item-lore: []
 shop-gui-item-lore:
   - ""
-  - "&fPrice: &a{ITEM_PRICE}"
+  - "&fPrice: &a${ITEM_PRICE}"
   - "&fStock: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
+  - ""
 
 
 # Set 'allow-direct-shop-tp' to true to allow players to teleport to the shop directly

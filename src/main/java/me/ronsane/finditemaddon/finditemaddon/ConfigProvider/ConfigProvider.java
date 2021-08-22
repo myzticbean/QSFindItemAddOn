@@ -9,12 +9,15 @@ import java.util.List;
 public class ConfigProvider {
 
     public final String PLUGIN_PREFIX = CommonUtils.parseColors(FindItemAddOn.getInstance().getConfig().getString("plugin-prefix"));
+    public final String FIND_ITEM_TO_BUY_AUTOCOMPLETE = FindItemAddOn.getInstance().getConfig().getString("find-item-command.to-buy-autocomplete");
+    public final String FIND_ITEM_TO_SELL_AUTOCOMPLETE = FindItemAddOn.getInstance().getConfig().getString("find-item-command.to-sell-autocomplete");
     public final String FIND_ITEM_CMD_INCORRECT_USAGE_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.incorrect-usage-message");
     public final String FIND_ITEM_CMD_INVALID_MATERIAL_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.invalid-material-message");
     public final String SHOP_SEARCH_LOADING_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.shop-search-loading-message");
     public final String NO_SHOP_FOUND_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.no-shop-found-message");
     public final String FIND_ITEM_CMD_NO_PERMISSION_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.find-item-command-no-permission-message");
     public final int SHOP_SORTING_METHOD = FindItemAddOn.getInstance().getConfig().getInt("shop-sorting-method");
+    public final String SHOP_SEARCH_GUI_TITLE = FindItemAddOn.getInstance().getConfig().getString("shop-search-gui-title");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) FindItemAddOn.getInstance().getConfig().getList("shop-gui-item-lore");
     public final Boolean ALLOW_DIRECT_SHOP_TP = FindItemAddOn.getInstance().getConfig().getBoolean("allow-direct-shop-tp");
     public final String CLICK_TO_TELEPORT_MSG = FindItemAddOn.getInstance().getConfig().getString("click-to-teleport-message");

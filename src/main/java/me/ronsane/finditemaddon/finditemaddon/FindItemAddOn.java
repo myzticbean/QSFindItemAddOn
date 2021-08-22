@@ -1,15 +1,12 @@
 package me.ronsane.finditemaddon.finditemaddon;
 
-import com.earth2me.essentials.Essentials;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
-import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
-import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.UpdateChecker;
 import org.bukkit.Bukkit;
@@ -25,10 +22,10 @@ public final class FindItemAddOn extends JavaPlugin {
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
-    public static Essentials essAPI;
     public static String serverVersion;
     private final static int bsPLUGIN_METRIC_ID = 12382;
     private static ConfigProvider configProvider;
+
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
@@ -47,22 +44,13 @@ public final class FindItemAddOn extends JavaPlugin {
         else {
             LoggerUtils.logInfo("Found QuickShop");
         }
-        if(!Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
-            LoggerUtils.logError("&cEssentialsX is required to use this addon. Please install EssentialsX and try again!");
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-        else {
-            essAPI = (Essentials) getServer().getPluginManager().getPlugin("Essentials");
-            LoggerUtils.logInfo("Found Essentials");
-        }
 
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
         initCommands();
         initEvents();
 
-        PlayerWarpsPlugin.setup();
+//        PlayerWarpsPlugin.setup();
 //        PWarpPlugin.setup();
 
         // init metrics
@@ -74,7 +62,8 @@ public final class FindItemAddOn extends JavaPlugin {
             if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 LoggerUtils.logInfo("&2Plugin is up to date!");
             } else {
-                LoggerUtils.logWarning("Plugin has an update! Download the latest version here: &7https://www.spigotmc.org/resources/95104/");
+                LoggerUtils.logWarning("Plugin has an update! (Version: " + this.getDescription().getVersion() + ")");
+                LoggerUtils.logWarning("Download the latest version here: &7https://www.spigotmc.org/resources/95104/");
             }
         });
     }
