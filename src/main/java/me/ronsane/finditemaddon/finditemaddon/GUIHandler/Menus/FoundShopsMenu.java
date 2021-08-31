@@ -1,14 +1,19 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
+import com.olziedev.playerwarps.api.warp.Warp;
+import io.papermc.lib.PaperLib;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.PlayerWarpsUtil;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
@@ -87,7 +92,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                         Location shopLocation = new Location(world, locX, locY, locZ);
                         Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
                         if(locToTeleport != null) {
-                            player.teleport(locToTeleport);
+                            PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
                         }
                         else {
                             if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG)) {
@@ -123,11 +128,11 @@ public class FoundShopsMenu extends PaginatedMenu {
 
                 if(foundShops.get(index) != null) {
                     // Place Search Results here
+                    Shop shop = foundShops.get(index);
                     NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-                    ItemStack item = new ItemStack(foundShops.get(0).getItem().getType());
+                    ItemStack item = new ItemStack(shop.getItem().getType());
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore;
-                    Shop shop = foundShops.get(index);
                     lore = new ArrayList<>();
 
                     if(shop.getItem().hasItemMeta()) {
@@ -140,7 +145,21 @@ public class FoundShopsMenu extends PaginatedMenu {
                     }
                     List<String> shopItemLore = FindItemAddOn.getConfigProvider().SHOP_GUI_ITEM_LORE;
                     for(String shopItemLore_i : shopItemLore) {
-                        lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
+                        if(shopItemLore_i.contains("{NEAREST_WARP}")) {
+                            // PlayerWarp: Check nearest warp
+                            if(PlayerWarpsPlugin.getIsEnabled()) {
+                                Warp nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
+                                if(nearestPlayerWarp != null) {
+                                    lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getWarpName())));
+                                }
+                                else {
+                                    lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
+                                }
+                            }
+                        }
+                        else {
+                            lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
+                        }
                     }
 
                     if(FindItemAddOn.getConfigProvider().ALLOW_DIRECT_SHOP_TP) {

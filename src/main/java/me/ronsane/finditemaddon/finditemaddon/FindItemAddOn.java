@@ -3,6 +3,7 @@ package me.ronsane.finditemaddon.finditemaddon;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
@@ -50,7 +51,7 @@ public final class FindItemAddOn extends JavaPlugin {
         initCommands();
         initEvents();
 
-//        PlayerWarpsPlugin.setup();
+        PlayerWarpsPlugin.setup();
 //        PWarpPlugin.setup();
 
         // init metrics
@@ -66,6 +67,7 @@ public final class FindItemAddOn extends JavaPlugin {
                 LoggerUtils.logWarning("Download the latest version here: &7https://www.spigotmc.org/resources/95104/");
             }
         });
+
     }
 
     @Override

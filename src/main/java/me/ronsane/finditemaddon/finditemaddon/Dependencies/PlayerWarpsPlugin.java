@@ -14,6 +14,7 @@ public class PlayerWarpsPlugin {
             isEnabled = true;
         }
     }
+    public static boolean getIsEnabled() { return isEnabled; }
     public static PlayerWarpsAPI getAPI() {
         return PlayerWarpsAPI.getInstance();
     }

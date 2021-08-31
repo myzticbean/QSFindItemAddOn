@@ -1,10 +1,16 @@
 # QuickShop Reremake Shop Search AddOn
 
-# Requires finditem.use permission node
+# Requires finditem.use permission node for players
+# Requires finditem.admin permission node for admin commands (/finditem reload | /finditem restart)
+# Do '/finditem reload' to reload this config and update your changes
+# Do '/finditem restart' to restart the plugin (NOT RECOMMENDED IN MOST CASES)
 # Color codes are supported below
 # If you want to keep a field empty, make it as ""
-# DON'T leave it empty without quotes, or bad things will happen!
-# Do /finditem reload to reload this config (Requires finditem.reload permission node)
+# DON'T leave it empty without quotes, or bad things might happen!
+
+# PS: If you do '/qs reload' this addon will stop working as QuickShop API
+# doesn't work after the plugin reload command is run
+# In such case, please restart your server.
 
 
 # Prefix that will be shown in chat for any message from this plugin
@@ -32,6 +38,13 @@ find-item-command:
 # Enter your choice of method below
 shop-sorting-method: 2
 
+# Set it to true to search shops on loaded chunks only.
+# When set to false, it searches through all shops regardless
+# of them being on loaded chunks or not.
+# If a shop is present in chunk which is currently unloaded,
+# it loads the chunk to search for items in containers.
+search-loaded-shops-only: false
+
 shop-search-gui-title: "&l» &rShops"
 
 # Shop Search GUI Item Lore
@@ -41,6 +54,9 @@ shop-search-gui-title: "&l» &rShops"
 # {SHOP_OWNER}          -> Owner of shop
 # {SHOP_LOC}            -> Shop coordinates
 # {SHOP_WORLD}          -> Name of the world the shop is in
+# {NEAREST_WARP}        -> Warp nearest to shop
+# -> Nearest warp only works with PlayerWarps v6.8.2 and above (https://www.spigotmc.org/resources/66692/)
+#    If plugin is not installed/enabled, it ignores the line containing {NEAREST_WARP}
 # -> Please don't put more than one placeholder in a single lore line
 # -> If you don't want to show the below lore for any item,
 #    set the below field as shop-gui-item-lore: []
@@ -51,6 +67,7 @@ shop-gui-item-lore:
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
+  - "&fWarp: &7{NEAREST_WARP}"
   - ""
 
 

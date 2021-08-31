@@ -17,6 +17,7 @@ public class ConfigProvider {
     public final String NO_SHOP_FOUND_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.no-shop-found-message");
     public final String FIND_ITEM_CMD_NO_PERMISSION_MSG = FindItemAddOn.getInstance().getConfig().getString("find-item-command.find-item-command-no-permission-message");
     public final int SHOP_SORTING_METHOD = FindItemAddOn.getInstance().getConfig().getInt("shop-sorting-method");
+    public final Boolean SEARCH_LOADED_SHOPS_ONLY = FindItemAddOn.getInstance().getConfig().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = FindItemAddOn.getInstance().getConfig().getString("shop-search-gui-title");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) FindItemAddOn.getInstance().getConfig().getList("shop-gui-item-lore");
     public final Boolean ALLOW_DIRECT_SHOP_TP = FindItemAddOn.getInstance().getConfig().getBoolean("allow-direct-shop-tp");
