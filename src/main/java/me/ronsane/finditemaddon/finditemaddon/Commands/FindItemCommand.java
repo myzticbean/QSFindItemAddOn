@@ -1,5 +1,6 @@
 package me.ronsane.finditemaddon.finditemaddon.Commands;
 
+import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigSetup;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
@@ -37,7 +38,10 @@ public class FindItemCommand implements CommandExecutor {
             if (!(sender instanceof Player)) {
                 if(args.length == 1){
                     if(args[0].equalsIgnoreCase("reload")) {
-                        FindItemAddOn.getInstance().reloadConfig();
+//                        FindItemAddOn.getInstance().reloadConfig();
+                        ConfigSetup.reloadConfig();
+                        ConfigSetup.checkForMissingProperties();
+                        ConfigSetup.saveConfig();
                         FindItemAddOn.initConfigProvider();
                         List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
                         if(allServerShops.size() == 0) {
@@ -50,8 +54,8 @@ public class FindItemCommand implements CommandExecutor {
                     else if(args[0].equalsIgnoreCase("restart")) {
                         Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                         Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-                        FindItemAddOn.getInstance().reloadConfig();
-                        FindItemAddOn.initConfigProvider();
+//                        FindItemAddOn.getInstance().reloadConfig();
+//                        FindItemAddOn.initConfigProvider();
                         LoggerUtils.logInfo("&aPlugin restarted!");
                         List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
                         if(allServerShops.size() == 0) {
@@ -78,7 +82,10 @@ public class FindItemCommand implements CommandExecutor {
                     else if(args.length == 1){
                         if(args[0].equalsIgnoreCase("reload")) {
                             if(player.hasPermission("finditem.reload") || player.hasPermission("finditem.admin")) {
-                                FindItemAddOn.getInstance().reloadConfig();
+//                                FindItemAddOn.getInstance().reloadConfig();
+                                ConfigSetup.reloadConfig();
+                                ConfigSetup.checkForMissingProperties();
+                                ConfigSetup.saveConfig();
                                 FindItemAddOn.initConfigProvider();
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                                 List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
@@ -97,8 +104,8 @@ public class FindItemCommand implements CommandExecutor {
                             if(player.hasPermission("finditem.restart") || player.hasPermission("finditem.admin")) {
                                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-                                FindItemAddOn.getInstance().reloadConfig();
-                                FindItemAddOn.initConfigProvider();
+//                                FindItemAddOn.getInstance().reloadConfig();
+//                                FindItemAddOn.initConfigProvider();
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));
                                 List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
                                 if(allServerShops.size() == 0) {

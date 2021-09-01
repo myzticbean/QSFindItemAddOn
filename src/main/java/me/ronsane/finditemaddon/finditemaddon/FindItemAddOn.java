@@ -2,7 +2,8 @@ package me.ronsane.finditemaddon.finditemaddon;
 
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
-import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
+import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigProvider;
+import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigSetup;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
@@ -35,7 +36,12 @@ public final class FindItemAddOn extends JavaPlugin {
         // Plugin startup logic
         LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
         this.saveDefaultConfig();
-        configProvider = new ConfigProvider();
+        this.getConfig().options().copyDefaults(true);
+        ConfigSetup.setupConfig();
+        ConfigSetup.get().options().copyDefaults(true);
+        ConfigSetup.checkForMissingProperties();
+        ConfigSetup.saveConfig();
+        initConfigProvider();
 
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
             LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");

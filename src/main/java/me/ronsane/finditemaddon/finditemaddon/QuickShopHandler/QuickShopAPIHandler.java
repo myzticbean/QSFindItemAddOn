@@ -1,6 +1,5 @@
 package me.ronsane.finditemaddon.finditemaddon.QuickShopHandler;
 
-import me.ronsane.finditemaddon.finditemaddon.ConfigProvider.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Material;
