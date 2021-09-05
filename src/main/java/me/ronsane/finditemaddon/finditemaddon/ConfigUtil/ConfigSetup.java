@@ -7,6 +7,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConfigSetup {
 
@@ -46,6 +48,18 @@ public class ConfigSetup {
         }
         if(!fileConfig.contains("search-loaded-shops-only", true)) {
             fileConfig.set("search-loaded-shops-only", false);
+        }
+        if(!fileConfig.contains("shop-gui-item-lore", true)) {
+            List<String> shopGUIItemLore = new ArrayList<>();
+            shopGUIItemLore.add("");
+            shopGUIItemLore.add("&fPrice: &a${ITEM_PRICE}");
+            shopGUIItemLore.add("&fStock: &7{SHOP_STOCK}");
+            shopGUIItemLore.add("&fOwner: &7{SHOP_OWNER}");
+            shopGUIItemLore.add("&fLocation: &7{SHOP_LOC}");
+            shopGUIItemLore.add("&fWorld: &7{SHOP_WORLD}");
+            shopGUIItemLore.add("&fWarp: &7{NEAREST_WARP}");
+            shopGUIItemLore.add("");
+            fileConfig.set("shop-gui-item-lore", shopGUIItemLore);
         }
     }
 
