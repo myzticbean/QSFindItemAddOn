@@ -2,12 +2,12 @@ package me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils;
 
 import com.olziedev.playerwarps.api.warp.Warp;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
+import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -27,8 +27,10 @@ public class PlayerWarpsUtil {
                         warp.getWarpLocation().getY()
                 ), warp);
             });
-            for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
-                LoggerUtils.logDebugInfo(entry.getValue().getWarpName() + " : " + entry.getKey());
+            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
+                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
+                    LoggerUtils.logDebugInfo(entry.getValue().getWarpName() + " : " + entry.getKey());
+                }
             }
 
             return warpDistanceMap.entrySet().iterator().next().getValue();

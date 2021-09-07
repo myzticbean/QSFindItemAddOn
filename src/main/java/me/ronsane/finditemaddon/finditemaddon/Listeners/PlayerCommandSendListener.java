@@ -12,10 +12,10 @@ public class PlayerCommandSendListener implements Listener {
     public void onPlayerCommandTab(PlayerCommandSendEvent event) {
         if(!event.getPlayer().isOp()) {
             List<String> blockedCommands = new ArrayList<>();
-            blockedCommands.add("finditemaddon:finditem");
-            blockedCommands.add("finditemaddon:searchitem");
-            blockedCommands.add("finditemaddon:shopsearch");
-            blockedCommands.add("finditemaddon:searchshop");
+            blockedCommands.add("qsfinditemaddon:finditem");
+            blockedCommands.add("qsfinditemaddon:searchitem");
+            blockedCommands.add("qsfinditemaddon:shopsearch");
+            blockedCommands.add("qsfinditemaddon:searchshop");
             event.getCommands().removeAll(blockedCommands);
         }
     }

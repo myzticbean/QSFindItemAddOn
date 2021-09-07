@@ -184,6 +184,8 @@ public class LocationUtils {
                         );
                         LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getBlock().getType() + " " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
                         if(blockBelow.getBlock().getType().equals(Material.AIR)
+                            || blockBelow.getBlock().getType().equals(Material.CAVE_AIR)
+                            || blockBelow.getBlock().getType().equals(Material.VOID_AIR)
                             || blockBelow.getBlock().getType().equals(qsAPI.getShopSignMaterial())) {
                             // do nothing and let the loop run
                             LoggerUtils.logDebugInfo("Shop or Air found below");

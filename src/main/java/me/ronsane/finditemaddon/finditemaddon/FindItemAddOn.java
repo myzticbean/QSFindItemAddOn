@@ -4,6 +4,8 @@ import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCmdTabCompleter;
 import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigSetup;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
@@ -58,7 +60,8 @@ public final class FindItemAddOn extends JavaPlugin {
         initEvents();
 
         PlayerWarpsPlugin.setup();
-//        PWarpPlugin.setup();
+        PWarpPlugin.setup();
+        EssentialsXPlugin.setup();
 
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");

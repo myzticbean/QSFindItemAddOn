@@ -72,7 +72,11 @@ public class FoundShopsMenu extends PaginatedMenu {
         else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
             event.getWhoClicked().closeInventory();
         }
-        else if(event.getCurrentItem().getType().equals(super.playerMenuUtility.getPlayerShopSearchResult().get(0).getItem().getType())) {
+//        else if(event.getCurrentItem().getType().equals(super.playerMenuUtility.getPlayerShopSearchResult().get(0).getItem().getType())) {
+        else if(event.getCurrentItem().getType().equals(Material.AIR)) {
+            // do nothing
+        }
+        else {
             if(FindItemAddOn.getConfigProvider().ALLOW_DIRECT_SHOP_TP) {
                 if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
                     Player player = (Player) event.getWhoClicked();
