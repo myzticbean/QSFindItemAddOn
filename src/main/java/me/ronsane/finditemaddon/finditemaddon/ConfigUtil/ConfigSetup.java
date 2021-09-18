@@ -82,6 +82,12 @@ public class ConfigSetup {
             shopGUIItemLore.add("");
             fileConfig.set("shop-gui-item-lore", shopGUIItemLore);
         }
+        if(!fileConfig.contains("blacklisted-worlds", true)) {
+            List<String> blacklistedWorlds = new ArrayList<>();
+            blacklistedWorlds.add("world_number_1");
+            blacklistedWorlds.add("world_number_2");
+            fileConfig.set("blacklisted-worlds", blacklistedWorlds);
+        }
     }
 
     public static FileConfiguration get() {

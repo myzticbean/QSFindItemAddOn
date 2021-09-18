@@ -6,6 +6,7 @@ import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.WarpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -65,6 +66,9 @@ public class FindItemCommand implements CommandExecutor {
                             LoggerUtils.logInfo("&aFound &e" + allServerShops.size() + " &ashops on the server.");
                         }
                     }
+                    else if(args[0].equalsIgnoreCase("updatelist")) {
+                        WarpUtils.updateWarps();
+                    }
                     else {
                         LoggerUtils.logInfo("&CIncorrect usage! Try &e/finditem &freload");
                     }
@@ -82,7 +86,6 @@ public class FindItemCommand implements CommandExecutor {
                     else if(args.length == 1){
                         if(args[0].equalsIgnoreCase("reload")) {
                             if(player.hasPermission("finditem.reload") || player.hasPermission("finditem.admin")) {
-//                                FindItemAddOn.getInstance().reloadConfig();
                                 ConfigSetup.reloadConfig();
                                 ConfigSetup.checkForMissingProperties();
                                 ConfigSetup.saveConfig();
@@ -114,6 +117,16 @@ public class FindItemCommand implements CommandExecutor {
                                 else {
                                     player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aFound &e" + allServerShops.size() + " &ashops on the server."));
                                 }
+                            }
+                            else {
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+                            }
+                        }
+                        else if(args[0].equalsIgnoreCase("updatelist")) {
+                            if(player.hasPermission("finditem.admin")) {
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdating warps/regions list..."));
+                                WarpUtils.updateWarps();
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdate complete!"));
                             }
                             else {
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));

@@ -4,12 +4,15 @@ import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ConfigProvider {
 
@@ -72,10 +75,34 @@ public class ConfigProvider {
     public final String SHOP_GUI_CLOSE_BUTTON_CMD = ConfigSetup.get().getString("shop-gui-close-button-custom-model-data");
     public final String SHOP_NAV_FIRST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-first-page-alert-message");
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-last-page-alert-message");
+    public final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
     public final Boolean DEBUG_MODE = ConfigSetup.get().getBoolean("debug-mode");
     public final int CONFIG_VERSION = ConfigSetup.get().getInt("config-version");
 
+    private final List<World> blacklistedWorldsList = new ArrayList<>();
+
     public ConfigProvider() {
+        if(BLACKLISTED_WORLDS != null) {
+            BLACKLISTED_WORLDS.forEach(world -> {
+                World worldObj = Bukkit.getWorld(world);
+                if(worldObj != null) {
+                    blacklistedWorldsList.add(worldObj);
+                }
+            });
+        }
         LoggerUtils.logInfo("Config loaded!");
+    }
+
+    public List<World> getBlacklistedWorlds() {
+        return blacklistedWorldsList;
+    }
+
+    public boolean shopGUIItemLoreHasKey(String key) {
+        if (SHOP_GUI_ITEM_LORE != null) {
+            return SHOP_GUI_ITEM_LORE.stream().anyMatch(key::contains);
+        }
+        else {
+            return false;
+        }
     }
 }

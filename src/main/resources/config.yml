@@ -41,5 +41,8 @@ shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
 shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+blacklisted-worlds:
+  - "world_number_1"
+  - "world_number_2"
 debug-mode: false
 config-version: 7

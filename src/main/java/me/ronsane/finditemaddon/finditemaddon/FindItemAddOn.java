@@ -5,13 +5,13 @@ import me.ronsane.finditemaddon.finditemaddon.Commands.FindItemCommand;
 import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigProvider;
 import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigSetup;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
-import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.WGPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
+import me.ronsane.finditemaddon.finditemaddon.ScheduledTasks.Task15MinInterval;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.UpdateChecker;
 import org.bukkit.Bukkit;
@@ -64,6 +64,9 @@ public final class FindItemAddOn extends JavaPlugin {
 //        PWarpPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
+
+        // Initiate batch tasks
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, 15*60*20);
 
         // init metrics
         LoggerUtils.logInfo("Registering bStats metrics");

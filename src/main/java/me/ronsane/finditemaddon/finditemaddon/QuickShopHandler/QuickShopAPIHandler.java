@@ -34,7 +34,9 @@ public class QuickShopAPIHandler {
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
         allShops.forEach((shop_i) -> {
-            if(shop_i.getItem().getType().equals(item.getType()) && shop_i.getRemainingStock() > 0
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
+                    && shop_i.getItem().getType().equals(item.getType())
+                    && shop_i.getRemainingStock() > 0
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 shopsFound.add(shop_i);
             }
@@ -53,30 +55,6 @@ public class QuickShopAPIHandler {
         return shopsFound;
     }
 
-//    public static List<Shop> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
-//        List<Shop> shopsFound = new ArrayList<>();
-//        assert QuickShopAPI.getShopAPI() != null;
-//        List<Shop> allShops = QuickShopAPI.getShopAPI().getAllShops();
-//        allShops.forEach((shop_i) -> {
-//            if(shop_i.getItem().getType().equals(item.getType()) && shop_i.getRemainingStock() > 0
-//                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-//                shopsFound.add(shop_i);
-//            }
-//        });
-//        if(!shopsFound.isEmpty()) {
-//            int sortingMethod = 2;
-//            try {
-//                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-//            }
-//            catch(Exception e) {
-//                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-//                LoggerUtils.logError("Defaulting to sorting by prices method");
-//            }
-//            return sortShops(sortingMethod, shopsFound);
-//        }
-//        return shopsFound;
-//    }
-
     public List<Shop> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
         List<Shop> shopsFound = new ArrayList<>();
         assert QuickShopAPI.getShopAPI() != null;
@@ -89,12 +67,14 @@ public class QuickShopAPIHandler {
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
         for(Shop shop_i : allShops) {
-            if(shop_i.getItem().hasItemMeta()) {
-                if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
-                    if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                            && shop_i.getRemainingStock() > 0
-                            && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                        shopsFound.add(shop_i);
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())) {
+                if(shop_i.getItem().hasItemMeta()) {
+                    if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
+                        if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
+                                && shop_i.getRemainingStock() > 0
+                                && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                            shopsFound.add(shop_i);
+                        }
                     }
                 }
             }
@@ -112,35 +92,6 @@ public class QuickShopAPIHandler {
         }
         return shopsFound;
     }
-
-//    public static List<Shop> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
-//        List<Shop> shopsFound = new ArrayList<>();
-//        assert QuickShopAPI.getShopAPI() != null;
-//        List<Shop> allShops = QuickShopAPI.getShopAPI().getAllShops();
-//        for(Shop shop_i : allShops) {
-//            if(shop_i.getItem().hasItemMeta()) {
-//                if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
-//                    if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-//                            && shop_i.getRemainingStock() > 0
-//                            && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-//                        shopsFound.add(shop_i);
-//                    }
-//                }
-//            }
-//        }
-//        if(!shopsFound.isEmpty()) {
-//            int sortingMethod = 2;
-//            try {
-//                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-//            }
-//            catch(Exception e) {
-//                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-//                LoggerUtils.logError("Defaulting to sorting by prices method");
-//            }
-//            return sortShops(sortingMethod, shopsFound);
-//        }
-//        return shopsFound;
-//    }
 
     private List<Shop> sortShops(int sortingMethod, List<Shop> shopsFound) {
         switch (sortingMethod) {
