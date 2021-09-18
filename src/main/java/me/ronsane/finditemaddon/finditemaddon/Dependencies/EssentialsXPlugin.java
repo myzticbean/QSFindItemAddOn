@@ -6,7 +6,7 @@ import org.bukkit.Bukkit;
 
 public class EssentialsXPlugin {
 
-    private static Essentials essAPI;
+    private static Essentials essAPI = null;
 
     public static void setup() {
         if(Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
@@ -14,6 +14,10 @@ public class EssentialsXPlugin {
             assert essAPI != null;
             LoggerUtils.logInfo("Found Essentials");
         }
+    }
+
+    public static boolean isEnabled() {
+        return essAPI != null;
     }
 
     public static Essentials getAPI() {

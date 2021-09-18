@@ -15,6 +15,7 @@ find-item-command:
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: "&l» &rShops"
+nearest-warp-mode: 1
 shop-gui-item-lore:
   - ""
   - "&fPrice: &a${ITEM_PRICE}"
@@ -41,4 +42,4 @@ shop-gui-close-button-custom-model-data: ""
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
 shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 debug-mode: false
-config-version: 6
+config-version: 7

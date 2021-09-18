@@ -1,14 +1,19 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
-import com.olziedev.playerwarps.api.warp.Warp;
 import io.papermc.lib.PaperLib;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
+import me.ronsane.finditemaddon.finditemaddon.Dependencies.WGPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.EssentialWarpsUtil;
+import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.PWarpsUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.PlayerWarpsUtil;
+import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.WGRegionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -17,6 +22,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.shop.Shop;
 
 import java.util.*;
@@ -150,16 +156,59 @@ public class FoundShopsMenu extends PaginatedMenu {
                     List<String> shopItemLore = FindItemAddOn.getConfigProvider().SHOP_GUI_ITEM_LORE;
                     for(String shopItemLore_i : shopItemLore) {
                         if(shopItemLore_i.contains("{NEAREST_WARP}")) {
-                            // PlayerWarp: Check nearest warp
-                            if(PlayerWarpsPlugin.getIsEnabled()) {
-                                Warp nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
-                                if(nearestPlayerWarp != null) {
-                                    lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getWarpName())));
-                                }
-                                else {
-                                    lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
-                                }
+                            switch(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE) {
+                                case 1:
+                                    // EssentialWarp: Check nearest warp
+                                    if(EssentialsXPlugin.isEnabled()) {
+                                        String nearestPlayerWarp = new EssentialWarpsUtil().findNearestWarp(shop.getLocation());
+                                        if(nearestPlayerWarp != null && !StringUtils.isEmpty(nearestPlayerWarp)) {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp)));
+                                        }
+                                        else {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
+                                        }
+                                    }
+                                    break;
+                                case 2:
+                                    // PlayerWarp: Check nearest warp
+                                    if(PlayerWarpsPlugin.getIsEnabled()) {
+                                        com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
+                                        if(nearestPlayerWarp != null) {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getWarpName())));
+                                        }
+                                        else {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
+                                        }
+                                    }
+                                    break;
+//                                case 2:
+//                                    // PWarp: Check nearest warp
+//                                    if(PWarpPlugin.isEnabled()) {
+//                                        me.tks.playerwarp.@Nullable Warp nearestPlayerWarp = new PWarpsUtil().findNearestWarp(shop.getLocation());
+//                                        if(nearestPlayerWarp != null) {
+//                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getName())));
+//                                        }
+//                                        else {
+//                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
+//                                        }
+//                                    }
+//                                    break;
+                                case 3:
+                                    // WG Region: Check nearest WG Region
+                                    if(WGPlugin.isEnabled()) {
+                                        String nearestWGRegion = new WGRegionUtils().findNearestWGRegion((shop.getLocation()));
+                                        if(nearestWGRegion != null && !StringUtils.isEmpty(nearestWGRegion)) {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestWGRegion)));
+                                        }
+                                        else {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Region near this shop")));
+                                        }
+                                    }
+                                    break;
+                                default:
+//                                    LoggerUtils.logError("Invalid value in 'nearest-warp-mode' in config.yml!");
                             }
+
                         }
                         else {
                             lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));

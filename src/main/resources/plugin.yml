@@ -8,6 +8,8 @@ depend:
 softdepend:
   - PlayerWarps
   - PWarp
+  - WorldGuard
+  - Essentials
 
 commands:
   finditem:

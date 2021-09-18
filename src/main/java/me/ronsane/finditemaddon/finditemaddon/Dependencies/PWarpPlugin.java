@@ -21,5 +21,13 @@ public class PWarpPlugin {
     public static PWarp getAPI() {
         return pWarp;
     }
-    public static List<Warp> getAllWarps() { return WarpList.read().getWarps(); }
+
+    public static boolean isEnabled() {
+        return pWarp != null;
+    }
+
+    public static List<Warp> getAllWarps() {
+
+        return PWarp.wL.getWarps();
+    }
 }

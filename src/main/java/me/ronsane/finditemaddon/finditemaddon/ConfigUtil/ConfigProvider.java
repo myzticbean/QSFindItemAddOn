@@ -54,6 +54,7 @@ public class ConfigProvider {
     public final int SHOP_SORTING_METHOD = ConfigSetup.get().getInt("shop-sorting-method");
     public final Boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");
+    public final int NEAREST_WARP_MODE = ConfigSetup.get().getInt("nearest-warp-mode");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) ConfigSetup.get().getList("shop-gui-item-lore");
     public final Boolean ALLOW_DIRECT_SHOP_TP = ConfigSetup.get().getBoolean("allow-direct-shop-tp");
     public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString("click-to-teleport-message");
