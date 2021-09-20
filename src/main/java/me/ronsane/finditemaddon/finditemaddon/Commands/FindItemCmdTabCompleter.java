@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,19 @@ public class FindItemCmdTabCompleter implements TabCompleter {
             }
             else {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
+            }
+            // hide
+            if(sender instanceof Player && sender.hasPermission("finditem.hideshop")) {
+                buyOrSellList.add("hideshop");
+                buyOrSellList.add("revealshop");
+            }
+            // reload
+            if(sender instanceof Player && (sender.hasPermission("finditem.admin") || sender.hasPermission("finditem.reload"))) {
+                buyOrSellList.add("reload");
+            }
+            // updatelist
+            if(sender instanceof Player && (sender.hasPermission("finditem.admin") || sender.hasPermission("finditem.updatelist"))) {
+                buyOrSellList.add("updatelist");
             }
         }
 

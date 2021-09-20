@@ -1,9 +1,9 @@
 package me.ronsane.finditemaddon.finditemaddon.Dependencies;
 
 import com.earth2me.essentials.Essentials;
+import me.ronsane.finditemaddon.finditemaddon.Models.EssentialWarpModel;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,13 +19,6 @@ public class EssentialsXPlugin {
             essAPI = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
             if(essAPI != null) {
                 LoggerUtils.logInfo("Found Essentials");
-//                for(int i = 0; i < 1000; i++) {
-//                    try {
-//                        essAPI.getWarps().setWarp("esswarp_" + i, new Location(Bukkit.getWorld("world"), -135.5f, 71f, -286.5f));
-//                    }
-//                    catch(Exception ignored) {}
-//                }
-
             }
         }
     }

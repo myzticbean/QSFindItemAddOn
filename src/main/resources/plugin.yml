@@ -29,6 +29,9 @@ permissions:
   finditem.restart:
     description: For OP. Enables use of '/finditem restart' to restart the plugin
     default: op
+  finditem.updatelist:
+    description: For OP. Enables use of '/finditem updatelist' to update warps list for essential warps
+    default: op
   finditem.shoptp:
     description: If 'allow-direct-shop-tp' is enabled in config, players require this permission to be able to teleport
     default: op

@@ -39,7 +39,6 @@ public class FindItemCommand implements CommandExecutor {
             if (!(sender instanceof Player)) {
                 if(args.length == 1){
                     if(args[0].equalsIgnoreCase("reload")) {
-//                        FindItemAddOn.getInstance().reloadConfig();
                         ConfigSetup.reloadConfig();
                         ConfigSetup.checkForMissingProperties();
                         ConfigSetup.saveConfig();
@@ -55,8 +54,6 @@ public class FindItemCommand implements CommandExecutor {
                     else if(args[0].equalsIgnoreCase("restart")) {
                         Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                         Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-//                        FindItemAddOn.getInstance().reloadConfig();
-//                        FindItemAddOn.initConfigProvider();
                         LoggerUtils.logInfo("&aPlugin restarted!");
                         List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
                         if(allServerShops.size() == 0) {
@@ -107,8 +104,6 @@ public class FindItemCommand implements CommandExecutor {
                             if(player.hasPermission("finditem.restart") || player.hasPermission("finditem.admin")) {
                                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-//                                FindItemAddOn.getInstance().reloadConfig();
-//                                FindItemAddOn.initConfigProvider();
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));
                                 List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
                                 if(allServerShops.size() == 0) {
@@ -151,7 +146,6 @@ public class FindItemCommand implements CommandExecutor {
                         Material mat = Material.getMaterial(args[1]);
                         if(mat != null) {
                             LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-//                            List<Shop> searchResult = QuickShopAPIHandler.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
                             List<Shop> searchResult = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
                             if(searchResult.size() > 0) {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);
@@ -165,7 +159,6 @@ public class FindItemCommand implements CommandExecutor {
                         }
                         else {
                             LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-//                            List<Shop> searchResult = QuickShopAPIHandler.findItemBasedOnDisplayNameFromAllShops(args[1], isBuying);
                             List<Shop> searchResult = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(args[1], isBuying);
                             if(searchResult.size() > 0) {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);

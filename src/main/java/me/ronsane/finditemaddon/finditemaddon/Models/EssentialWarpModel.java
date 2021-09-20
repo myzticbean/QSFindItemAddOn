@@ -1,4 +1,4 @@
-package me.ronsane.finditemaddon.finditemaddon.Dependencies;
+package me.ronsane.finditemaddon.finditemaddon.Models;
 
 import org.bukkit.Location;
 

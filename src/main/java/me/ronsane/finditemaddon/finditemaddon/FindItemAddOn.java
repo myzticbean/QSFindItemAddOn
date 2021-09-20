@@ -31,7 +31,6 @@ public final class FindItemAddOn extends JavaPlugin {
     private final static int bsPLUGIN_METRIC_ID = 12382;
     private static ConfigProvider configProvider;
 
-
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
@@ -66,6 +65,7 @@ public final class FindItemAddOn extends JavaPlugin {
         WGPlugin.setup();
 
         // Initiate batch tasks
+        LoggerUtils.logInfo("Registering tasks");
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, 15*60*20);
 
         // init metrics
