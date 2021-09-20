@@ -143,7 +143,7 @@ public class FindItemCommand implements CommandExecutor {
                         else {
                             isBuying = args[0].equalsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
                         }
-                        Material mat = Material.getMaterial(args[1]);
+                        Material mat = Material.getMaterial(args[1].toUpperCase());
                         if(mat != null) {
                             LoggerUtils.logDebugInfo("Material found: " + mat.toString());
                             List<Shop> searchResult = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
