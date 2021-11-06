@@ -1,7 +1,7 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
 import org.bukkit.entity.Player;
-import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.List;
 

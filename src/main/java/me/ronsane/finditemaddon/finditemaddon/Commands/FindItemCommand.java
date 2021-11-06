@@ -5,18 +5,21 @@ import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.HiddenShopStorageUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.WarpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,6 +39,7 @@ public class FindItemCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, String label, String[] args) {
         if(findItemCommandAliases.contains(label.toLowerCase())) {
+            // If sender is a console
             if (!(sender instanceof Player)) {
                 if(args.length == 1){
                     if(args[0].equalsIgnoreCase("reload")) {
@@ -74,6 +78,7 @@ public class FindItemCommand implements CommandExecutor {
                     LoggerUtils.logInfo("This command can only be run from in game");
                 }
             }
+            // If sender is a player
             else {
                 Player player = (Player) sender;
                 if(player.hasPermission("finditem.use")) {
@@ -126,6 +131,54 @@ public class FindItemCommand implements CommandExecutor {
                             else {
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
                             }
+                        }
+                        else if(args[0].equalsIgnoreCase("hideshop")) {
+                            if(player.hasPermission("finditem.hideshop")) {
+                                Block playerLookAtBlock = player.getTargetBlock(null, 100);
+                                Shop shop = new QuickShopAPIHandler().findShopAtLocation(playerLookAtBlock);
+                                if(shop != null) {
+                                    if(!HiddenShopStorageUtil.isShopHidden(shop)) {
+                                        HiddenShopStorageUtil.addShop(shop);
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
+                                    }
+                                    else {
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
+                                    }
+                                }
+                                else {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+                                }
+                            }
+                            else {
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+                            }
+                        }
+                        else if(args[0].equalsIgnoreCase("revealshop")) {
+                            if(player.hasPermission("finditem.hideshop")) {
+                                Block playerLookAtBlock = player.getTargetBlock(null, 100);
+                                Shop shop = new QuickShopAPIHandler().findShopAtLocation(playerLookAtBlock);
+                                if(shop != null) {
+                                    if(HiddenShopStorageUtil.isShopHidden(shop)) {
+                                        HiddenShopStorageUtil.deleteShop(shop);
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
+                                    }
+                                    else {
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
+                                    }
+                                }
+                                else {
+                                    player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+                                }
+                            }
+                            else {
+                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+                            }
+                        }
+                        else if(args[0].equalsIgnoreCase("save")) {
+                            HiddenShopStorageUtil.saveHiddenShopsToFile();
+                        }
+                        else if(args[0].equalsIgnoreCase("load")) {
+                            HiddenShopStorageUtil.loadHiddenShopsFromFile();
                         }
                         else {
                             player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&CIncorrect usage! Try &e/finditem &freload"));

@@ -40,10 +40,10 @@ public class FindItemCmdTabCompleter implements TabCompleter {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
             }
             // hide
-//            if(sender instanceof Player && sender.hasPermission("finditem.hideshop")) {
-//                buyOrSellList.add("hideshop");
-//                buyOrSellList.add("revealshop");
-//            }
+            if(sender instanceof Player && sender.hasPermission("finditem.hideshop")) {
+                buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE);
+                buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE);
+            }
             // reload
             if(sender instanceof Player && (sender.hasPermission("finditem.admin") || sender.hasPermission("finditem.reload"))) {
                 buyOrSellList.add("reload");

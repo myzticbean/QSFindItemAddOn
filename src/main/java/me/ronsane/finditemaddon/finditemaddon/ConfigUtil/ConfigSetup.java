@@ -44,10 +44,10 @@ public class ConfigSetup {
 
     public static void checkForMissingProperties() {
         if(!fileConfig.contains("config-version", true)) {
-            fileConfig.set("config-version", 7);
+            fileConfig.set("config-version", 8);
         }
         else {
-            fileConfig.set("config-version", 7);
+            fileConfig.set("config-version", 8);
         }
         if(!fileConfig.contains("search-loaded-shops-only", true)) {
             fileConfig.set("search-loaded-shops-only", false);
@@ -87,6 +87,27 @@ public class ConfigSetup {
             blacklistedWorlds.add("world_number_1");
             blacklistedWorlds.add("world_number_2");
             fileConfig.set("blacklisted-worlds", blacklistedWorlds);
+        }
+        if(!fileConfig.contains("find-item-command.hideshop-autocomplete", true)) {
+            fileConfig.set("find-item-command.hideshop-autocomplete", "hideshop");
+        }
+        if(!fileConfig.contains("find-item-command.revealshop-autocomplete", true)) {
+            fileConfig.set("find-item-command.revealshop-autocomplete", "revealshop");
+        }
+        if(!fileConfig.contains("find-item-command.shop-hide-success-message", true)) {
+            fileConfig.set("find-item-command.shop-hide-success-message", "&aShop is now hidden from search list!");
+        }
+        if(!fileConfig.contains("find-item-command.shop-reveal-success-message", true)) {
+            fileConfig.set("find-item-command.shop-reveal-success-message", "&aShop is no longer hidden from search list!");
+        }
+        if(!fileConfig.contains("find-item-command.shop-already-hidden-message", true)) {
+            fileConfig.set("find-item-command.shop-already-hidden-message", "&cThis shop is already hidden!");
+        }
+        if(!fileConfig.contains("find-item-command.shop-already-public-message", true)) {
+            fileConfig.set("find-item-command.shop-already-public-message", "&cThis shop is already public!");
+        }
+        if(!fileConfig.contains("find-item-command.invalid-shop-block-message", true)) {
+            fileConfig.set("find-item-command.invalid-shop-block-message", "&cThe block you are looking at is not a shop!");
         }
     }
 

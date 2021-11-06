@@ -23,6 +23,9 @@ permissions:
   finditem.use:
     description: Enables players to use the /finditem command
     default: true
+  finditem.hideshop:
+    description: Enables players to use the /finditem hideshop & /finditem revealshop
+    default: true
   finditem.reload:
     description: For OP. Enables use of '/finditem reload' to reload the config
     default: op

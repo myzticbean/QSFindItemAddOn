@@ -12,6 +12,13 @@ find-item-command:
   find-item-command-no-permission-message: "&cNo permission!"
   to-buy-autocomplete: "TO-BUY"
   to-sell-autocomplete: "TO-SELL"
+  hideshop-autocomplete: "hideshop"
+  revealshop-autocomplete: "revealshop"
+  shop-hide-success-message: "&aShop is now hidden from search list!"
+  shop-reveal-success-message: "&aShop is no longer hidden from search list!"
+  shop-already-hidden-message: "&cThis shop is already hidden!"
+  shop-already-public-message: "&cThis shop is already public!"
+  invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: "&l» &rShops"

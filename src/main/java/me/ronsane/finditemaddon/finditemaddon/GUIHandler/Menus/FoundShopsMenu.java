@@ -2,7 +2,6 @@ package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
 import io.papermc.lib.PaperLib;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
-import me.ronsane.finditemaddon.finditemaddon.Dependencies.PWarpPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.WGPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
@@ -10,8 +9,8 @@ import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
+import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.EssentialWarpsUtil;
-import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.PWarpsUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.PlayerWarpsUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.WGRegionUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,8 +21,7 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.jetbrains.annotations.Nullable;
-import org.maxgamer.quickshop.shop.Shop;
+import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.*;
 
@@ -206,7 +204,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                     }
                                     break;
                                 default:
-//                                    LoggerUtils.logError("Invalid value in 'nearest-warp-mode' in config.yml!");
+                                    LoggerUtils.logDebugInfo("Invalid value in 'nearest-warp-mode' in config.yml!");
                             }
 
                         }

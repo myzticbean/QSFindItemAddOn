@@ -12,6 +12,7 @@ import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
 import me.ronsane.finditemaddon.finditemaddon.ScheduledTasks.Task15MinInterval;
+import me.ronsane.finditemaddon.finditemaddon.Utils.HiddenShopStorageUtil;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.UpdateChecker;
 import org.bukkit.Bukkit;
@@ -64,6 +65,8 @@ public final class FindItemAddOn extends JavaPlugin {
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
+        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, 15*60*20);
@@ -87,6 +90,7 @@ public final class FindItemAddOn extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+        HiddenShopStorageUtil.saveHiddenShopsToFile();
         LoggerUtils.logInfo("Bye!");
     }
 
