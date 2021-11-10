@@ -9,6 +9,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
@@ -151,6 +152,10 @@ public class QuickShopAPIHandler {
 //        Optional<Shop> foundShop = api.getShopManager().getShop(block);
 //        return foundShop.orElse(null);
         return api.getShopManager().getShop(loc);
+    }
+
+    public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
+        return shop.getOwner().toString().equalsIgnoreCase(player.getUniqueId().toString());
     }
 
 

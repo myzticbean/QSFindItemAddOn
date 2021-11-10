@@ -44,10 +44,10 @@ public class ConfigSetup {
 
     public static void checkForMissingProperties() {
         if(!fileConfig.contains("config-version", true)) {
-            fileConfig.set("config-version", 8);
+            fileConfig.set("config-version", 9);
         }
         else {
-            fileConfig.set("config-version", 8);
+            fileConfig.set("config-version", 9);
         }
         if(!fileConfig.contains("search-loaded-shops-only", true)) {
             fileConfig.set("search-loaded-shops-only", false);
@@ -108,6 +108,9 @@ public class ConfigSetup {
         }
         if(!fileConfig.contains("find-item-command.invalid-shop-block-message", true)) {
             fileConfig.set("find-item-command.invalid-shop-block-message", "&cThe block you are looking at is not a shop!");
+        }
+        if(!fileConfig.contains("find-item-command.hiding-shop-owner-invalid-message", true)) {
+            fileConfig.set("find-item-command.hiding-shop-owner-invalid-message", "&cThat shop is not yours!");
         }
     }
 

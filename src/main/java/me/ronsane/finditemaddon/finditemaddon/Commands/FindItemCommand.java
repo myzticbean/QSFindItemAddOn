@@ -135,14 +135,21 @@ public class FindItemCommand implements CommandExecutor {
                         else if(args[0].equalsIgnoreCase("hideshop")) {
                             if(player.hasPermission("finditem.hideshop")) {
                                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                                Shop shop = new QuickShopAPIHandler().findShopAtLocation(playerLookAtBlock);
+                                QuickShopAPIHandler qsAPI = new QuickShopAPIHandler();
+                                Shop shop = qsAPI.findShopAtLocation(playerLookAtBlock);
                                 if(shop != null) {
-                                    if(!HiddenShopStorageUtil.isShopHidden(shop)) {
-                                        HiddenShopStorageUtil.addShop(shop);
-                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
+                                    // check if command runner same as shop owner
+                                    if(qsAPI.isShopOwnerCommandRunner(player, shop)) {
+                                        if(!HiddenShopStorageUtil.isShopHidden(shop)) {
+                                            HiddenShopStorageUtil.addShop(shop);
+                                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
+                                        }
+                                        else {
+                                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
+                                        }
                                     }
                                     else {
-                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
                                     }
                                 }
                                 else {
@@ -156,14 +163,21 @@ public class FindItemCommand implements CommandExecutor {
                         else if(args[0].equalsIgnoreCase("revealshop")) {
                             if(player.hasPermission("finditem.hideshop")) {
                                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                                Shop shop = new QuickShopAPIHandler().findShopAtLocation(playerLookAtBlock);
+                                QuickShopAPIHandler qsAPI = new QuickShopAPIHandler();
+                                Shop shop = qsAPI.findShopAtLocation(playerLookAtBlock);
                                 if(shop != null) {
-                                    if(HiddenShopStorageUtil.isShopHidden(shop)) {
-                                        HiddenShopStorageUtil.deleteShop(shop);
-                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
+                                    // check if command runner same as shop owner
+                                    if(qsAPI.isShopOwnerCommandRunner(player, shop)) {
+                                        if(HiddenShopStorageUtil.isShopHidden(shop)) {
+                                            HiddenShopStorageUtil.deleteShop(shop);
+                                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
+                                        }
+                                        else {
+                                            player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
+                                        }
                                     }
                                     else {
-                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
+                                        player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
                                     }
                                 }
                                 else {

@@ -19,6 +19,7 @@ find-item-command:
   shop-already-hidden-message: "&cThis shop is already hidden!"
   shop-already-public-message: "&cThis shop is already public!"
   invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
+  hiding-shop-owner-invalid-message: "&cThat shop is not yours!"
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: "&l» &rShops"

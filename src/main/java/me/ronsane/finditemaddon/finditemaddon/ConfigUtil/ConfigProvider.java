@@ -53,6 +53,7 @@ public class ConfigProvider {
     public final String FIND_ITEM_REVEALSHOP_AUTOCOMPLETE = ConfigSetup.get().getString("find-item-command.revealshop-autocomplete");
     public final String FIND_ITEM_CMD_INCORRECT_USAGE_MSG = ConfigSetup.get().getString("find-item-command.incorrect-usage-message");
     public final String FIND_ITEM_CMD_INVALID_MATERIAL_MSG = ConfigSetup.get().getString("find-item-command.invalid-material-message");
+    public final String FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG = ConfigSetup.get().getString("find-item-command.hiding-shop-owner-invalid-message");
     public final String SHOP_SEARCH_LOADING_MSG = ConfigSetup.get().getString("find-item-command.shop-search-loading-message");
     public final String NO_SHOP_FOUND_MSG = ConfigSetup.get().getString("find-item-command.no-shop-found-message");
     public final String FIND_ITEM_CMD_NO_PERMISSION_MSG = ConfigSetup.get().getString("find-item-command.find-item-command-no-permission-message");
