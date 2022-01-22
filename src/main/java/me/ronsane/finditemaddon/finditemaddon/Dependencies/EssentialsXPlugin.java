@@ -36,6 +36,7 @@ public class EssentialsXPlugin {
     }
 
     public static void updateAllWarps() {
+        LoggerUtils.logInfo("Updating Essentials warps list...");
         if(essAPI.isEnabled()) {
             Collection<String> allWarps = EssentialsXPlugin.getAPI().getWarps().getList();
             allWarpsList = new ArrayList<>();
@@ -48,6 +49,7 @@ public class EssentialsXPlugin {
                 } catch (Exception ignored) { }
             });
         }
+        LoggerUtils.logInfo("Update complete!");
     }
 
 }

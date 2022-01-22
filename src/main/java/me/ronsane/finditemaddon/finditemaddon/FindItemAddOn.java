@@ -9,7 +9,9 @@ import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.WGPlugin;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.MenuListener;
+import me.ronsane.finditemaddon.finditemaddon.Listeners.PWPlayerWarpCreateListener;
 import me.ronsane.finditemaddon.finditemaddon.Listeners.PlayerCommandSendListener;
+import me.ronsane.finditemaddon.finditemaddon.Listeners.PWPlayerWarpRemoveListener;
 import me.ronsane.finditemaddon.finditemaddon.Metrics.Metrics;
 import me.ronsane.finditemaddon.finditemaddon.ScheduledTasks.Task15MinInterval;
 import me.ronsane.finditemaddon.finditemaddon.Utils.HiddenShopStorageUtil;
@@ -61,7 +63,6 @@ public final class FindItemAddOn extends JavaPlugin {
         initEvents();
 
         PlayerWarpsPlugin.setup();
-//        PWarpPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
@@ -104,6 +105,8 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("Registering events");
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveListener(), this);
     }
     
     public static ConfigProvider getConfigProvider() {

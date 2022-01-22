@@ -16,7 +16,7 @@ public class PlayerWarpsUtil {
 
     @Nullable
     public Warp findNearestWarp(Location shopLocation) {
-        List<Warp> allWarps = PlayerWarpsPlugin.getAPI().getPlayerWarps(false);
+        List<Warp> allWarps = PlayerWarpsPlugin.getAllWarps();
         if(allWarps.size() > 0) {
             Map<Double, Warp> warpDistanceMap = new TreeMap<>();
             allWarps.parallelStream().forEach(warp -> {
