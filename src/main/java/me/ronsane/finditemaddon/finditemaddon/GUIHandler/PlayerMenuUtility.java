@@ -1,20 +1,20 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
+import me.ronsane.finditemaddon.finditemaddon.Models.FoundShopItemModel;
 import org.bukkit.entity.Player;
-import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.List;
 
 public class PlayerMenuUtility {
     private Player owner;
 
-    private List<Shop> playerShopSearchResult;
+    private List<FoundShopItemModel> playerShopSearchResult;
 
-    public List<Shop> getPlayerShopSearchResult() {
+    public List<FoundShopItemModel> getPlayerShopSearchResult() {
         return playerShopSearchResult;
     }
 
-    public void setPlayerShopSearchResult(List<Shop> playerShopSearchResult) {
+    public void setPlayerShopSearchResult(List<FoundShopItemModel> playerShopSearchResult) {
         this.playerShopSearchResult = playerShopSearchResult;
     }
 

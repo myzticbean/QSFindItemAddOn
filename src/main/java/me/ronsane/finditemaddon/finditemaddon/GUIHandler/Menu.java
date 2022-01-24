@@ -1,6 +1,7 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import me.ronsane.finditemaddon.finditemaddon.Models.FoundShopItemModel;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -9,7 +10,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
-import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.List;
 
@@ -46,7 +46,7 @@ public abstract class Menu implements InventoryHolder {
 
     public abstract void setMenuItems();
 
-    public abstract void setMenuItems(List<Shop> foundShops);
+    public abstract void setMenuItems(List<FoundShopItemModel> foundShops);
 
     public void open() {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
@@ -54,7 +54,7 @@ public abstract class Menu implements InventoryHolder {
         playerMenuUtility.getOwner().openInventory(inventory);
     }
 
-    public void open(List<Shop> foundShops) {
+    public void open(List<FoundShopItemModel> foundShops) {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
         this.setMenuItems(foundShops);
         playerMenuUtility.getOwner().openInventory(inventory);

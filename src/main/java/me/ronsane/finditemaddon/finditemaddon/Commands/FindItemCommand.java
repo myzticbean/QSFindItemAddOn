@@ -3,6 +3,7 @@ package me.ronsane.finditemaddon.finditemaddon.Commands;
 import me.ronsane.finditemaddon.finditemaddon.ConfigUtil.ConfigSetup;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus.FoundShopsMenu;
+import me.ronsane.finditemaddon.finditemaddon.Models.FoundShopItemModel;
 import me.ronsane.finditemaddon.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.HiddenShopStorageUtil;
@@ -10,7 +11,6 @@ import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils.WarpUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
@@ -213,10 +213,20 @@ public class FindItemCommand implements CommandExecutor {
                         Material mat = Material.getMaterial(args[1].toUpperCase());
                         if(mat != null) {
                             LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                            List<Shop> searchResult = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
-                            if(searchResult.size() > 0) {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);
-                                menu.open(searchResult);
+                            List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                            if(searchResultList.size() > 0) {
+                                Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                        Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                menu.open(searchResultList);
+                                            }
+                                        });
+                                    }
+                                });
                             }
                             else {
                                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
@@ -226,10 +236,20 @@ public class FindItemCommand implements CommandExecutor {
                         }
                         else {
                             LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                            List<Shop> searchResult = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(args[1], isBuying);
-                            if(searchResult.size() > 0) {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResult);
-                                menu.open(searchResult);
+                            List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(args[1], isBuying);
+                            if(searchResultList.size() > 0) {
+                                Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                        Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                menu.open(searchResultList);
+                                            }
+                                        });
+                                    }
+                                });
                             }
                             else {
                                 // Invalid Material

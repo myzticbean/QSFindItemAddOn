@@ -1,13 +1,13 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler;
 
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import me.ronsane.finditemaddon.finditemaddon.Models.FoundShopItemModel;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.List;
 
@@ -26,7 +26,7 @@ public abstract class PaginatedMenu extends Menu {
         initMaterialsForBottomBar();
     }
 
-    public PaginatedMenu(PlayerMenuUtility playerMenuUtility, List<Shop> searchResult) {
+    public PaginatedMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
         super(playerMenuUtility);
 
         initMaterialsForBottomBar();

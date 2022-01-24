@@ -3,7 +3,6 @@ package me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
-import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 
 public class WarpUtils {
     public static void updateWarps() {

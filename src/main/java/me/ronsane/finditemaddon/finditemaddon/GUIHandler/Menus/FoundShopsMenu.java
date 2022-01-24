@@ -7,6 +7,7 @@ import me.ronsane.finditemaddon.finditemaddon.Dependencies.WGPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PaginatedMenu;
 import me.ronsane.finditemaddon.finditemaddon.GUIHandler.PlayerMenuUtility;
+import me.ronsane.finditemaddon.finditemaddon.Models.FoundShopItemModel;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LocationUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
@@ -21,13 +22,15 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
-import org.maxgamer.quickshop.api.shop.Shop;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class FoundShopsMenu extends PaginatedMenu {
 
-    public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<Shop> searchResult) {
+    public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
         super(playerMenuUtility, searchResult);
     }
 
@@ -76,7 +79,6 @@ public class FoundShopsMenu extends PaginatedMenu {
         else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
             event.getWhoClicked().closeInventory();
         }
-//        else if(event.getCurrentItem().getType().equals(super.playerMenuUtility.getPlayerShopSearchResult().get(0).getItem().getType())) {
         else if(event.getCurrentItem().getType().equals(Material.AIR)) {
             // do nothing
         }
@@ -124,8 +126,12 @@ public class FoundShopsMenu extends PaginatedMenu {
     @Override
     public void setMenuItems() {}
 
+    /**
+     * Sets the slots in the search result GUI
+     * @param foundShops List of found shops
+     */
     @Override
-    public void setMenuItems(List<Shop> foundShops) {
+    public void setMenuItems(List<FoundShopItemModel> foundShops) {
         addMenuBottomBar();
         if(foundShops != null && !foundShops.isEmpty()) {
             int guiSlotCounter = 0;
@@ -136,7 +142,7 @@ public class FoundShopsMenu extends PaginatedMenu {
 
                 if(foundShops.get(index) != null) {
                     // Place Search Results here
-                    Shop shop = foundShops.get(index);
+                    FoundShopItemModel shop = foundShops.get(index);
                     NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
                     ItemStack item = new ItemStack(shop.getItem().getType());
                     ItemMeta meta = item.getItemMeta();
@@ -179,18 +185,6 @@ public class FoundShopsMenu extends PaginatedMenu {
                                         }
                                     }
                                     break;
-//                                case 2:
-//                                    // PWarp: Check nearest warp
-//                                    if(PWarpPlugin.isEnabled()) {
-//                                        me.tks.playerwarp.@Nullable Warp nearestPlayerWarp = new PWarpsUtil().findNearestWarp(shop.getLocation());
-//                                        if(nearestPlayerWarp != null) {
-//                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getName())));
-//                                        }
-//                                        else {
-//                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
-//                                        }
-//                                    }
-//                                    break;
                                 case 3:
                                     // WG Region: Check nearest WG Region
                                     if(WGPlugin.isEnabled()) {
@@ -240,7 +234,13 @@ public class FoundShopsMenu extends PaginatedMenu {
         }
     }
 
-    private String replaceLorePlaceholders(String text, Shop shop) {
+    /**
+     * Replaces all the placeholders in the Shop item lore in GUI
+     * @param text Line of lore
+     * @param shop Shop instance
+     * @return Line of lore replaced with placeholder values
+     */
+    private String replaceLorePlaceholders(String text, FoundShopItemModel shop) {
 
         if(text.contains("{ITEM_PRICE}")) {
             text = text.replace("{ITEM_PRICE}", String.valueOf(shop.getPrice()));

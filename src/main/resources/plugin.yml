@@ -7,7 +7,6 @@ depend:
   - QuickShop
 softdepend:
   - PlayerWarps
-  - PWarp
   - WorldGuard
   - Essentials
 

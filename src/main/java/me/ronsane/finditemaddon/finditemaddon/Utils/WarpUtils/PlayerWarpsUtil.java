@@ -19,7 +19,7 @@ public class PlayerWarpsUtil {
         List<Warp> allWarps = PlayerWarpsPlugin.getAllWarps();
         if(allWarps.size() > 0) {
             Map<Double, Warp> warpDistanceMap = new TreeMap<>();
-            allWarps.parallelStream().forEach(warp -> {
+            allWarps.forEach(warp -> {
                 warpDistanceMap.put(CommonUtils.calculateDistance2D(
                         shopLocation.getX(),
                         shopLocation.getY(),

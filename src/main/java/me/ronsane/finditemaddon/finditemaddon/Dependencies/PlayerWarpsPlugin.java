@@ -36,13 +36,11 @@ public class PlayerWarpsPlugin {
     }
 
     public static void updateWarpsOnEventCall(Warp warp, boolean isRemoved) {
-//        LoggerUtils.logInfo("Updating Player warps list with new warp change...");
         if(isRemoved) {
             allWarpsList.remove(warp);
         }
         else {
             allWarpsList.add(warp);
         }
-//        LoggerUtils.logInfo("Update complete!");
     }
 }

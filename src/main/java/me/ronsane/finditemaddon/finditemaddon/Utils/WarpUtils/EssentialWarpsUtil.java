@@ -1,8 +1,8 @@
 package me.ronsane.finditemaddon.finditemaddon.Utils.WarpUtils;
 
-import me.ronsane.finditemaddon.finditemaddon.Models.EssentialWarpModel;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
 import me.ronsane.finditemaddon.finditemaddon.FindItemAddOn;
+import me.ronsane.finditemaddon.finditemaddon.Models.EssentialWarpModel;
 import me.ronsane.finditemaddon.finditemaddon.Utils.CommonUtils;
 import me.ronsane.finditemaddon.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Location;
@@ -19,7 +19,7 @@ public class EssentialWarpsUtil {
         List<EssentialWarpModel> allWarps = EssentialsXPlugin.getAllWarps();
         if(allWarps != null && allWarps.size() > 0) {
             Map<Double, String> warpDistanceMap = new TreeMap<>();
-            allWarps.parallelStream().forEach(warp -> {
+            allWarps.forEach(warp -> {
                 Double distance = CommonUtils.calculateDistance2D(
                         shopLocation.getX(),
                         shopLocation.getY(),
