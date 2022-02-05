@@ -31,9 +31,7 @@ public class EssentialsXPlugin {
         return essAPI;
     }
 
-    public static List<EssentialWarpModel> getAllWarps() {
-        return allWarpsList;
-    }
+    public static List<EssentialWarpModel> getAllWarps() { return allWarpsList; }
 
     public static void updateAllWarps() {
         LoggerUtils.logInfo("Updating Essentials warps list...");
@@ -49,7 +47,7 @@ public class EssentialsXPlugin {
                 } catch (Exception ignored) { }
             });
         }
-        LoggerUtils.logInfo("Update complete!");
+        LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
     }
 
 }

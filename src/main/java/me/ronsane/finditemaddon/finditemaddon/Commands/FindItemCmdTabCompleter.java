@@ -49,9 +49,9 @@ public class FindItemCmdTabCompleter implements TabCompleter {
                 buyOrSellList.add("reload");
             }
             // updatelist
-            if(sender instanceof Player && (sender.hasPermission("finditem.admin") || sender.hasPermission("finditem.updatelist"))) {
-                buyOrSellList.add("updatelist");
-            }
+//            if(sender instanceof Player && (sender.hasPermission("finditem.admin") || sender.hasPermission("finditem.updatelist"))) {
+//                buyOrSellList.add("updatelist");
+//            }
         }
 
         List<String> result = new ArrayList<>();

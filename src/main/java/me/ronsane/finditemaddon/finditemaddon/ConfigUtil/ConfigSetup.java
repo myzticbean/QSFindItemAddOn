@@ -14,6 +14,7 @@ public class ConfigSetup {
 
     private static File file;
     private static FileConfiguration fileConfig;
+    private static final int CURRENT_CONFIG_VERSION = 10;
 
     public static void setupConfig() {
         file = new File(Bukkit.getServer().getPluginManager().getPlugin("QSFindItemAddOn").getDataFolder(), "config.yml");
@@ -43,12 +44,6 @@ public class ConfigSetup {
     }
 
     public static void checkForMissingProperties() {
-        if(!fileConfig.contains("config-version", true)) {
-            fileConfig.set("config-version", 9);
-        }
-        else {
-            fileConfig.set("config-version", 9);
-        }
         if(!fileConfig.contains("search-loaded-shops-only", true)) {
             fileConfig.set("search-loaded-shops-only", false);
         }
@@ -111,6 +106,44 @@ public class ConfigSetup {
         }
         if(!fileConfig.contains("find-item-command.hiding-shop-owner-invalid-message", true)) {
             fileConfig.set("find-item-command.hiding-shop-owner-invalid-message", "&cThat shop is not yours!");
+        }
+
+        // ALWAYS AT LAST
+        if(!fileConfig.contains("config-version", true)) {
+            fileConfig.set("config-version", CURRENT_CONFIG_VERSION);
+        }
+        else {
+            if(fileConfig.getInt("config-version") < 10) {
+                boolean allowDirectShopTp = fileConfig.getBoolean("allow-direct-shop-tp");
+                String clickToTeleportMsg = fileConfig.getString("click-to-teleport-message");
+                String shopTPNoPermMsg = fileConfig.getString("shop-tp-no-permission-message");
+                String unsafeShopAreaMsg = fileConfig.getString("unsafe-shop-area-message");
+                // clear existing config properties
+                fileConfig.set("allow-direct-shop-tp", null);
+                fileConfig.set("click-to-teleport-message", null);
+                fileConfig.set("shop-tp-no-permission-message", null);
+                fileConfig.set("unsafe-shop-area-message", null);
+                // set the new properties
+                fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.tp-player-directly-to-shop", allowDirectShopTp);
+                if(clickToTeleportMsg == null || clickToTeleportMsg.isEmpty())
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.click-to-teleport-message", "&6&lClick to teleport to the shop!");
+                else
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.click-to-teleport-message", clickToTeleportMsg);
+
+                if(shopTPNoPermMsg == null || shopTPNoPermMsg.isEmpty())
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.shop-tp-no-permission-message", "&cYou don't have permission to teleport to shop!");
+                else
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.shop-tp-no-permission-message", shopTPNoPermMsg);
+
+                if(unsafeShopAreaMsg == null || unsafeShopAreaMsg.isEmpty())
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.unsafe-shop-area-message", "&cThe area around the shop is unsafe!");
+                else
+                    fileConfig.set("player-shop-teleportation.direct-shop-tp-mode.unsafe-shop-area-message", unsafeShopAreaMsg);
+
+                fileConfig.set("player-shop-teleportation.nearest-warp-tp-mode.tp-player-to-nearest-warp", false);
+            }
+            fileConfig.set("config-version", null);
+            fileConfig.set("config-version", CURRENT_CONFIG_VERSION);
         }
     }
 

@@ -1,5 +1,6 @@
 package me.ronsane.finditemaddon.finditemaddon.GUIHandler.Menus;
 
+import com.olziedev.playerwarps.api.warp.Warp;
 import io.papermc.lib.PaperLib;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.EssentialsXPlugin;
 import me.ronsane.finditemaddon.finditemaddon.Dependencies.PlayerWarpsPlugin;
@@ -83,20 +84,18 @@ public class FoundShopsMenu extends PaginatedMenu {
             // do nothing
         }
         else {
-            if(FindItemAddOn.getConfigProvider().ALLOW_DIRECT_SHOP_TP) {
-                if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
-                    Player player = (Player) event.getWhoClicked();
-
-                    ItemStack item = event.getCurrentItem();
-                    ItemMeta meta = item.getItemMeta();
-                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-                    if(!meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                        return;
-                    }
-                    else {
-                        String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-                        List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
-
+            Player player = (Player) event.getWhoClicked();
+            ItemStack item = event.getCurrentItem();
+            ItemMeta meta = item.getItemMeta();
+            NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
+            if(!meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
+                return;
+            }
+            else {
+                String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
+                List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
+                if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
+                    if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
                         World world = Bukkit.getWorld(locDataList.get(0));
                         int locX = Integer.parseInt(locDataList.get(1)), locY = Integer.parseInt(locDataList.get(2)), locZ = Integer.parseInt(locDataList.get(3));
                         Location shopLocation = new Location(world, locX, locY, locZ);
@@ -109,14 +108,58 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
                             }
                         }
-                        player.closeInventory();
                     }
+                    else {
+                        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
+                            playerMenuUtility.getOwner()
+                                    .sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
+                            event.getWhoClicked().closeInventory();
+                        }
+                    }
+                    // if list size = 1, it contains PlayerWarp name
+//                    if(locDataList.size() == 1) {
+//                        String warpName = locDataList.get(0);
+//                        Warp playerWarp = PlayerWarpsPlugin.getAPI().getPlayerWarp(warpName);
+//                        if(playerWarp != null) {
+//                            playerWarp.getWarpLocation().teleportWarp(player);
+//                        }
+//                        else {
+//                            LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
+//                        }
+//                    }
+                    // else if will contain coordinates
+//                    else {
+//                        World world = Bukkit.getWorld(locDataList.get(0));
+//                        int locX = Integer.parseInt(locDataList.get(1)), locY = Integer.parseInt(locDataList.get(2)), locZ = Integer.parseInt(locDataList.get(3));
+//                        Location shopLocation = new Location(world, locX, locY, locZ);
+//                        Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
+//                        if(locToTeleport != null) {
+//                            PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
+//                        }
+//                        else {
+//                            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG)) {
+//                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
+//                            }
+//                        }
+//                    }
+                    player.closeInventory();
                 }
-                else {
-                    if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
-                        playerMenuUtility.getOwner()
-                                .sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
-                        event.getWhoClicked().closeInventory();
+                else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP) {
+                    // if list size = 1, it contains Warp name
+                    if(locDataList.size() == 1) {
+                        String warpName = locDataList.get(0);
+                        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
+                            Bukkit.dispatchCommand(player, "essentials:warp " + warpName);
+                        }
+                        else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
+                            Warp playerWarp = PlayerWarpsPlugin.getAPI().getPlayerWarp(warpName);
+                            if(playerWarp != null) {
+                                playerWarp.getWarpLocation().teleportWarp(player);
+                            }
+                            else {
+                                LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
+                            }
+                        }
                     }
                 }
             }
@@ -148,6 +191,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore;
                     lore = new ArrayList<>();
+                    com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
+                    String nearestEWarp = null;
 
                     if(shop.getItem().hasItemMeta()) {
                         meta = shop.getItem().getItemMeta();
@@ -164,9 +209,9 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 1:
                                     // EssentialWarp: Check nearest warp
                                     if(EssentialsXPlugin.isEnabled()) {
-                                        String nearestPlayerWarp = new EssentialWarpsUtil().findNearestWarp(shop.getLocation());
-                                        if(nearestPlayerWarp != null && !StringUtils.isEmpty(nearestPlayerWarp)) {
-                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp)));
+                                        nearestEWarp = new EssentialWarpsUtil().findNearestWarp(shop.getLocation());
+                                        if(nearestEWarp != null && !StringUtils.isEmpty(nearestEWarp)) {
+                                            lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestEWarp)));
                                         }
                                         else {
                                             lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", "No Warp near this shop")));
@@ -176,7 +221,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 2:
                                     // PlayerWarp: Check nearest warp
                                     if(PlayerWarpsPlugin.getIsEnabled()) {
-                                        com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
+                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
                                         if(nearestPlayerWarp != null) {
                                             lore.add(CommonUtils.parseColors(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getWarpName())));
                                         }
@@ -200,14 +245,13 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 default:
                                     LoggerUtils.logDebugInfo("Invalid value in 'nearest-warp-mode' in config.yml!");
                             }
-
                         }
                         else {
                             lore.add(CommonUtils.parseColors(replaceLorePlaceholders(shopItemLore_i, shop)));
                         }
                     }
 
-                    if(FindItemAddOn.getConfigProvider().ALLOW_DIRECT_SHOP_TP) {
+                    if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
                         if(playerMenuUtility.getOwner().hasPermission("finditem.shoptp")) {
                             lore.add(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().CLICK_TO_TELEPORT_MSG));
                         }
@@ -216,10 +260,28 @@ public class FoundShopsMenu extends PaginatedMenu {
                     meta.setLore(lore);
 
                     // storing location data in item persistent storage
-                    String locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
-                            + shop.getLocation().getBlockX() + ","
-                            + shop.getLocation().getBlockY() + ","
-                            + shop.getLocation().getBlockZ();
+                    String locData = StringUtils.EMPTY;
+                    // store the coordinates
+                    if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
+                        locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
+                                + shop.getLocation().getBlockX() + ","
+                                + shop.getLocation().getBlockY() + ","
+                                + shop.getLocation().getBlockZ();
+                    }
+                    else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP) {
+                        // if Nearest Warp is set to EssentialsX Warps, store the warp name
+                        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
+                            if(nearestEWarp != null) {
+                                locData = nearestEWarp;
+                            }
+                        }
+                        // if Nearest Warp is set to PlayerWarps, store the warp name
+                        else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
+                            if(nearestPlayerWarp != null) {
+                                locData = nearestPlayerWarp.getWarpName();
+                            }
+                        }
+                    }
                     meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
 
                     // handling custom model data

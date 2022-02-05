@@ -33,10 +33,14 @@ shop-gui-item-lore:
   - "&fWorld: &7{SHOP_WORLD}"
   - "&fWarp: &7{NEAREST_WARP}"
   - ""
-allow-direct-shop-tp: true
-click-to-teleport-message: "&6&lClick to teleport to the shop!"
-shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
-unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
+player-shop-teleportation:
+  direct-shop-tp-mode:
+    tp-player-directly-to-shop: true
+    click-to-teleport-message: "&6&lClick to teleport to the shop!"
+    shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
+    unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
+  nearest-warp-tp-mode:
+    warp-player-to-nearest-warp: false
 shop-gui-back-button-material: "RED_CONCRETE"
 shop-gui-back-button-text: "&7&l« &cBack"
 shop-gui-next-button-material: "GREEN_CONCRETE"
@@ -53,4 +57,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 7
+config-version: 9

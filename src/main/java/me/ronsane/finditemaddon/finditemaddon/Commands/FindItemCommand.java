@@ -54,6 +54,7 @@ public class FindItemCommand implements CommandExecutor {
                         else {
                             LoggerUtils.logInfo("&aFound &e" + allServerShops.size() + " &ashops on the server.");
                         }
+                        WarpUtils.updateWarps();
                     }
                     else if(args[0].equalsIgnoreCase("restart")) {
                         Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
@@ -67,9 +68,9 @@ public class FindItemCommand implements CommandExecutor {
                             LoggerUtils.logInfo("&aFound &e" + allServerShops.size() + " &ashops on the server.");
                         }
                     }
-                    else if(args[0].equalsIgnoreCase("updatelist")) {
-                        WarpUtils.updateWarps();
-                    }
+//                    else if(args[0].equalsIgnoreCase("updatelist")) {
+//                        WarpUtils.updateWarps();
+//                    }
                     else {
                         LoggerUtils.logInfo("&CIncorrect usage! Try &e/finditem &freload");
                     }
@@ -100,6 +101,7 @@ public class FindItemCommand implements CommandExecutor {
                                 else {
                                     player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aFound &e" + allServerShops.size() + " &ashops on the server."));
                                 }
+                                WarpUtils.updateWarps();
                             }
                             else {
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
@@ -122,16 +124,16 @@ public class FindItemCommand implements CommandExecutor {
                                 player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
                             }
                         }
-                        else if(args[0].equalsIgnoreCase("updatelist")) {
-                            if(player.hasPermission("finditem.admin")) {
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdating warps/regions list..."));
-                                WarpUtils.updateWarps();
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdate complete!"));
-                            }
-                            else {
-                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
-                            }
-                        }
+//                        else if(args[0].equalsIgnoreCase("updatelist")) {
+//                            if(player.hasPermission("finditem.admin")) {
+//                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdating warps/regions list..."));
+//                                WarpUtils.updateWarps();
+//                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&eUpdate complete!"));
+//                            }
+//                            else {
+//                                player.sendMessage(CommonUtils.parseColors(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
+//                            }
+//                        }
                         else if(args[0].equalsIgnoreCase("hideshop")) {
                             if(player.hasPermission("finditem.hideshop")) {
                                 Block playerLookAtBlock = player.getTargetBlock(null, 100);

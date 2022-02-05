@@ -31,7 +31,7 @@ public class PlayerWarpsPlugin {
         if(isEnabled) {
             LoggerUtils.logInfo("Updating Player warps list...");
             allWarpsList = PlayerWarpsPlugin.getAPI().getPlayerWarps(false);
-            LoggerUtils.logInfo("Update complete!");
+            LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
         }
     }
 
