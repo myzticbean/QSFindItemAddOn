@@ -5,13 +5,14 @@
 
 plugin-prefix: "&a&l[Shop Search] &r"
 find-item-command:
+  command-alias: "searchshop"
   incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
   invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
   shop-search-loading-message: "&7Searching..."
   no-shop-found-message: "&7No shops found!"
   find-item-command-no-permission-message: "&cNo permission!"
-  to-buy-autocomplete: "TO-BUY"
-  to-sell-autocomplete: "TO-SELL"
+  to-buy-autocomplete: "TO_BUY"
+  to-sell-autocomplete: "TO_SELL"
   hideshop-autocomplete: "hideshop"
   revealshop-autocomplete: "revealshop"
   shop-hide-success-message: "&aShop is now hidden from search list!"
@@ -40,7 +41,7 @@ player-shop-teleportation:
     shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
     unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
   nearest-warp-tp-mode:
-    warp-player-to-nearest-warp: false
+    tp-player-to-nearest-warp: false
 shop-gui-back-button-material: "RED_CONCRETE"
 shop-gui-back-button-text: "&7&l« &cBack"
 shop-gui-next-button-material: "GREEN_CONCRETE"
@@ -57,4 +58,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 9
+config-version: 11
