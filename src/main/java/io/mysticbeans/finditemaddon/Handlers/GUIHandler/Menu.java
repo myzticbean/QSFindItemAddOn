@@ -21,7 +21,7 @@ public abstract class Menu implements InventoryHolder {
 
     protected PlayerMenuUtility playerMenuUtility;
 
-    protected ItemStack FILLER_GLASS;
+    protected ItemStack GUI_FILLER_ITEM;
 
     public Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
@@ -31,11 +31,11 @@ public abstract class Menu implements InventoryHolder {
         if(fillerMaterial == null) {
             fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
         }
-        FILLER_GLASS = new ItemStack(fillerMaterial);
-        ItemMeta FILLER_GLASS_meta = this.FILLER_GLASS.getItemMeta();
+        GUI_FILLER_ITEM = new ItemStack(fillerMaterial);
+        ItemMeta FILLER_GLASS_meta = this.GUI_FILLER_ITEM.getItemMeta();
         assert FILLER_GLASS_meta != null;
         FILLER_GLASS_meta.setDisplayName(" ");
-        this.FILLER_GLASS.setItemMeta(FILLER_GLASS_meta);
+        this.GUI_FILLER_ITEM.setItemMeta(FILLER_GLASS_meta);
     }
 
     public abstract String getMenuName();

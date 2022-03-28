@@ -46,6 +46,11 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         LoggerUtils.logInfo("A QuickShop AddOn by &aronsane");
+
+        // Load all hidden shops from file
+        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+
+        // Handle config file
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         ConfigSetup.setupConfig();
@@ -72,15 +77,14 @@ public final class FindItemAddOn extends JavaPlugin {
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
-        // Load all hidden shops from file
-        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, 15*60*20);
 
         // init metrics
-        LoggerUtils.logInfo("Registering bStats metrics");
+        LoggerUtils.logInfo("Registering anonymous bStats metrics");
         Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
 
         // Check for plugin updates
@@ -104,57 +108,8 @@ public final class FindItemAddOn extends JavaPlugin {
 
     private void initCommands() {
         LoggerUtils.logInfo("Registering commands");
-//        Objects.requireNonNull(this.getCommand("finditem")).setExecutor(new FindItemCommand());
-//        Objects.requireNonNull(this.getCommand("finditem")).setTabCompleter(new FindItemCmdTabCompleter());
-        String alias;
-        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
-                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
-            alias = "shopsearch";
-        }
-        else {
-            alias = FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS;
-        }
-        // Register the subcommands under a core command
-        try {
-            CommandManager.createCoreCommand(
-                    this,
-                    "finditem",
-                    "Search for items from all shops using an interactive GUI",
-                    "/finditem",
-                    new CommandList() {
-                @Override
-                public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Commands"));
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
-                    List<String> adminCmds = Arrays.asList("reload", "restart");
-                    for (SubCommand subCommand : subCommandList) {
-                        if (adminCmds.contains(subCommand.getName())) {
-                            if (commandSender.isOp()) {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                            } else if (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
-                                    || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()))) {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                            }
-                        } else {
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&e" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                        }
-                    }
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                }
-            },
-            Arrays.asList(alias),
-            SellSubCmd.class,
-            BuySubCmd.class,
-            HideShopSubCmd.class,
-            RevealShopSubCmd.class,
-            ReloadSubCmd.class,
-            RestartSubCmd.class);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerUtils.logError(e.getMessage());
-            e.printStackTrace();
-        }
+        initFindItemCmd();
+        initFindItemAdminCmd();
     }
 
     private void initEvents() {
@@ -192,5 +147,96 @@ public final class FindItemAddOn extends JavaPlugin {
 
     public static int getPluginID() {
         return SPIGOT_PLUGIN_ID;
+    }
+
+    private void initFindItemCmd() {
+        List<String> alias;
+        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
+                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
+            alias = Arrays.asList("shopsearch", "searchshop");
+        }
+        else {
+            alias = FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS;
+        }
+        // Register the subcommands under a core command
+        try {
+            CommandManager.createCoreCommand(
+                    this,
+                    "finditem",
+                    "Search for items from all shops using an interactive GUI",
+                    "/finditem",
+                    new CommandList() {
+                        @Override
+                        public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Commands"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
+                            List<String> adminCmds = Arrays.asList("reload", "restart");
+                            for (SubCommand subCommand : subCommandList) {
+                                if (adminCmds.contains(subCommand.getName())) {
+                                    if (commandSender.isOp()) {
+                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                    } else if (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
+                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()))) {
+                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                    }
+                                } else {
+                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&e" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                }
+                            }
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                        }
+                    },
+                    alias,
+                    SellSubCmd.class,
+                    BuySubCmd.class,
+                    HideShopSubCmd.class,
+                    RevealShopSubCmd.class);
+            LoggerUtils.logInfo("Registered /finditem command");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LoggerUtils.logError(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void initFindItemAdminCmd() {
+        try {
+            CommandManager.createCoreCommand(
+                    this,
+                    "finditemadmin",
+                    "Admin command for Shop Search addon",
+                    "/finditemadmin",
+                    new CommandList() {
+                        @Override
+                        public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Admin Commands"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                            List<String> adminCmds = Arrays.asList("reload", "restart");
+                            for (SubCommand subCommand : subCommandList) {
+                                if (adminCmds.contains(subCommand.getName())) {
+                                    if (commandSender.isOp()) {
+                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                    } else if (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
+                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()))) {
+                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                    }
+                                } else {
+                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&e" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                                }
+                            }
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                        }
+                    },
+                    List.of("fiadmin"),
+                    ReloadSubCmd.class,
+                    RestartSubCmd.class);
+            LoggerUtils.logInfo("Registered /finditemadmin command");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LoggerUtils.logError(e.getMessage());
+            e.printStackTrace();
+        }
     }
 }

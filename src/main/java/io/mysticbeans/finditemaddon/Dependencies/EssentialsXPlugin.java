@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Hook for EssentialsX Plugin
+ * @author ronsane
+ */
 public class EssentialsXPlugin {
 
     private static Essentials essAPI = null;

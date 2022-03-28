@@ -32,7 +32,6 @@ public class QuickShopAPIHandler {
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
-//        List<Shop> shopsFound = new ArrayList<>();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -50,7 +49,6 @@ public class QuickShopAPIHandler {
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 // check for shop if hidden
                 if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-//                    shopsFound.add(shop_i);
                     shopsFoundList.add(new FoundShopItemModel(
                             shop_i.getPrice(),
                             shop_i.getRemainingStock(),
@@ -76,7 +74,6 @@ public class QuickShopAPIHandler {
     }
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
-//        List<Shop> shopsFound = new ArrayList<>();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -95,7 +92,6 @@ public class QuickShopAPIHandler {
                                 && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                             // check for shop if hidden
                             if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-//                                shopsFound.add(shop_i);
                                 shopsFoundList.add(new FoundShopItemModel(
                                         shop_i.getPrice(),
                                         shop_i.getRemainingStock(),
@@ -123,25 +119,46 @@ public class QuickShopAPIHandler {
         return shopsFoundList;
     }
 
-//    private List<Shop> sortShops(int sortingMethod, List<Shop> shopsFound) {
-//        switch (sortingMethod) {
-//            // Random
-//            case 1 -> Collections.shuffle(shopsFound);
-//            // Based on prices (lower to higher)
-//            case 2 -> shopsFound.sort(Comparator.comparing(Shop::getPrice));
-//            // Based on stocks (higher to lower)
-//            case 3 -> {
-//                shopsFound.sort(Comparator.comparing(Shop::getRemainingStock));
-//                Collections.reverse(shopsFound);
+    public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy) {
+        List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
+        List<Shop> allShops;
+        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+            allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
+        }
+        else {
+            allShops = api.getShopManager().getAllShops();
+        }
+        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
+        allShops.forEach((shop_i) -> {
+            // check for blacklisted worlds
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
+                    && shop_i.getRemainingStock() > 0
+                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                // check for shop if hidden
+                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                    shopsFoundList.add(new FoundShopItemModel(
+                            shop_i.getPrice(),
+                            shop_i.getRemainingStock(),
+                            shop_i.getOwner(),
+                            shop_i.getLocation(),
+                            shop_i.getItem()
+                    ));
+                }
+            }
+        });
+        if(!shopsFoundList.isEmpty()) {
+            int sortingMethod = 1;
+//            try {
+//                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
 //            }
-//            default -> {
+//            catch(Exception e) {
 //                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
 //                LoggerUtils.logError("Defaulting to sorting by prices method");
-//                shopsFound.sort(Comparator.comparing(Shop::getPrice));
 //            }
-//        }
-//        return shopsFound;
-//    }
+            return sortShops(sortingMethod, shopsFoundList);
+        }
+        return shopsFoundList;
+    }
 
     private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
         switch (sortingMethod) {

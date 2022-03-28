@@ -5,7 +5,9 @@
 
 plugin-prefix: "&a&l[Shop Search] &r"
 find-item-command:
-  command-alias: "searchshop"
+  command-alias:
+    - "searchshop"
+    - "shopsearch"
   incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
   invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
   shop-search-loading-message: "&7Searching..."

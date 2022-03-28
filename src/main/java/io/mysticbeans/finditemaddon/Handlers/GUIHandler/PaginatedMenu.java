@@ -41,6 +41,7 @@ public abstract class PaginatedMenu extends Menu {
         }
         backButton = new ItemStack(backButtonMaterial);
         ItemMeta backButton_meta = backButton.getItemMeta();
+        assert backButton_meta != null;
         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT)) {
             backButton_meta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT));
         }
@@ -62,6 +63,7 @@ public abstract class PaginatedMenu extends Menu {
         }
         nextButton = new ItemStack(nextButtonMaterial);
         ItemMeta nextButton_meta = nextButton.getItemMeta();
+        assert nextButton_meta != null;
         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT)) {
             nextButton_meta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT));
         }
@@ -83,6 +85,7 @@ public abstract class PaginatedMenu extends Menu {
         }
         closeInvButton = new ItemStack(closeInvButtonMaterial);
         ItemMeta closeInv_meta = closeInvButton.getItemMeta();
+        assert closeInv_meta != null;
         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT)) {
             closeInv_meta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT));
         }
@@ -104,11 +107,11 @@ public abstract class PaginatedMenu extends Menu {
         inventory.setItem(53, nextButton);
         inventory.setItem(49, closeInvButton);
 
-        inventory.setItem(46, super.FILLER_GLASS);
-        inventory.setItem(47, super.FILLER_GLASS);
-        inventory.setItem(48, super.FILLER_GLASS);
-        inventory.setItem(50, super.FILLER_GLASS);
-        inventory.setItem(51, super.FILLER_GLASS);
-        inventory.setItem(52, super.FILLER_GLASS);
+        inventory.setItem(46, super.GUI_FILLER_ITEM);
+        inventory.setItem(47, super.GUI_FILLER_ITEM);
+        inventory.setItem(48, super.GUI_FILLER_ITEM);
+        inventory.setItem(50, super.GUI_FILLER_ITEM);
+        inventory.setItem(51, super.GUI_FILLER_ITEM);
+        inventory.setItem(52, super.GUI_FILLER_ITEM);
     }
 }

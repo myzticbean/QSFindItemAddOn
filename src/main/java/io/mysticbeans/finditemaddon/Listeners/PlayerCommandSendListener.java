@@ -14,7 +14,14 @@ public class PlayerCommandSendListener implements Listener {
         if(!event.getPlayer().isOp()) {
             List<String> blockedCommands = new ArrayList<>();
             blockedCommands.add("finditem:finditem");
-            blockedCommands.add("finditem:" + FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS);
+            assert FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS != null;
+            for(String cmd : FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS) {
+                blockedCommands.add("finditem:" + cmd);
+            }
+            blockedCommands.add("finditemadmin:finditemadmin");
+            blockedCommands.add("finditemadmin:fiadmin");
+            blockedCommands.add("finditemadmin");
+            blockedCommands.add("fiadmin");
             event.getCommands().removeAll(blockedCommands);
         }
     }

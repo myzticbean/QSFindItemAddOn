@@ -11,7 +11,7 @@ import java.util.List;
 public class ConfigProvider {
 
     public final String PLUGIN_PREFIX = ColorTranslator.translateColorCodes(ConfigSetup.get().getString("plugin-prefix"));
-    public final String FIND_ITEM_COMMAND_ALIAS = ConfigSetup.get().getString("find-item-command.command-alias");
+    public final List<String> FIND_ITEM_COMMAND_ALIAS = (List<String>) ConfigSetup.get().getList("find-item-command.command-alias");
     public final String FIND_ITEM_TO_BUY_AUTOCOMPLETE = ConfigSetup.get().getString("find-item-command.to-buy-autocomplete");
     public final String FIND_ITEM_TO_SELL_AUTOCOMPLETE = ConfigSetup.get().getString("find-item-command.to-sell-autocomplete");
     public final String FIND_ITEM_HIDESHOP_AUTOCOMPLETE = ConfigSetup.get().getString("find-item-command.hideshop-autocomplete");
@@ -32,10 +32,6 @@ public class ConfigProvider {
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");
     public final int NEAREST_WARP_MODE = ConfigSetup.get().getInt("nearest-warp-mode");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) ConfigSetup.get().getList("shop-gui-item-lore");
-//    public final Boolean ALLOW_DIRECT_SHOP_TP = ConfigSetup.get().getBoolean("allow-direct-shop-tp");
-//    public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString("click-to-teleport-message");
-//    public final String SHOP_TP_NO_PERMISSION_MSG = ConfigSetup.get().getString("shop-tp-no-permission-message");
-//    public final String UNSAFE_SHOP_AREA_MSG = ConfigSetup.get().getString("unsafe-shop-area-message");
     public final Boolean TP_PLAYER_DIRECTLY_TO_SHOP = ConfigSetup.get().getBoolean("player-shop-teleportation.direct-shop-tp-mode.tp-player-directly-to-shop");
     public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.click-to-teleport-message");
     public final String SHOP_TP_NO_PERMISSION_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.shop-tp-no-permission-message");

@@ -21,8 +21,18 @@ import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.List;
 
+/**
+ * Handler for different parameters of /finditem command
+ * @author ronsane
+ */
 public class CmdExecutorHandler {
 
+    /**
+     * Handles the main shop search process
+     * @param buySellSubCommand Whether player is buying or selling
+     * @param commandSender Who is the command sender: console or player
+     * @param itemArg Specifies Item ID or Item name
+     */
     public static void handleShopSearch(String buySellSubCommand, CommandSender commandSender, String itemArg) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -38,15 +48,14 @@ public class CmdExecutorHandler {
                 boolean isBuying;
                 if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
                         || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
-                    isBuying = buySellSubCommand.equalsIgnoreCase("to-buy");
+                    isBuying = buySellSubCommand.equalsIgnoreCase("to_buy");
                 }
                 else {
                     isBuying = buySellSubCommand.equalsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
                 }
-                Material mat = Material.getMaterial(itemArg.toUpperCase());
-                if(mat != null) {
-                    LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                    List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+
+                if(itemArg.equalsIgnoreCase("*")) {
+                    List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().fetchAllItemsFromAllShops(isBuying);
                     if(searchResultList.size() > 0) {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
                             @Override
@@ -69,30 +78,58 @@ public class CmdExecutorHandler {
                     }
                 }
                 else {
-                    LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                    List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
-                    if(searchResultList.size() > 0) {
-                        Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        menu.open(searchResultList);
-                                    }
-                                });
+                    Material mat = Material.getMaterial(itemArg.toUpperCase());
+                    if(mat != null) {
+                        LoggerUtils.logDebugInfo("Material found: " + mat.toString());
+                        List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                        if(searchResultList.size() > 0) {
+                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            menu.open(searchResultList);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
+                                player.sendMessage(ColorTranslator.translateColorCodes(
+                                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
                             }
-                        });
+                        }
                     }
                     else {
-                        // Invalid Material
-                        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                        LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
+                        List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
+                        if(searchResultList.size() > 0) {
+                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
+                                @Override
+                                public void run() {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            menu.open(searchResultList);
+                                        }
+                                    });
+                                }
+                            });
+                        }
+                        else {
+                            // Invalid Material
+                            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
+                                player.sendMessage(ColorTranslator.translateColorCodes(
+                                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                            }
                         }
                     }
                 }
+
             }
             else {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
@@ -100,6 +137,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles the shop hiding feature
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handleHideShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -143,6 +184,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles the shop reveal feature
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handleRevealShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -186,6 +231,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles the saving hidden shops to file feature
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handleHiddenShopSavingToFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -207,6 +256,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles the loading of hidden shops from file feature
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handleHiddenShopLoadingFromFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -228,6 +281,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles plugin reload
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handlePluginReload(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             ConfigSetup.reloadConfig();
@@ -269,6 +326,10 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles plugin restart
+     * @param commandSender Who is the command sender: console or player
+     */
     public static void handlePluginRestart(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());

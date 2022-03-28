@@ -12,6 +12,10 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sub Command Handler for /finditem TO_SELL
+ * @author ronsane
+ */
 public class SellSubCmd extends SubCommand {
 
     private final String sellSubCommand;

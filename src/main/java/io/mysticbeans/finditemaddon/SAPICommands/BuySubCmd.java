@@ -12,6 +12,10 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sub Command Handler for /finditem TO_BUY
+ * @author ronsane
+ */
 public class BuySubCmd extends SubCommand {
 
     private final String buySubCommand;
@@ -21,7 +25,7 @@ public class BuySubCmd extends SubCommand {
         // to-buy
         if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
                 || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
-            buySubCommand = "TO_UY";
+            buySubCommand = "TO_BUY";
         }
         else {
             buySubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE;
