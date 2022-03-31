@@ -7,8 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class LocationUtils {
@@ -34,40 +33,13 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.AIR);
         // Glass
         nonSuffocatingBlocks.add(Material.GLASS);
-        nonSuffocatingBlocks.add(Material.GRAY_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.GREEN_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.BLACK_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.BLUE_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.BROWN_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.CYAN_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.LIGHT_BLUE_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.LIGHT_GRAY_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.LIME_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.MAGENTA_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.ORANGE_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.PINK_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.PURPLE_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.RED_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.WHITE_STAINED_GLASS);
-        nonSuffocatingBlocks.add(Material.YELLOW_STAINED_GLASS);
+        nonSuffocatingBlocks.addAll(
+                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_glass")).toList())
+        );
         // Glass Panes
-        nonSuffocatingBlocks.add(Material.GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.GRAY_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.GREEN_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.BLACK_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.BLUE_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.BROWN_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.CYAN_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.LIGHT_BLUE_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.LIGHT_GRAY_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.LIME_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.MAGENTA_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.ORANGE_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.PINK_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.PURPLE_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.RED_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.WHITE_STAINED_GLASS_PANE);
-        nonSuffocatingBlocks.add(Material.YELLOW_STAINED_GLASS_PANE);
+        nonSuffocatingBlocks.addAll(
+                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("glass_pane")).toList())
+        );
         // Leaves
         nonSuffocatingBlocks.add(Material.ACACIA_LEAVES);
         nonSuffocatingBlocks.add(Material.BIRCH_LEAVES);
@@ -80,41 +52,17 @@ public class LocationUtils {
             nonSuffocatingBlocks.add(Material.FLOWERING_AZALEA_LEAVES);
         }
         // Slabs
-        nonSuffocatingBlocks.add(Material.SANDSTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.SMOOTH_SANDSTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.QUARTZ_SLAB);
-        nonSuffocatingBlocks.add(Material.SMOOTH_QUARTZ_SLAB);
-        nonSuffocatingBlocks.add(Material.ACACIA_SLAB);
-        nonSuffocatingBlocks.add(Material.RED_SANDSTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.SMOOTH_RED_SANDSTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.CUT_RED_SANDSTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.SPRUCE_SLAB);
-        nonSuffocatingBlocks.add(Material.ACACIA_SLAB);
-        nonSuffocatingBlocks.add(Material.BIRCH_SLAB);
-        nonSuffocatingBlocks.add(Material.OAK_SLAB);
-        nonSuffocatingBlocks.add(Material.DARK_OAK_SLAB);
-        nonSuffocatingBlocks.add(Material.JUNGLE_SLAB);
-        nonSuffocatingBlocks.add(Material.CRIMSON_SLAB);
-        nonSuffocatingBlocks.add(Material.WARPED_SLAB);
-        nonSuffocatingBlocks.add(Material.STONE_SLAB);
-        nonSuffocatingBlocks.add(Material.COBBLESTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.MOSSY_COBBLESTONE_SLAB);
-        nonSuffocatingBlocks.add(Material.SMOOTH_STONE_SLAB);
+        nonSuffocatingBlocks.addAll(
+                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_slab")).toList())
+        );
         // Walled Signs
-        nonSuffocatingBlocks.add(Material.ACACIA_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.SPRUCE_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.BIRCH_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.CRIMSON_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.WARPED_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.DARK_OAK_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.JUNGLE_WALL_SIGN);
-        nonSuffocatingBlocks.add(Material.OAK_WALL_SIGN);
+        nonSuffocatingBlocks.addAll(
+                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_sign")).toList())
+        );
         // Stairs
-        nonSuffocatingBlocks.add(Material.SANDSTONE_STAIRS);
-//        Collections.addAll(nonSuffocatingBlocks,
-//                Arrays.asList(Arrays.stream(Material.values()).filter(material -> {
-//            return material.toString().toLowerCase().contains("_stairs");
-//        })));
+        nonSuffocatingBlocks.addAll(
+                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_stairs")).toList())
+        );
         // MISC
         nonSuffocatingBlocks.add(Material.HONEY_BLOCK);
         nonSuffocatingBlocks.add(Material.BELL);
@@ -127,11 +75,11 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.IRON_BARS);
         nonSuffocatingBlocks.add(Material.END_PORTAL_FRAME);
         nonSuffocatingBlocks.add(Material.PISTON_HEAD);
+
     }
 
     @Nullable
     public static Location findSafeLocationAroundShop(Location shopLocation) {
-
         Location roundedShopLoc = getRoundedDestination(shopLocation);
         QuickShopAPIHandler qsAPI = new QuickShopAPIHandler();
         LoggerUtils.logDebugInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
@@ -171,7 +119,8 @@ public class LocationUtils {
                         loc_i.getBlockX(),
                         loc_i.getBlockY() + 1,
                         loc_i.getBlockZ());
-                LoggerUtils.logDebugInfo("Block above shop sign: " + blockAbove.getX() + ", " + blockAbove.getY() + ", " + blockAbove.getZ());
+                LoggerUtils.logDebugInfo("Block above shop sign: "
+                        + blockAbove.getX() + ", " + blockAbove.getY() + ", " + blockAbove.getZ());
                 if(!isBlockSuffocating(blockAbove)) {
                     Location blockBelow = null;
                     boolean safeLocFound = false;
@@ -182,7 +131,8 @@ public class LocationUtils {
                                 loc_i.getBlockY() - i,
                                 loc_i.getBlockZ()
                         );
-                        LoggerUtils.logDebugInfo("Block below shop sign: " + blockBelow.getBlock().getType() + " " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
+                        LoggerUtils.logDebugInfo("Block below shop sign: "
+                                + blockBelow.getBlock().getType() + " " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
                         if(blockBelow.getBlock().getType().equals(Material.AIR)
                             || blockBelow.getBlock().getType().equals(Material.CAVE_AIR)
                             || blockBelow.getBlock().getType().equals(Material.VOID_AIR)

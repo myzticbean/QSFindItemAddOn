@@ -25,7 +25,7 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public String getSyntax() {
-        return "/finditem reload";
+        return "/finditemadmin reload";
     }
 
     @Override

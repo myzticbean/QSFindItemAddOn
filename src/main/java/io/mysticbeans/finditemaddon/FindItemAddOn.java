@@ -93,7 +93,7 @@ public final class FindItemAddOn extends JavaPlugin {
                 LoggerUtils.logInfo("&2Plugin is up to date!");
             } else {
                 isPluginOutdated = true;
-                LoggerUtils.logWarning("Plugin has an update! (Version: " + this.getDescription().getVersion() + ")");
+                LoggerUtils.logWarning("Plugin has an update! (Version: " + this.getDescription().getVersion().replace("-SNAPSHOT", "") + ")");
                 LoggerUtils.logWarning("Download the latest version here: &7https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
             }
         });
@@ -153,7 +153,7 @@ public final class FindItemAddOn extends JavaPlugin {
         List<String> alias;
         if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
                 || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
-            alias = Arrays.asList("shopsearch", "searchshop");
+            alias = Arrays.asList("shopsearch", "searchshop", "searchitem");
         }
         else {
             alias = FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS;
@@ -169,22 +169,17 @@ public final class FindItemAddOn extends JavaPlugin {
                         @Override
                         public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
                             commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Commands"));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7--------------------------"));
-                            List<String> adminCmds = Arrays.asList("reload", "restart");
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
                             for (SubCommand subCommand : subCommandList) {
-                                if (adminCmds.contains(subCommand.getName())) {
-                                    if (commandSender.isOp()) {
-                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                                    } else if (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
-                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()))) {
-                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                                    }
-                                } else {
-                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&e" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                                }
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff9933" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
                             }
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
+                            alias.forEach(alias_i -> {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
+                            });
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                         }
                     },
@@ -201,6 +196,7 @@ public final class FindItemAddOn extends JavaPlugin {
     }
 
     private void initFindItemAdminCmd() {
+        List<String> alias = List.of("fiadmin");
         try {
             CommandManager.createCoreCommand(
                     this,
@@ -210,29 +206,30 @@ public final class FindItemAddOn extends JavaPlugin {
                     new CommandList() {
                         @Override
                         public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Admin Commands"));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
-                            List<String> adminCmds = Arrays.asList("reload", "restart");
-                            for (SubCommand subCommand : subCommandList) {
-                                if (adminCmds.contains(subCommand.getName())) {
-                                    if (commandSender.isOp()) {
-                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                                    } else if (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
-                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()))) {
-                                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&c" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
-                                    }
-                                } else {
-                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&e" + subCommand.getSyntax() + " &7" + subCommand.getDescription()));
+                            if (
+                                    (commandSender.isOp())
+                                            || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
+                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString())))
+                            ) {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Admin Commands"));
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+
+                                for (SubCommand subCommand : subCommandList) {
+                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff1a1a" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
                                 }
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
+                                alias.forEach(alias_i -> {
+                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
+                                });
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                             }
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                         }
                     },
-                    List.of("fiadmin"),
-                    ReloadSubCmd.class,
-                    RestartSubCmd.class);
+                    alias,
+                    ReloadSubCmd.class);
             LoggerUtils.logInfo("Registered /finditemadmin command");
         } catch (NoSuchFieldException | IllegalAccessException e) {
             LoggerUtils.logError(e.getMessage());

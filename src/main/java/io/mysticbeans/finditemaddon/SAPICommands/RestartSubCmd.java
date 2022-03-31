@@ -7,6 +7,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+@Deprecated
 public class RestartSubCmd extends SubCommand {
     @Override
     public String getName() {
@@ -20,12 +21,12 @@ public class RestartSubCmd extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Restarts the plugin";
+        return "Restarts the plugin (NOT recommended in most cases, restart server if necessary)";
     }
 
     @Override
     public String getSyntax() {
-        return "/finditem restart";
+        return "/finditemadmin restart";
     }
 
     @Override

@@ -145,13 +145,27 @@ public class ConfigSetup {
             }
             // Config v11
             if(fileConfig.getInt("config-version") < 11) {
-                fileConfig.set("find-item-command.command-alias", "searchshop");
+                List<String> cmdAliases = new ArrayList<>();
+                cmdAliases.add("searchshop");
+                cmdAliases.add("shopsearch");
+                cmdAliases.add("searchitem");
+                fileConfig.set("find-item-command.command-alias", cmdAliases);
 
                 boolean warpState = fileConfig.getBoolean("player-shop-teleportation.nearest-warp-tp-mode.warp-player-to-nearest-warp");
                 if(warpState)
                     fileConfig.set("player-shop-teleportation.nearest-warp-tp-mode.tp-player-to-nearest-warp", true);
                 // if warpState is false, don't bother updating tPState
+
+                // remove an erroneous field added in previous version
                 fileConfig.set("player-shop-teleportation.nearest-warp-tp-mode.warp-player-to-nearest-warp", null);
+
+                // Update GUI next/previous button to blank if set to default value for the new player-head icons
+                if(fileConfig.getString("shop-gui-back-button-material").equalsIgnoreCase("RED_CONCRETE")) {
+                    fileConfig.set("shop-gui-back-button-material", "");
+                }
+                if(fileConfig.getString("shop-gui-next-button-material").equalsIgnoreCase("GREEN_CONCRETE")) {
+                    fileConfig.set("shop-gui-next-button-material", "");
+                }
             }
             fileConfig.set("config-version", null);
             fileConfig.set("config-version", CURRENT_CONFIG_VERSION);

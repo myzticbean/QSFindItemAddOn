@@ -33,12 +33,12 @@ public class PlayerJoinEventListener implements Listener {
             if(FindItemAddOn.getPluginOutdated()) {
                 player.sendMessage(ColorTranslator.translateColorCodes(
                         prefix
-                                + "&2Hey &a" + player.getName() + "&2! Plugin has an update... (Version: "
-                                + FindItemAddOn.getInstance().getDescription().getVersion() + ")"));
+                                + "&#59b300Hey &#73e600" + player.getName() + "&#59b300! Plugin has an update... (Version: "
+                                + FindItemAddOn.getInstance().getDescription().getVersion().replace("-SNAPSHOT", "") + ")"));
 
                 player.sendMessage(ColorTranslator.translateColorCodes(
                         prefix
-                                + "&2Download here: &7&nhttps://www.spigotmc.org/resources/"
+                                + "&#59b300Download here: &#a3a3c2&nhttps://www.spigotmc.org/resources/"
                                 + FindItemAddOn.getPluginID() + "/"));
             }
         }
