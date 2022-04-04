@@ -40,6 +40,7 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         LoggerUtils.logInfo("A QuickShop AddOn by &cronsane");
+        HiddenShopStorageUtil.loadHiddenShopsFromFile();
         this.saveDefaultConfig();
         this.getConfig().options().copyDefaults(true);
         ConfigSetup.setupConfig();
@@ -66,7 +67,7 @@ public final class FindItemAddOn extends JavaPlugin {
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
-        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");

@@ -52,7 +52,7 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
-        if(event.getCurrentItem().getType().equals(super.backButton.getType())) {
+        if(event.getSlot() == 45) {
             if(page == 0) {
                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG)) {
                     event.getWhoClicked().sendMessage(
@@ -65,7 +65,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                 super.open(super.playerMenuUtility.getPlayerShopSearchResult());
             }
         }
-        else if(event.getCurrentItem().getType().equals(super.nextButton.getType())) {
+        else if(event.getSlot() == 53) {
             if(!((index + 1) >= super.playerMenuUtility.getPlayerShopSearchResult().size())) {
                 page = page + 1;
                 super.open(super.playerMenuUtility.getPlayerShopSearchResult());
@@ -77,7 +77,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                 }
             }
         }
-        else if(event.getCurrentItem().getType().equals(Material.BARRIER)) {
+        else if(event.getCurrentItem().getType().equals(Material.BARRIER) && event.getSlot() == 49) {
             event.getWhoClicked().closeInventory();
         }
         else if(event.getCurrentItem().getType().equals(Material.AIR)) {
