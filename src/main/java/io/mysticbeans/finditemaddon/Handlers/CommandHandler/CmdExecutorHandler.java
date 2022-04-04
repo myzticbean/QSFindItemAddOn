@@ -4,7 +4,9 @@ import io.mysticbeans.finditemaddon.ConfigUtil.ConfigSetup;
 import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Handlers.GUIHandler.Menus.FoundShopsMenu;
 import io.mysticbeans.finditemaddon.Models.FoundShopItemModel;
-import io.mysticbeans.finditemaddon.QuickShopHandler.QuickShopAPIHandler;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSApi;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import io.mysticbeans.finditemaddon.Utils.HiddenShopStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import io.mysticbeans.finditemaddon.Utils.PlayerPerms;
@@ -27,13 +29,24 @@ import java.util.List;
  */
 public class CmdExecutorHandler {
 
+    QSApi qsApi;
+
+    public CmdExecutorHandler() {
+        if(FindItemAddOn.isQSReremakeInstalled()) {
+            qsApi = new QSReremakeAPIHandler();
+        }
+        else {
+            qsApi = new QSHikariAPIHandler();
+        }
+    }
+
     /**
      * Handles the main shop search process
      * @param buySellSubCommand Whether player is buying or selling
      * @param commandSender Who is the command sender: console or player
      * @param itemArg Specifies Item ID or Item name
      */
-    public static void handleShopSearch(String buySellSubCommand, CommandSender commandSender, String itemArg) {
+    public void handleShopSearch(String buySellSubCommand, CommandSender commandSender, String itemArg) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
         }
@@ -55,7 +68,7 @@ public class CmdExecutorHandler {
                 }
 
                 if(itemArg.equalsIgnoreCase("*")) {
-                    List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().fetchAllItemsFromAllShops(isBuying);
+                    List<FoundShopItemModel> searchResultList = qsApi.fetchAllItemsFromAllShops(isBuying);
                     if(searchResultList.size() > 0) {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
                             @Override
@@ -81,7 +94,7 @@ public class CmdExecutorHandler {
                     Material mat = Material.getMaterial(itemArg.toUpperCase());
                     if(mat != null) {
                         LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                        List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                        List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
                                 @Override
@@ -105,7 +118,7 @@ public class CmdExecutorHandler {
                     }
                     else {
                         LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                        List<FoundShopItemModel> searchResultList = new QuickShopAPIHandler().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
+                        List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
                                 @Override
@@ -141,7 +154,7 @@ public class CmdExecutorHandler {
      * Handles the shop hiding feature
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handleHideShop(CommandSender commandSender) {
+    public void handleHideShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
         }
@@ -149,33 +162,13 @@ public class CmdExecutorHandler {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                QuickShopAPIHandler qsAPI = new QuickShopAPIHandler();
-                Shop shop = qsAPI.findShopAtLocation(playerLookAtBlock);
-                if(shop != null) {
-                    // check if command runner same as shop owner
-                    if(qsAPI.isShopOwnerCommandRunner(player, shop)) {
-                        if(!HiddenShopStorageUtil.isShopHidden(shop)) {
-                            HiddenShopStorageUtil.addShop(shop);
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
-                        }
-                        else {
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
-                        }
-                    }
-                    else {
-                        player.sendMessage(ColorTranslator.translateColorCodes(
-                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
-                    }
+//                QSReremakeAPIHandler qsAPI = new QSReremakeAPIHandler();
+//                var shop = qsApi.findShopAtLocation(playerLookAtBlock);
+                if(FindItemAddOn.isQSReremakeInstalled()) {
+                    hideShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
-                    player.sendMessage(ColorTranslator.translateColorCodes(
-                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+                    hideShop((com.ghostchu.quickshop.api.shop.Shop)qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
             }
             else {
@@ -188,7 +181,7 @@ public class CmdExecutorHandler {
      * Handles the shop reveal feature
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handleRevealShop(CommandSender commandSender) {
+    public void handleRevealShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
         }
@@ -196,34 +189,14 @@ public class CmdExecutorHandler {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                QuickShopAPIHandler qsAPI = new QuickShopAPIHandler();
-                Shop shop = qsAPI.findShopAtLocation(playerLookAtBlock);
-                if(shop != null) {
-                    // check if command runner same as shop owner
-                    if(qsAPI.isShopOwnerCommandRunner(player, shop)) {
-                        if(HiddenShopStorageUtil.isShopHidden(shop)) {
-                            HiddenShopStorageUtil.deleteShop(shop);
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
-                        }
-                        else {
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
-                        }
-                    }
-                    else {
-                        player.sendMessage(ColorTranslator.translateColorCodes(
-                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
-                    }
+//                QSReremakeAPIHandler qsAPI = new QSReremakeAPIHandler();
+                if(FindItemAddOn.isQSReremakeInstalled()) {
+                    revealShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
-                    player.sendMessage(ColorTranslator.translateColorCodes(
-                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+                    revealShop((com.ghostchu.quickshop.api.shop.Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
+//                Shop shop = qsApi.findShopAtLocation(playerLookAtBlock);
             }
             else {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
@@ -235,7 +208,7 @@ public class CmdExecutorHandler {
      * Handles the saving hidden shops to file feature
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handleHiddenShopSavingToFile(CommandSender commandSender) {
+    public void handleHiddenShopSavingToFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
         }
@@ -260,7 +233,7 @@ public class CmdExecutorHandler {
      * Handles the loading of hidden shops from file feature
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handleHiddenShopLoadingFromFile(CommandSender commandSender) {
+    public void handleHiddenShopLoadingFromFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
         }
@@ -285,13 +258,13 @@ public class CmdExecutorHandler {
      * Handles plugin reload
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handlePluginReload(CommandSender commandSender) {
+    public void handlePluginReload(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             ConfigSetup.reloadConfig();
             ConfigSetup.checkForMissingProperties();
             ConfigSetup.saveConfig();
             FindItemAddOn.initConfigProvider();
-            List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
+            List allServerShops = qsApi.getAllShops();
             if(allServerShops.size() == 0) {
                 LoggerUtils.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
             }
@@ -308,7 +281,7 @@ public class CmdExecutorHandler {
                 ConfigSetup.saveConfig();
                 FindItemAddOn.initConfigProvider();
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
-                List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
+                List allServerShops = qsApi.getAllShops();
                 if(allServerShops.size() == 0) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
@@ -330,12 +303,12 @@ public class CmdExecutorHandler {
      * Handles plugin restart
      * @param commandSender Who is the command sender: console or player
      */
-    public static void handlePluginRestart(CommandSender commandSender) {
+    public void handlePluginRestart(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
             Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
             LoggerUtils.logInfo("&aPlugin restarted!");
-            List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
+            List allServerShops = qsApi.getAllShops();
             if(allServerShops.size() == 0) {
                 LoggerUtils.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
             }
@@ -349,7 +322,7 @@ public class CmdExecutorHandler {
                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));
-                List<Shop> allServerShops = new QuickShopAPIHandler().getQsPluginInstance().getShopManager().getAllShops();
+                List allServerShops = qsApi.getAllShops();
                 if(allServerShops.size() == 0) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
@@ -363,6 +336,122 @@ public class CmdExecutorHandler {
             else {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
             }
+        }
+    }
+
+    private void hideShop(Shop shop, Player player) {
+        if(shop != null) {
+            // check if command runner same as shop owner
+            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+                if(!HiddenShopStorageUtil.isShopHidden(shop)) {
+                    HiddenShopStorageUtil.addShop(shop);
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
+                }
+                else {
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
+                }
+            }
+            else {
+                player.sendMessage(ColorTranslator.translateColorCodes(
+                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
+            }
+        }
+        else {
+            player.sendMessage(ColorTranslator.translateColorCodes(
+                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+        }
+    }
+
+    private void hideShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
+        if(shop != null) {
+            // check if command runner same as shop owner
+            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+                if(!HiddenShopStorageUtil.isShopHidden(shop)) {
+                    HiddenShopStorageUtil.addShop(shop);
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
+                }
+                else {
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG));
+                }
+            }
+            else {
+                player.sendMessage(ColorTranslator.translateColorCodes(
+                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
+            }
+        }
+        else {
+            player.sendMessage(ColorTranslator.translateColorCodes(
+                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+        }
+    }
+
+    private void revealShop(Shop shop, Player player) {
+        if(shop != null) {
+            // check if command runner same as shop owner
+            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+                if(HiddenShopStorageUtil.isShopHidden(shop)) {
+                    HiddenShopStorageUtil.deleteShop(shop);
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
+                }
+                else {
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
+                }
+            }
+            else {
+                player.sendMessage(ColorTranslator.translateColorCodes(
+                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
+            }
+        }
+        else {
+            player.sendMessage(ColorTranslator.translateColorCodes(
+                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
+        }
+    }
+
+    private void revealShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
+        if(shop != null) {
+            // check if command runner same as shop owner
+            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+                if(HiddenShopStorageUtil.isShopHidden(shop)) {
+                    HiddenShopStorageUtil.deleteShop(shop);
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
+                }
+                else {
+                    player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                    + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG));
+                }
+            }
+            else {
+                player.sendMessage(ColorTranslator.translateColorCodes(
+                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG));
+            }
+        }
+        else {
+            player.sendMessage(ColorTranslator.translateColorCodes(
+                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                            + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG));
         }
     }
 }

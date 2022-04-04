@@ -8,6 +8,13 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 public class ReloadSubCmd extends SubCommand {
+
+    private final CmdExecutorHandler cmdExecutor;
+
+    public ReloadSubCmd() {
+        cmdExecutor = new CmdExecutorHandler();
+    }
+
     @Override
     public String getName() {
         return "reload";
@@ -30,7 +37,7 @@ public class ReloadSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender commandSender, String[] strings) {
-        CmdExecutorHandler.handlePluginReload(commandSender);
+        cmdExecutor.handlePluginReload(commandSender);
     }
 
     @Override

@@ -23,9 +23,6 @@ public class HiddenShopStorageUtil {
     private static FileConfiguration hiddenShopsConfig;
 
     public static void addShop(Shop shop) {
-
-//        hiddenShops.put(shop.getLocation(), shop.getOwner());
-
         HiddenShopModel hiddenShop = new HiddenShopModel(
                 shop.getLocation().getWorld().getName(),
                 shop.getLocation().getX(),
@@ -35,13 +32,21 @@ public class HiddenShopStorageUtil {
                 shop.getLocation().getYaw(),
                 shop.getOwner().toString());
         hiddenShopsList.add(hiddenShop);
-//        return hiddenShop;
+    }
+
+    public static void addShop(com.ghostchu.quickshop.api.shop.Shop shop) {
+        HiddenShopModel hiddenShop = new HiddenShopModel(
+                shop.getLocation().getWorld().getName(),
+                shop.getLocation().getX(),
+                shop.getLocation().getY(),
+                shop.getLocation().getZ(),
+                shop.getLocation().getPitch(),
+                shop.getLocation().getYaw(),
+                shop.getOwner().toString());
+        hiddenShopsList.add(hiddenShop);
     }
 
     public static void deleteShop(Shop shop) {
-
-//        hiddenShops.remove(shop.getLocation());
-
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
                 && hiddenShop.getX() == shop.getLocation().getX()
@@ -53,15 +58,40 @@ public class HiddenShopStorageUtil {
                 hiddenShopsList.remove(hiddenShop);
                 break;
             }
-//            if(new Location(Bukkit.getWorld(hiddenShop.getWorldName()), hiddenShop.getX(), hiddenShop.getY(), hiddenShop.getZ(), hiddenShop.getYaw(), hiddenShop.getPitch()).equals(shop.getLocation())) {
-//                hiddenShopsList.remove(hiddenShop);
-//                break;
-//            }
+        }
+    }
+
+    public static void deleteShop(com.ghostchu.quickshop.api.shop.Shop shop) {
+        for(HiddenShopModel hiddenShop : hiddenShopsList) {
+            if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
+                    && hiddenShop.getX() == shop.getLocation().getX()
+                    && hiddenShop.getY() == shop.getLocation().getY()
+                    && hiddenShop.getZ() == shop.getLocation().getZ()
+                    && hiddenShop.getPitch() == shop.getLocation().getPitch()
+                    && hiddenShop.getYaw() == shop.getLocation().getYaw()
+                    && Objects.equals(hiddenShop.getShopOwnerUUID(), shop.getOwner().toString())) {
+                hiddenShopsList.remove(hiddenShop);
+                break;
+            }
         }
     }
 
     public static boolean isShopHidden(Shop shop) {
-//        return hiddenShops.containsKey(shop.getLocation());
+        for(HiddenShopModel hiddenShop : hiddenShopsList) {
+            if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
+                    && hiddenShop.getX() == shop.getLocation().getX()
+                    && hiddenShop.getY() == shop.getLocation().getY()
+                    && hiddenShop.getZ() == shop.getLocation().getZ()
+                    && hiddenShop.getPitch() == shop.getLocation().getPitch()
+                    && hiddenShop.getYaw() == shop.getLocation().getYaw()
+                    && Objects.equals(hiddenShop.getShopOwnerUUID(), shop.getOwner().toString())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isShopHidden(com.ghostchu.quickshop.api.shop.Shop shop) {
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
                     && hiddenShop.getX() == shop.getLocation().getX()

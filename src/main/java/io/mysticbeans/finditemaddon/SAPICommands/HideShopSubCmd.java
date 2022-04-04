@@ -12,6 +12,7 @@ import java.util.List;
 public class HideShopSubCmd extends SubCommand {
 
     private final String hideSubCommand;
+    private final CmdExecutorHandler cmdExecutor;
 
     public HideShopSubCmd() {
         if(StringUtils.isBlank(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE)) {
@@ -20,7 +21,7 @@ public class HideShopSubCmd extends SubCommand {
         else {
             hideSubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE;
         }
-
+        cmdExecutor = new CmdExecutorHandler();
     }
 
     @Override
@@ -46,7 +47,7 @@ public class HideShopSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender commandSender, String[] args) {
-        CmdExecutorHandler.handleHideShop(commandSender);
+        cmdExecutor.handleHideShop(commandSender);
     }
 
     @Override

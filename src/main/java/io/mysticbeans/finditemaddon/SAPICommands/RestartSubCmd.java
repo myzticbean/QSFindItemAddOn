@@ -9,6 +9,12 @@ import java.util.List;
 
 @Deprecated
 public class RestartSubCmd extends SubCommand {
+
+    private final CmdExecutorHandler cmdExecutor;
+
+    public RestartSubCmd() {
+        cmdExecutor = new CmdExecutorHandler();
+    }
     @Override
     public String getName() {
         return "restart";
@@ -31,7 +37,7 @@ public class RestartSubCmd extends SubCommand {
 
     @Override
     public void perform(CommandSender commandSender, String[] args) {
-        CmdExecutorHandler.handlePluginRestart(commandSender);
+        cmdExecutor.handlePluginRestart(commandSender);
     }
 
     @Override

@@ -39,6 +39,8 @@ public final class FindItemAddOn extends JavaPlugin {
     private final static int SPIGOT_PLUGIN_ID = 95104;
     private static ConfigProvider configProvider;
     private static boolean isPluginOutdated = false;
+    private static boolean qSReremakeInstalled = false;
+    private static boolean qSHikariInstalled = false;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
@@ -59,13 +61,20 @@ public final class FindItemAddOn extends JavaPlugin {
         ConfigSetup.saveConfig();
         initConfigProvider();
 
-        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
+        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
+            && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
             LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
+            LoggerUtils.logError("&cBoth QuickShop-Reremake or QuickShop-Hikari are supported by this addon.");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        else {
-            LoggerUtils.logInfo("Found QuickShop");
+        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
+            qSReremakeInstalled = true;
+            LoggerUtils.logInfo("Found QuickShop-Reremake");
+        }
+        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+            qSHikariInstalled = true;
+            LoggerUtils.logInfo("Found QuickShop-Hikari");
         }
 
         serverVersion = Bukkit.getServer().getVersion();
@@ -76,8 +85,6 @@ public final class FindItemAddOn extends JavaPlugin {
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
-
-
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
@@ -235,5 +242,13 @@ public final class FindItemAddOn extends JavaPlugin {
             LoggerUtils.logError(e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public static boolean isQSReremakeInstalled() {
+        return qSReremakeInstalled;
+    }
+
+    public static boolean isQSHikariInstalled() {
+        return qSHikariInstalled;
     }
 }

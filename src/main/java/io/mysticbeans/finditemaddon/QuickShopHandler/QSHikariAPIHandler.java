@@ -1,5 +1,8 @@
 package io.mysticbeans.finditemaddon.QuickShopHandler;
 
+import com.ghostchu.quickshop.QuickShop;
+import com.ghostchu.quickshop.api.QuickShopAPI;
+import com.ghostchu.quickshop.api.shop.Shop;
 import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Models.FoundShopItemModel;
 import io.mysticbeans.finditemaddon.Utils.HiddenShopStorageUtil;
@@ -10,21 +13,18 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.maxgamer.quickshop.QuickShop;
-import org.maxgamer.quickshop.api.QuickShopAPI;
-import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.*;
 
-public class QuickShopAPIHandler {
+public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShop qsPlugin;
 
     private QuickShopAPI api;
 
-    public QuickShopAPIHandler() {
+    public QSHikariAPIHandler() {
         qsPlugin = QuickShop.getInstance();
-        api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop");
+        api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop-Hikari");
     }
 
     public QuickShop getQsPluginInstance() {
@@ -148,16 +148,27 @@ public class QuickShopAPIHandler {
         });
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-//            try {
-//                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-//            }
-//            catch(Exception e) {
-//                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-//                LoggerUtils.logError("Defaulting to sorting by prices method");
-//            }
             return sortShops(sortingMethod, shopsFoundList);
         }
         return shopsFoundList;
+    }
+
+    public Material getShopSignMaterial() {
+        return com.ghostchu.quickshop.util.Util.getSignMaterial();
+    }
+
+    public Shop findShopAtLocation(Block block) {
+        Location loc = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
+        return api.getShopManager().getShop(loc);
+    }
+
+    public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
+        return shop.getOwner().toString().equalsIgnoreCase(player.getUniqueId().toString());
+    }
+
+    @Override
+    public List<Shop> getAllShops() {
+        return getQsPluginInstance().getShopManager().getAllShops();
     }
 
     private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
@@ -178,19 +189,6 @@ public class QuickShopAPIHandler {
             }
         }
         return shopsFoundList;
-    }
-
-    public Material getShopSignMaterial() {
-        return org.maxgamer.quickshop.util.Util.getSignMaterial();
-    }
-
-    public Shop findShopAtLocation(Block block) {
-        Location loc = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
-        return api.getShopManager().getShop(loc);
-    }
-
-    public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
-        return shop.getOwner().toString().equalsIgnoreCase(player.getUniqueId().toString());
     }
 
 }

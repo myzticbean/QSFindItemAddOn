@@ -1,11 +1,11 @@
 name: QSFindItemAddOn
 version: ${project.version}
 main: io.mysticbeans.finditemaddon.FindItemAddOn
-api-version: 1.13
+api-version: 1.16
 authors: [ ronsane ]
-depend:
-  - QuickShop
 softdepend:
+  - QuickShop
+  - QuickShop-Hikari
   - PlayerWarps
   - WorldGuard
   - Essentials

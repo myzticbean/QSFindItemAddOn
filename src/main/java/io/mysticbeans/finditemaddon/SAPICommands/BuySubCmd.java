@@ -20,6 +20,7 @@ public class BuySubCmd extends SubCommand {
 
     private final String buySubCommand;
     private final List<String> itemsList = new ArrayList<>();
+    private final CmdExecutorHandler cmdExecutor;
 
     public BuySubCmd() {
         // to-buy
@@ -35,6 +36,7 @@ public class BuySubCmd extends SubCommand {
                 itemsList.add(mat.name());
             }
         }
+        cmdExecutor = new CmdExecutorHandler();
     }
 
     @Override
@@ -64,7 +66,7 @@ public class BuySubCmd extends SubCommand {
                     FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                             + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INCORRECT_USAGE_MSG));
         else
-            CmdExecutorHandler.handleShopSearch(buySubCommand, commandSender, args[1]);
+            cmdExecutor.handleShopSearch(buySubCommand, commandSender, args[1]);
     }
 
     @Override
