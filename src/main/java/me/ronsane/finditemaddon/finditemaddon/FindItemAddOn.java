@@ -61,13 +61,13 @@ public final class FindItemAddOn extends JavaPlugin {
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
         initCommands();
-        initEvents();
+
 
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
-
+        initEvents();
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
@@ -106,8 +106,10 @@ public final class FindItemAddOn extends JavaPlugin {
         LoggerUtils.logInfo("Registering events");
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
-        this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateListener(), this);
-        this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveListener(), this);
+        if(PlayerWarpsPlugin.getIsEnabled()) {
+            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateListener(), this);
+            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveListener(), this);
+        }
     }
     
     public static ConfigProvider getConfigProvider() {
