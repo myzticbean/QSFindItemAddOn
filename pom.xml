@@ -48,8 +48,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-<!--                    <outputDirectory>E:\MCServer_1.18\plugins</outputDirectory>-->
-                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.18/plugins</outputDirectory>
+                    <outputDirectory>E:\MCServer_1.18\plugins</outputDirectory>
+<!--                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.18/plugins</outputDirectory>-->
                 </configuration>
             </plugin>
         </plugins>
@@ -128,7 +128,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-bukkit</artifactId>
-            <version>1.1.1.2</version>
+            <version>1.1.2.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -254,6 +254,12 @@
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
             <version>22.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.22</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.github.KodySimpson</groupId>

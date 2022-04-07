@@ -18,18 +18,13 @@ import java.util.*;
 
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
-    private final QuickShop qsPlugin;
+//    private final QuickShop qsPlugin;
 
     private final QuickShopAPI api;
 
     public QSReremakeAPIHandler() {
-        qsPlugin = QuickShop.getInstance();
+//        qsPlugin = QuickShop.getInstance();
         api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop");
-    }
-
-    @Override
-    public QuickShop getQsPluginInstance() {
-        return qsPlugin;
     }
 
     @Override
@@ -175,7 +170,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<Shop> getAllShops() {
-        return getQsPluginInstance().getShopManager().getAllShops();
+        return api.getShopManager().getAllShops();
     }
 
     private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {

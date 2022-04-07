@@ -2,6 +2,7 @@ package io.mysticbeans.finditemaddon.Dependencies;
 
 import com.olziedev.playerwarps.api.PlayerWarpsAPI;
 import com.olziedev.playerwarps.api.warp.Warp;
+import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 
@@ -36,11 +37,22 @@ public class PlayerWarpsPlugin {
     }
 
     public static void updateWarpsOnEventCall(Warp warp, boolean isRemoved) {
-        if(isRemoved) {
-            allWarpsList.remove(warp);
+        LoggerUtils.logDebugInfo("Got a PlayerWarps event call... checking nearest-warp-mode");
+        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
+            if (PlayerWarpsPlugin.getIsEnabled()) {
+                LoggerUtils.logDebugInfo("nearest-warp-mode found set to 2");
+                if(isRemoved) {
+                    allWarpsList.remove(warp);
+                    LoggerUtils.logDebugInfo("Warp removed from allWarpsList: " + warp.getWarpName());
+                }
+                else {
+                    allWarpsList.add(warp);
+                    LoggerUtils.logDebugInfo("New warp added to allWarpsList: " + warp.getWarpName());
+                }
+            }
         }
         else {
-            allWarpsList.add(warp);
+            LoggerUtils.logDebugInfo("No update required to allWarpsList as its null");
         }
     }
 }

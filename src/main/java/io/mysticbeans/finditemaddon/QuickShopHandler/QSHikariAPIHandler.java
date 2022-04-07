@@ -18,17 +18,13 @@ import java.util.*;
 
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
-    private final QuickShop qsPlugin;
+//    private final QuickShop qsPlugin;
 
     private QuickShopAPI api;
 
     public QSHikariAPIHandler() {
-        qsPlugin = QuickShop.getInstance();
+//        qsPlugin = QuickShop.getInstance();
         api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop-Hikari");
-    }
-
-    public QuickShop getQsPluginInstance() {
-        return qsPlugin;
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
@@ -168,7 +164,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<Shop> getAllShops() {
-        return getQsPluginInstance().getShopManager().getAllShops();
+        return api.getShopManager().getAllShops();
     }
 
     private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {

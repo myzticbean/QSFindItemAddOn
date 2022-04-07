@@ -24,6 +24,8 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,6 +104,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                         Location shopLocation = new Location(world, locX, locY, locZ);
                         Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
                         if(locToTeleport != null) {
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
                             PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
                         }
                         else {

@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import java.util.List;
 
 public interface QSApi<T, V> {
-    T getQsPluginInstance();
+//    T getQsPluginInstance();
     List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy);
     List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy);
     List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy);

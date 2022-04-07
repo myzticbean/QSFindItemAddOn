@@ -70,17 +70,9 @@ public class CmdExecutorHandler {
                 if(itemArg.equalsIgnoreCase("*")) {
                     List<FoundShopItemModel> searchResultList = qsApi.fetchAllItemsFromAllShops(isBuying);
                     if(searchResultList.size() > 0) {
-                        Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
-                            @Override
-                            public void run() {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        menu.open(searchResultList);
-                                    }
-                                });
-                            }
+                        Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                            FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                            Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
                         });
                     }
                     else {
@@ -96,17 +88,9 @@ public class CmdExecutorHandler {
                         LoggerUtils.logDebugInfo("Material found: " + mat.toString());
                         List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
                         if(searchResultList.size() > 0) {
-                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            menu.open(searchResultList);
-                                        }
-                                    });
-                                }
+                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
                             });
                         }
                         else {
@@ -120,17 +104,9 @@ public class CmdExecutorHandler {
                         LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
                         List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
                         if(searchResultList.size() > 0) {
-                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), new Runnable() {
-                                @Override
-                                public void run() {
-                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            menu.open(searchResultList);
-                                        }
-                                    });
-                                }
+                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
                             });
                         }
                         else {
@@ -162,8 +138,6 @@ public class CmdExecutorHandler {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-//                QSReremakeAPIHandler qsAPI = new QSReremakeAPIHandler();
-//                var shop = qsApi.findShopAtLocation(playerLookAtBlock);
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     hideShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
@@ -189,14 +163,12 @@ public class CmdExecutorHandler {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
-//                QSReremakeAPIHandler qsAPI = new QSReremakeAPIHandler();
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     revealShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
                     revealShop((com.ghostchu.quickshop.api.shop.Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
                 }
-//                Shop shop = qsApi.findShopAtLocation(playerLookAtBlock);
             }
             else {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
