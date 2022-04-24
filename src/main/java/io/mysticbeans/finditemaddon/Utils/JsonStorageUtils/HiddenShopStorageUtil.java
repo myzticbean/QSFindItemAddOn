@@ -1,10 +1,11 @@
-package io.mysticbeans.finditemaddon.Utils;
+package io.mysticbeans.finditemaddon.Utils.JsonStorageUtils;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Models.HiddenShopModel;
-import org.bukkit.configuration.file.FileConfiguration;
+import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.io.*;
@@ -16,12 +17,13 @@ import java.util.Objects;
 
 public class HiddenShopStorageUtil {
 
-    private static List<HiddenShopModel> hiddenShopsList = new ArrayList<>();
-//    private static Map<Location, UUID> hiddenShops = new HashMap<>();
+    protected static List<HiddenShopModel> hiddenShopsList = new ArrayList<>();
+    protected static final String HIDDEN_SHOP_STORAGE_JSON_FILE_NAME = "hiddenShops.json";
 
-    private static File hiddenShopsYamlFile;
-    private static FileConfiguration hiddenShopsConfig;
-
+    /**
+     * QuickShop Reremake
+     * @param shop
+     */
     public static void addShop(Shop shop) {
         HiddenShopModel hiddenShop = new HiddenShopModel(
                 shop.getLocation().getWorld().getName(),
@@ -34,6 +36,10 @@ public class HiddenShopStorageUtil {
         hiddenShopsList.add(hiddenShop);
     }
 
+    /**
+     * QuickShop Hikari
+     * @param shop
+     */
     public static void addShop(com.ghostchu.quickshop.api.shop.Shop shop) {
         HiddenShopModel hiddenShop = new HiddenShopModel(
                 shop.getLocation().getWorld().getName(),
@@ -46,6 +52,10 @@ public class HiddenShopStorageUtil {
         hiddenShopsList.add(hiddenShop);
     }
 
+    /**
+     * QuickShop Reremake
+     * @param shop
+     */
     public static void deleteShop(Shop shop) {
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
@@ -61,6 +71,10 @@ public class HiddenShopStorageUtil {
         }
     }
 
+    /**
+     * QuickShop Hikari
+     * @param shop
+     */
     public static void deleteShop(com.ghostchu.quickshop.api.shop.Shop shop) {
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
@@ -76,6 +90,11 @@ public class HiddenShopStorageUtil {
         }
     }
 
+    /**
+     * QuickShop Reremake
+     * @param shop
+     * @return
+     */
     public static boolean isShopHidden(Shop shop) {
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
@@ -91,6 +110,11 @@ public class HiddenShopStorageUtil {
         return false;
     }
 
+    /**
+     * QuickShop Hikari
+     * @param shop
+     * @return
+     */
     public static boolean isShopHidden(com.ghostchu.quickshop.api.shop.Shop shop) {
         for(HiddenShopModel hiddenShop : hiddenShopsList) {
             if(hiddenShop.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
@@ -106,36 +130,9 @@ public class HiddenShopStorageUtil {
         return false;
     }
 
-//    public static void loadHiddenShopsFromFile() {
-//        hiddenShopsYamlFile = new File(Bukkit.getServer().getPluginManager().getPlugin("QSFindItemAddOn").getDataFolder(), "hiddenShops.yml");
-//        if(!hiddenShopsYamlFile.exists()) {
-//            hiddenShops = new HashMap<>();
-//        }
-//        else {
-//            hiddenShopsConfig = YamlConfiguration.loadConfiguration(hiddenShopsYamlFile);
-//            hiddenShops = new HashMap<>();
-//            hiddenShopsConfig.getConfigurationSection("hiddenShops").getKeys(false).forEach(key -> {
-//                hiddenShops.put((Location)key, UUID.fromString(hiddenShopsConfig.getString("hiddenShops." + key)));
-//            });
-//        }
-//    }
-
-//    public static void saveHiddenShopsToFile() {
-//        hiddenShopsYamlFile = new File(Bukkit.getServer().getPluginManager().getPlugin("QSFindItemAddOn").getDataFolder(), "hiddenShops.yml");
-//        for(Map.Entry<Location, UUID> entry : hiddenShops.entrySet()) {
-//            hiddenShopsConfig.set("hiddenShops." + entry.getKey(), entry.getValue());
-//        }
-//        try {
-//            hiddenShopsConfig.save(hiddenShopsYamlFile);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//            LoggerUtils.logError("Error saving hidden shops list to file");
-//        }
-//    }
-
     public static void loadHiddenShopsFromFile() {
         Gson gson = new Gson();
-        File file = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/hiddenShops.json");
+        File file = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/" + HIDDEN_SHOP_STORAGE_JSON_FILE_NAME);
         if(file.exists()) {
             try {
                 Reader reader = new FileReader(file);
@@ -155,24 +152,19 @@ public class HiddenShopStorageUtil {
     }
 
     public static void saveHiddenShopsToFile() {
-//        if(hiddenShopsList.size() > 0) {
-            Gson gson = new Gson();
-            File file = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/hiddenShops.json");
-            file.getParentFile().mkdir();
-            try {
-                file.createNewFile();
-                Writer writer = new FileWriter(file, false);
-                gson.toJson(hiddenShopsList, writer);
-                writer.flush();
-                writer.close();
-                LoggerUtils.logInfo("Saved hidden shops to file");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-//        }
-//        else {
-//            LoggerUtils.logInfo("Hidden shops list empty, nothing to save to file.");
-//        }
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+        File file = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/" + HIDDEN_SHOP_STORAGE_JSON_FILE_NAME);
+        file.getParentFile().mkdir();
+        try {
+            file.createNewFile();
+            Writer writer = new FileWriter(file, false);
+            gson.toJson(hiddenShopsList, writer);
+            writer.flush();
+            writer.close();
+            LoggerUtils.logInfo("Saved hidden shops to file");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 }

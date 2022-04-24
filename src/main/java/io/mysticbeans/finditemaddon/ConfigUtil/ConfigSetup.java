@@ -1,7 +1,7 @@
 package io.mysticbeans.finditemaddon.ConfigUtil;
 
+import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -17,7 +17,7 @@ public class ConfigSetup {
     private static final int CURRENT_CONFIG_VERSION = 11;
 
     public static void setupConfig() {
-        file = new File(Bukkit.getServer().getPluginManager().getPlugin("QSFindItemAddOn").getDataFolder(), "config.yml");
+        file = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
 
         if(!file.exists()) {
             try {
@@ -166,6 +166,9 @@ public class ConfigSetup {
                 if(fileConfig.getString("shop-gui-next-button-material").equalsIgnoreCase("GREEN_CONCRETE")) {
                     fileConfig.set("shop-gui-next-button-material", "");
                 }
+
+                // Add option to configure player visit cooldown
+                fileConfig.set("shop-player-visit-cooldown-in-minutes", 5);
             }
             fileConfig.set("config-version", null);
             fileConfig.set("config-version", CURRENT_CONFIG_VERSION);

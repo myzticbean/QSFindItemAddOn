@@ -48,8 +48,8 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>2.3.1</version>
                 <configuration>
-                    <outputDirectory>E:\MCServer_1.18\plugins</outputDirectory>
-<!--                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.18/plugins</outputDirectory>-->
+<!--                    <outputDirectory>E:\MCServer_1.18\plugins</outputDirectory>-->
+                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.18/plugins</outputDirectory>
                 </configuration>
             </plugin>
         </plugins>

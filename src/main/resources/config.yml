@@ -36,6 +36,7 @@ shop-gui-item-lore:
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
   - "&fWarp: &7{NEAREST_WARP}"
+  - "&fShop Visits: &7{SHOP_VISITS}"
   - ""
 player-shop-teleportation:
   direct-shop-tp-mode:
@@ -57,6 +58,7 @@ shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
 shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+shop-player-visit-cooldown-in-minutes: 5
 blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"

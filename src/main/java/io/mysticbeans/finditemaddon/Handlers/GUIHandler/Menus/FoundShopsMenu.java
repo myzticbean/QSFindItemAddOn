@@ -8,6 +8,7 @@ import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Handlers.GUIHandler.PaginatedMenu;
 import io.mysticbeans.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
 import io.mysticbeans.finditemaddon.Models.FoundShopItemModel;
+import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LocationUtils;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import io.mysticbeans.finditemaddon.Utils.PlayerPerms;
@@ -104,7 +105,16 @@ public class FoundShopsMenu extends PaginatedMenu {
                         Location shopLocation = new Location(world, locX, locY, locZ);
                         Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
                         if(locToTeleport != null) {
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, true));
+                            // Check cooldown
+
+
+                            // Add Player Visit Entry
+                            ShopSearchActivityStorageUtil.addPlayerVisitEntryAsync(shopLocation, player);
+
+                            // Add Short Blindness effect
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, false, false, false));
+
+                            // Teleport
                             PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
                         }
                         else {
@@ -255,6 +265,9 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                     }
 
+                    // FOR TESTING
+//                    lore.add(ColorTranslator.translateColorCodes("&cPlayer Visits: " + ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getLocation())));
+
                     if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
                         if(playerMenuUtility.getOwner().hasPermission(PlayerPerms.FINDITEM_SHOPTP.toString())) {
                             lore.add(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().CLICK_TO_TELEPORT_MSG));
@@ -325,6 +338,9 @@ public class FoundShopsMenu extends PaginatedMenu {
         }
         if(text.contains("{SHOP_WORLD}")) {
             text = text.replace("{SHOP_WORLD}", Objects.requireNonNull(shop.getLocation().getWorld()).getName());
+        }
+        if(text.contains("{SHOP_VISITS}")) {
+            text = text.replace("{SHOP_VISITS}", String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getLocation())));
         }
         return text;
     }

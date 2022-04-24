@@ -1,12 +1,13 @@
 package io.mysticbeans.finditemaddon.Models;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
 
 @AllArgsConstructor
+@NoArgsConstructor
 public class PlayerShopVisitModel {
 
     private String playerUUID;

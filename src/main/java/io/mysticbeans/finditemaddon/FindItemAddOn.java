@@ -8,9 +8,13 @@ import io.mysticbeans.finditemaddon.Dependencies.WGPlugin;
 import io.mysticbeans.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
 import io.mysticbeans.finditemaddon.Listeners.*;
 import io.mysticbeans.finditemaddon.Metrics.Metrics;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSApi;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
+import io.mysticbeans.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import io.mysticbeans.finditemaddon.SAPICommands.*;
 import io.mysticbeans.finditemaddon.ScheduledTasks.Task15MinInterval;
-import io.mysticbeans.finditemaddon.Utils.HiddenShopStorageUtil;
+import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
+import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import io.mysticbeans.finditemaddon.Utils.PlayerPerms;
 import io.mysticbeans.finditemaddon.Utils.UpdateChecker;
@@ -41,6 +45,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private static boolean isPluginOutdated = false;
     private static boolean qSReremakeInstalled = false;
     private static boolean qSHikariInstalled = false;
+    private static QSApi qsApi;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
@@ -48,18 +53,6 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onEnable() {
         // Plugin startup logic
         LoggerUtils.logInfo("A QuickShop AddOn by &aronsane");
-
-        // Load all hidden shops from file
-        HiddenShopStorageUtil.loadHiddenShopsFromFile();
-
-        // Handle config file
-        this.saveDefaultConfig();
-        this.getConfig().options().copyDefaults(true);
-        ConfigSetup.setupConfig();
-        ConfigSetup.get().options().copyDefaults(true);
-        ConfigSetup.checkForMissingProperties();
-        ConfigSetup.saveConfig();
-        initConfigProvider();
 
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
             && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
@@ -70,12 +63,32 @@ public final class FindItemAddOn extends JavaPlugin {
         }
         else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
             qSReremakeInstalled = true;
+            qsApi = new QSReremakeAPIHandler();
             LoggerUtils.logInfo("Found QuickShop-Reremake");
         }
         else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
             qSHikariInstalled = true;
+            qsApi = new QSHikariAPIHandler();
             LoggerUtils.logInfo("Found QuickShop-Hikari");
         }
+
+        // Load all hidden shops from file
+        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+        ShopSearchActivityStorageUtil.loadShopsFromFile();
+        ShopSearchActivityStorageUtil.setupCooldownsConfigFile();
+        ShopSearchActivityStorageUtil.restoreCooldowns();
+
+        // Handle config file
+        this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        ConfigSetup.setupConfig();
+        ConfigSetup.get().options().copyDefaults(true);
+        ConfigSetup.checkForMissingProperties();
+        ConfigSetup.saveConfig();
+        initConfigProvider();
+
+        // v2.0.0 - Migrating hiddenShops.json to shops.json
+        ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();
 
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
@@ -111,7 +124,11 @@ public final class FindItemAddOn extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        HiddenShopStorageUtil.saveHiddenShopsToFile();
+        if(qsApi != null) {
+            HiddenShopStorageUtil.saveHiddenShopsToFile();
+            ShopSearchActivityStorageUtil.saveShopsToFile();
+            ShopSearchActivityStorageUtil.saveCooldowns();
+        }
         LoggerUtils.logInfo("Bye!");
     }
 
@@ -254,5 +271,9 @@ public final class FindItemAddOn extends JavaPlugin {
 
     public static boolean isQSHikariInstalled() {
         return qSHikariInstalled;
+    }
+
+    public static QSApi getQsApiInstance() {
+        return qsApi;
     }
 }

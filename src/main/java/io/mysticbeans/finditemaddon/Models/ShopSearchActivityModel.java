@@ -2,11 +2,15 @@ package io.mysticbeans.finditemaddon.Models;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @AllArgsConstructor
 @Getter
+@Setter
+@ToString
 public class ShopSearchActivityModel {
 
     private String worldName;
@@ -18,5 +22,30 @@ public class ShopSearchActivityModel {
     private String shopOwnerUUID;
     private List<PlayerShopVisitModel> playerVisitList;
     private boolean isHiddenFromSearch;
+
+    public boolean compareWith(String targetWorldName, double targetX, double targetY, double targetZ, String targetShopOwnerUUID) {
+        if(this.getWorldName().equalsIgnoreCase(worldName)
+                && this.getX() == targetX
+                && this.getY() == targetY
+                && this.getZ() == targetZ
+                && this.getShopOwnerUUID().equalsIgnoreCase(targetShopOwnerUUID)
+        ) {
+            return true;
+        }
+        else
+            return false;
+    }
+
+    public boolean compareWith(String targetWorldName, double targetX, double targetY, double targetZ) {
+        if(this.getWorldName().equalsIgnoreCase(worldName)
+                && this.getX() == targetX
+                && this.getY() == targetY
+                && this.getZ() == targetZ
+        ) {
+            return true;
+        }
+        else
+            return false;
+    }
 
 }

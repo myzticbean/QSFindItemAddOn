@@ -5,7 +5,8 @@ import com.ghostchu.quickshop.api.QuickShopAPI;
 import com.ghostchu.quickshop.api.shop.Shop;
 import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Models.FoundShopItemModel;
-import io.mysticbeans.finditemaddon.Utils.HiddenShopStorageUtil;
+import io.mysticbeans.finditemaddon.Models.ShopSearchActivityModel;
+import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -14,7 +15,9 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
@@ -64,7 +67,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            return sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList);
         }
         return shopsFoundList;
     }
@@ -110,7 +113,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            return sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList);
         }
         return shopsFoundList;
     }
@@ -144,7 +147,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         });
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-            return sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList);
         }
         return shopsFoundList;
     }
@@ -167,24 +170,65 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return api.getShopManager().getAllShops();
     }
 
-    private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
-        switch (sortingMethod) {
-            // Random
-            case 1 -> Collections.shuffle(shopsFoundList);
-            // Based on prices (lower to higher)
-            case 2 -> shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
-            // Based on stocks (higher to lower)
-            case 3 -> {
-                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getRemainingStock));
-                Collections.reverse(shopsFoundList);
-            }
-            default -> {
-                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-                LoggerUtils.logError("Defaulting to sorting by prices method");
-                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
-            }
+    @Override
+    public List<ShopSearchActivityModel> syncShopsListForStorage(List<ShopSearchActivityModel> globalShopsList) {
+        // copy all shops from shops list in API to a temp globalShopsList
+        // now check shops from temp globalShopsList in current globalShopsList and pull playerVisit data
+        List<ShopSearchActivityModel> tempGlobalShopsList = new ArrayList<>();
+        for(Shop shop_i : getAllShops()) {
+            Location shopLoc = shop_i.getLocation();
+            tempGlobalShopsList.add(new ShopSearchActivityModel(
+                    shopLoc.getWorld().getName(),
+                    shopLoc.getX(),
+                    shopLoc.getY(),
+                    shopLoc.getZ(),
+                    shopLoc.getPitch(),
+                    shopLoc.getYaw(),
+                    shop_i.getOwner().toString(),
+                    new ArrayList<>(),
+                    false
+            ));
         }
-        return shopsFoundList;
+
+        for(ShopSearchActivityModel shop_temp : tempGlobalShopsList) {
+            ShopSearchActivityModel tempShopToRemove = null;
+            for(ShopSearchActivityModel shop_global : globalShopsList) {
+                if(shop_temp.getWorldName().equalsIgnoreCase(shop_global.getWorldName())
+                        && shop_temp.getX() == shop_global.getX()
+                        && shop_temp.getY() == shop_global.getY()
+                        && shop_temp.getZ() == shop_global.getZ()
+                        && shop_temp.getShopOwnerUUID().equalsIgnoreCase(shop_global.getShopOwnerUUID())
+                ) {
+                    shop_temp.setPlayerVisitList(shop_global.getPlayerVisitList());
+                    shop_temp.setHiddenFromSearch(shop_global.isHiddenFromSearch());
+                    tempShopToRemove = shop_global;
+                    break;
+                }
+            }
+            if(tempShopToRemove != null)
+                globalShopsList.remove(tempShopToRemove);
+        }
+        return tempGlobalShopsList;
     }
+
+//    private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
+//        switch (sortingMethod) {
+//            // Random
+//            case 1 -> Collections.shuffle(shopsFoundList);
+//            // Based on prices (lower to higher)
+//            case 2 -> shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
+//            // Based on stocks (higher to lower)
+//            case 3 -> {
+//                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getRemainingStock));
+//                Collections.reverse(shopsFoundList);
+//            }
+//            default -> {
+//                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
+//                LoggerUtils.logError("Defaulting to sorting by prices method");
+//                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
+//            }
+//        }
+//        return shopsFoundList;
+//    }
 
 }

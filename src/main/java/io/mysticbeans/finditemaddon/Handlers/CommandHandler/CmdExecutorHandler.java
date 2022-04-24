@@ -4,10 +4,7 @@ import io.mysticbeans.finditemaddon.ConfigUtil.ConfigSetup;
 import io.mysticbeans.finditemaddon.FindItemAddOn;
 import io.mysticbeans.finditemaddon.Handlers.GUIHandler.Menus.FoundShopsMenu;
 import io.mysticbeans.finditemaddon.Models.FoundShopItemModel;
-import io.mysticbeans.finditemaddon.QuickShopHandler.QSApi;
-import io.mysticbeans.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
-import io.mysticbeans.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
-import io.mysticbeans.finditemaddon.Utils.HiddenShopStorageUtil;
+import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import io.mysticbeans.finditemaddon.Utils.PlayerPerms;
 import io.mysticbeans.finditemaddon.Utils.WarpUtils.WarpUtils;
@@ -29,16 +26,16 @@ import java.util.List;
  */
 public class CmdExecutorHandler {
 
-    QSApi qsApi;
-
-    public CmdExecutorHandler() {
-        if(FindItemAddOn.isQSReremakeInstalled()) {
-            qsApi = new QSReremakeAPIHandler();
-        }
-        else {
-            qsApi = new QSHikariAPIHandler();
-        }
-    }
+//    QSApi qsApi;
+//
+//    public CmdExecutorHandler() {
+//        if(FindItemAddOn.isQSReremakeInstalled()) {
+//            qsApi = new QSReremakeAPIHandler();
+//        }
+//        else {
+//            qsApi = new QSHikariAPIHandler();
+//        }
+//    }
 
     /**
      * Handles the main shop search process
@@ -68,7 +65,7 @@ public class CmdExecutorHandler {
                 }
 
                 if(itemArg.equalsIgnoreCase("*")) {
-                    List<FoundShopItemModel> searchResultList = qsApi.fetchAllItemsFromAllShops(isBuying);
+                    List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying);
                     if(searchResultList.size() > 0) {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                             FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
@@ -86,7 +83,7 @@ public class CmdExecutorHandler {
                     Material mat = Material.getMaterial(itemArg.toUpperCase());
                     if(mat != null) {
                         LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                        List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
@@ -102,7 +99,7 @@ public class CmdExecutorHandler {
                     }
                     else {
                         LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                        List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
+                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
@@ -139,10 +136,10 @@ public class CmdExecutorHandler {
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
                 if(FindItemAddOn.isQSReremakeInstalled()) {
-                    hideShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
+                    hideShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
-                    hideShop((com.ghostchu.quickshop.api.shop.Shop)qsApi.findShopAtLocation(playerLookAtBlock), player);
+                    hideShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
             }
             else {
@@ -164,10 +161,10 @@ public class CmdExecutorHandler {
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
                 if(FindItemAddOn.isQSReremakeInstalled()) {
-                    revealShop((Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
+                    revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
-                    revealShop((com.ghostchu.quickshop.api.shop.Shop) qsApi.findShopAtLocation(playerLookAtBlock), player);
+                    revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
             }
             else {
@@ -236,7 +233,7 @@ public class CmdExecutorHandler {
             ConfigSetup.checkForMissingProperties();
             ConfigSetup.saveConfig();
             FindItemAddOn.initConfigProvider();
-            List allServerShops = qsApi.getAllShops();
+            List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
             if(allServerShops.size() == 0) {
                 LoggerUtils.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
             }
@@ -253,7 +250,7 @@ public class CmdExecutorHandler {
                 ConfigSetup.saveConfig();
                 FindItemAddOn.initConfigProvider();
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
-                List allServerShops = qsApi.getAllShops();
+                List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
                 if(allServerShops.size() == 0) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
@@ -280,7 +277,7 @@ public class CmdExecutorHandler {
             Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
             Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
             LoggerUtils.logInfo("&aPlugin restarted!");
-            List allServerShops = qsApi.getAllShops();
+            List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
             if(allServerShops.size() == 0) {
                 LoggerUtils.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
             }
@@ -294,7 +291,7 @@ public class CmdExecutorHandler {
                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));
-                List allServerShops = qsApi.getAllShops();
+                List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
                 if(allServerShops.size() == 0) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
@@ -314,7 +311,7 @@ public class CmdExecutorHandler {
     private void hideShop(Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
-            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+            if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(!HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.addShop(shop);
                     player.sendMessage(ColorTranslator.translateColorCodes(
@@ -343,7 +340,7 @@ public class CmdExecutorHandler {
     private void hideShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
-            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+            if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(!HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.addShop(shop);
                     player.sendMessage(ColorTranslator.translateColorCodes(
@@ -372,7 +369,7 @@ public class CmdExecutorHandler {
     private void revealShop(Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
-            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+            if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.deleteShop(shop);
                     player.sendMessage(ColorTranslator.translateColorCodes(
@@ -401,7 +398,7 @@ public class CmdExecutorHandler {
     private void revealShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
-            if(qsApi.isShopOwnerCommandRunner(player, shop)) {
+            if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.deleteShop(shop);
                     player.sendMessage(ColorTranslator.translateColorCodes(
