@@ -8,7 +8,7 @@ public class Task15MinInterval implements Runnable {
     @Override
     public void run() {
         WarpUtils.updateWarps();
-        HiddenShopStorageUtil.saveHiddenShopsToFile();
+//        HiddenShopStorageUtil.saveHiddenShopsToFile();
         new ShopSearchActivityStorageUtil().syncShops();
     }
 }

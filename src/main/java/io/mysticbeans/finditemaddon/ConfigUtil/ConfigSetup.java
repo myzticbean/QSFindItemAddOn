@@ -170,6 +170,9 @@ public class ConfigSetup {
                 // Add option to configure player visit cooldown
                 fileConfig.set("shop-player-visit-cooldown-in-minutes", 5);
             }
+            boolean userDefinedDebugMode = fileConfig.getBoolean("debug-mode");
+            fileConfig.set("debug-mode", null);
+            fileConfig.set("debug-mode", userDefinedDebugMode);
             fileConfig.set("config-version", null);
             fileConfig.set("config-version", CURRENT_CONFIG_VERSION);
         }

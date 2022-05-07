@@ -177,6 +177,7 @@ public class CmdExecutorHandler {
      * Handles the saving hidden shops to file feature
      * @param commandSender Who is the command sender: console or player
      */
+    /*
     public void handleHiddenShopSavingToFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -197,11 +198,13 @@ public class CmdExecutorHandler {
             }
         }
     }
+     */
 
     /**
      * Handles the loading of hidden shops from file feature
      * @param commandSender Who is the command sender: console or player
      */
+    /*
     public void handleHiddenShopLoadingFromFile(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             LoggerUtils.logInfo("This command can only be run from in game");
@@ -222,6 +225,7 @@ public class CmdExecutorHandler {
             }
         }
     }
+     */
 
     /**
      * Handles plugin reload
@@ -308,12 +312,17 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles hide shop for QuickShop Reremake
+     * @param shop
+     * @param player
+     */
     private void hideShop(Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(!HiddenShopStorageUtil.isShopHidden(shop)) {
-                    HiddenShopStorageUtil.addShop(shop);
+                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, true);
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
@@ -337,12 +346,17 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles hide shop for QuickShop Hikari
+     * @param shop
+     * @param player
+     */
     private void hideShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(!HiddenShopStorageUtil.isShopHidden(shop)) {
-                    HiddenShopStorageUtil.addShop(shop);
+                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, true);
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG));
@@ -366,12 +380,17 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles reveal shop for QuickShop Reremake
+     * @param shop
+     * @param player
+     */
     private void revealShop(Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(HiddenShopStorageUtil.isShopHidden(shop)) {
-                    HiddenShopStorageUtil.deleteShop(shop);
+                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, false);
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));
@@ -395,12 +414,17 @@ public class CmdExecutorHandler {
         }
     }
 
+    /**
+     * Handles reveal shop for QuickShop Hikari
+     * @param shop
+     * @param player
+     */
     private void revealShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
                 if(HiddenShopStorageUtil.isShopHidden(shop)) {
-                    HiddenShopStorageUtil.deleteShop(shop);
+                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, false);
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG));

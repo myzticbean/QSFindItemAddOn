@@ -107,14 +107,16 @@ public class FoundShopsMenu extends PaginatedMenu {
                         if(locToTeleport != null) {
                             // Check cooldown
 
-
                             // Add Player Visit Entry
                             ShopSearchActivityStorageUtil.addPlayerVisitEntryAsync(shopLocation, player);
 
                             // Add Short Blindness effect
-                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20, 0, false, false, false));
+//                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 0, false, false, false));
 
                             // Teleport
+                            if(EssentialsXPlugin.isEnabled()) {
+                                EssentialsXPlugin.getAPI().getUser(player).setLastLocation();
+                            }
                             PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
                         }
                         else {

@@ -45,12 +45,12 @@ public class ShopSearchActivityStorageUtil {
             // check if player still has cooldown
             if(cooldowns.get(player.getName()) > (System.currentTimeMillis()/1000)) {
                 long timeLeft = (cooldowns.get(player.getName()) - System.currentTimeMillis()/1000);
-//                player.sendMessage(ColorTranslator.translateColorCodes("&6Still has cooldown of " + timeLeft + " seconds!"));
+                LoggerUtils.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " still has cooldown of " + timeLeft + " seconds!"));
                 return false;
             }
         }
         cooldowns.put(player.getName(), (System.currentTimeMillis()/1000) + FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60);
-//        player.sendMessage(ColorTranslator.translateColorCodes("&aCooldown added for " + FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60 + " seconds"));
+        LoggerUtils.logDebugInfo(ColorTranslator.translateColorCodes("&aCooldown added for " + FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60 + " seconds for " + player.getName()));
         return true;
     }
 
@@ -141,7 +141,6 @@ public class ShopSearchActivityStorageUtil {
         if(file.exists()) {
             try {
                 Reader reader = new FileReader(file);
-                Type listType = new TypeToken<List<HiddenShopModel>>() {}.getType();
                 ShopSearchActivityModel[] h = gson.fromJson(reader, ShopSearchActivityModel[].class);
                 if(h != null) {
                     globalShopsList = new ArrayList<>(Arrays.asList(h));
@@ -154,6 +153,15 @@ public class ShopSearchActivityStorageUtil {
                 e.printStackTrace();
             }
         }
+//        else {
+//            try {
+//                file.createNewFile();
+//                LoggerUtils.logInfo("Generated new " + SHOP_SEARCH_ACTIVITY_JSON_FILE_NAME);
+//            } catch (IOException e) {
+//                LoggerUtils.logError("Error generating " + SHOP_SEARCH_ACTIVITY_JSON_FILE_NAME);
+//                e.printStackTrace();
+//            }
+//        }
         globalShopsList = FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList);
     }
 
@@ -191,6 +199,7 @@ public class ShopSearchActivityStorageUtil {
     public static void migrateHiddenShopsToShopsJson() {
         File hiddenShopsJsonfile = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/" + HiddenShopStorageUtil.HIDDEN_SHOP_STORAGE_JSON_FILE_NAME);
         if(hiddenShopsJsonfile.exists()) {
+            HiddenShopStorageUtil.loadHiddenShopsFromFile();
             if(HiddenShopStorageUtil.hiddenShopsList.size() > 0) {
                 for(int globalShopsList_i = 0 ; globalShopsList_i < globalShopsList.size() ; globalShopsList_i++) {
                     ShopSearchActivityModel shopSearchActivity = globalShopsList.get(globalShopsList_i);
@@ -211,6 +220,7 @@ public class ShopSearchActivityStorageUtil {
                 }
             }
             LoggerUtils.logDebugInfo("Here we will delete the hiddenShops.json");
+            hiddenShopsJsonfile.delete();
         }
         else {
             LoggerUtils.logDebugInfo("hiddenshops.json: No conversion required");
@@ -220,7 +230,10 @@ public class ShopSearchActivityStorageUtil {
     public static void addPlayerVisitEntryAsync(Location shopLocation, Player visitingPlayer) {
         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
             if(handleCooldownIfPresent(visitingPlayer)) {
-                for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
+                Iterator<ShopSearchActivityModel> shopSearchActivityIterator = globalShopsList.iterator();
+                int i = 0;
+                while(shopSearchActivityIterator.hasNext()) {
+                    ShopSearchActivityModel shopSearchActivity = shopSearchActivityIterator.next();
                     if(shopSearchActivity.compareWith(
                             shopLocation.getWorld().getName(),
                             shopLocation.getX(),
@@ -230,11 +243,28 @@ public class ShopSearchActivityStorageUtil {
                         PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
                         playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
                         playerShopVisit.setVisitDateTime();
-                        shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
+//                        shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
+                        globalShopsList.get(i).getPlayerVisitList().add(playerShopVisit);
                         LoggerUtils.logDebugInfo("Added new player visit entry at " + shopLocation.toString());
                         break;
                     }
+                    i++;
                 }
+//                for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
+//                    if(shopSearchActivity.compareWith(
+//                            shopLocation.getWorld().getName(),
+//                            shopLocation.getX(),
+//                            shopLocation.getY(),
+//                            shopLocation.getZ()
+//                    )) {
+//                        PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
+//                        playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
+//                        playerShopVisit.setVisitDateTime();
+//                        shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
+//                        LoggerUtils.logDebugInfo("Added new player visit entry at " + shopLocation.toString());
+//                        break;
+//                    }
+//                }
             }
         });
     }

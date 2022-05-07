@@ -13,7 +13,6 @@ import io.mysticbeans.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
 import io.mysticbeans.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import io.mysticbeans.finditemaddon.SAPICommands.*;
 import io.mysticbeans.finditemaddon.ScheduledTasks.Task15MinInterval;
-import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.mysticbeans.finditemaddon.Utils.LoggerUtils;
 import io.mysticbeans.finditemaddon.Utils.PlayerPerms;
@@ -47,6 +46,8 @@ public final class FindItemAddOn extends JavaPlugin {
     private static boolean qSHikariInstalled = false;
     private static QSApi qsApi;
 
+    private static ShopSearchActivityStorageUtil shopSearchActivityStorageUtil;
+
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
@@ -73,7 +74,8 @@ public final class FindItemAddOn extends JavaPlugin {
         }
 
         // Load all hidden shops from file
-        HiddenShopStorageUtil.loadHiddenShopsFromFile();
+        shopSearchActivityStorageUtil = new ShopSearchActivityStorageUtil();
+//        HiddenShopStorageUtil.loadHiddenShopsFromFile();
         ShopSearchActivityStorageUtil.loadShopsFromFile();
         ShopSearchActivityStorageUtil.setupCooldownsConfigFile();
         ShopSearchActivityStorageUtil.restoreCooldowns();
@@ -125,7 +127,7 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         if(qsApi != null) {
-            HiddenShopStorageUtil.saveHiddenShopsToFile();
+//            HiddenShopStorageUtil.saveHiddenShopsToFile();
             ShopSearchActivityStorageUtil.saveShopsToFile();
             ShopSearchActivityStorageUtil.saveCooldowns();
         }
@@ -275,5 +277,9 @@ public final class FindItemAddOn extends JavaPlugin {
 
     public static QSApi getQsApiInstance() {
         return qsApi;
+    }
+
+    public static ShopSearchActivityStorageUtil getShopSearchActivityStorageUtil() {
+        return shopSearchActivityStorageUtil;
     }
 }
