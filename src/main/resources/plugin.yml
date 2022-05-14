@@ -1,6 +1,6 @@
 name: QSFindItemAddOn
 version: ${project.version}
-main: io.mysticbeans.finditemaddon.FindItemAddOn
+main: io.myzticbean.finditemaddon.FindItemAddOn
 api-version: 1.16
 authors: [ ronsane ]
 softdepend:
