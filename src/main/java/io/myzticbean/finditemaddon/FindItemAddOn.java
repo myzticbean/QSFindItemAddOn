@@ -46,22 +46,30 @@ public final class FindItemAddOn extends JavaPlugin {
     private static boolean qSHikariInstalled = false;
     private static QSApi qsApi;
 
-//    private static ShopSearchActivityStorageUtil shopSearchActivityStorageUtil;
-
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
     public void onEnable() {
-        // Plugin startup logic
-        LoggerUtils.logInfo("A QuickShop AddOn by &aronsane");
 
-        // Show warning if its a snapshot build
+        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by ronsane");
+
+        // Show warning if it's a snapshot build
         if(this.getDescription().getVersion().toLowerCase().contains("snapshot")) {
             LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
             LoggerUtils.logWarning("If you find any bugs, please report them here: https://gitlab.com/ronsane/QSFindItemAddOn/-/issues");
         }
 
-        // Enable after server is done loading
+        // Handle config file
+        this.saveDefaultConfig();
+        this.getConfig().options().copyDefaults(true);
+        ConfigSetup.setupConfig();
+        ConfigSetup.get().options().copyDefaults(true);
+        ConfigSetup.checkForMissingProperties();
+        ConfigSetup.saveConfig();
+        initConfigProvider();
+
+        initCommands();
+        // Run plugin startup logic after server is done loading
         Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), () -> runPluginStartupTasks());
     }
 
@@ -73,14 +81,20 @@ public final class FindItemAddOn extends JavaPlugin {
             ShopSearchActivityStorageUtil.saveShopsToFile();
 //            ShopSearchActivityStorageUtil.saveCooldowns();
         }
+        else {
+            LoggerUtils.logError("Uh oh! Looks like this plugin has crashed.");
+        }
         LoggerUtils.logInfo("Bye!");
     }
 
     private void runPluginStartupTasks() {
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
                 && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
-            LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
-            LoggerUtils.logError("&cBoth QuickShop-Reremake or QuickShop-Hikari are supported by this addon.");
+            LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
+            LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
+            LoggerUtils.logError("Download links:");
+            LoggerUtils.logError("» QuickShop-Reremake: https://www.spigotmc.org/resources/62575");
+            LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -103,13 +117,13 @@ public final class FindItemAddOn extends JavaPlugin {
 //        ShopSearchActivityStorageUtil.restoreCooldowns();
 
         // Handle config file
-        this.saveDefaultConfig();
-        this.getConfig().options().copyDefaults(true);
-        ConfigSetup.setupConfig();
-        ConfigSetup.get().options().copyDefaults(true);
-        ConfigSetup.checkForMissingProperties();
-        ConfigSetup.saveConfig();
-        initConfigProvider();
+//        this.saveDefaultConfig();
+//        this.getConfig().options().copyDefaults(true);
+//        ConfigSetup.setupConfig();
+//        ConfigSetup.get().options().copyDefaults(true);
+//        ConfigSetup.checkForMissingProperties();
+//        ConfigSetup.saveConfig();
+//        initConfigProvider();
 
         // v2.0.0 - Migrating hiddenShops.json to shops.json
         ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();
@@ -117,7 +131,7 @@ public final class FindItemAddOn extends JavaPlugin {
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
 
-        initCommands();
+//        initCommands();
 
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
@@ -290,7 +304,4 @@ public final class FindItemAddOn extends JavaPlugin {
         return qsApi;
     }
 
-//    public static ShopSearchActivityStorageUtil getShopSearchActivityStorageUtil() {
-//        return shopSearchActivityStorageUtil;
-//    }
 }

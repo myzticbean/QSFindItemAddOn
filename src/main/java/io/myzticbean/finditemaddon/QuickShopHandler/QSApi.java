@@ -13,9 +13,9 @@ import java.util.Comparator;
 import java.util.List;
 
 public interface QSApi<T, V> {
-    List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy);
-    List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy);
-    List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy);
+    List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer);
+    List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer);
+    List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer);
     Material getShopSignMaterial();
     V findShopAtLocation(Block block);
     boolean isShopOwnerCommandRunner(Player player, V shop);

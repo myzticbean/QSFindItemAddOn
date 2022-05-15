@@ -21,17 +21,15 @@ import java.util.Objects;
 
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
-//    private final QuickShop qsPlugin;
-
     private final QuickShopAPI api;
+    private final String QS_REREMAKE_PLUGIN_NAME = "QuickShop";
 
     public QSReremakeAPIHandler() {
-//        qsPlugin = QuickShop.getInstance();
-        api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop");
+        api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin(QS_REREMAKE_PLUGIN_NAME);
     }
 
     @Override
-    public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
+    public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -74,7 +72,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     @Override
-    public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
+    public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -121,7 +119,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     @Override
-    public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy) {
+    public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {

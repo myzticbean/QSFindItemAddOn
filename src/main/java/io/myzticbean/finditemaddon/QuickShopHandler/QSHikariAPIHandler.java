@@ -3,6 +3,7 @@ package io.myzticbean.finditemaddon.QuickShopHandler;
 import com.ghostchu.quickshop.QuickShop;
 import com.ghostchu.quickshop.api.QuickShopAPI;
 import com.ghostchu.quickshop.api.shop.Shop;
+import com.ghostchu.quickshop.shop.permission.BuiltInShopPermission;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
@@ -14,6 +15,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,16 +23,16 @@ import java.util.Objects;
 
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
-//    private final QuickShop qsPlugin;
-
     private QuickShopAPI api;
+    private Plugin qsHikariPluginInstance;
+    private final String QS_HIKARI_PLUGIN_NAME = "QuickShop-Hikari";
 
     public QSHikariAPIHandler() {
-//        qsPlugin = QuickShop.getInstance();
-        api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin("QuickShop-Hikari");
+        qsHikariPluginInstance = Bukkit.getPluginManager().getPlugin(QS_HIKARI_PLUGIN_NAME);
+        api = (QuickShopAPI) qsHikariPluginInstance;
     }
 
-    public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy) {
+    public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -41,20 +43,23 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
         allShops.forEach((shop_i) -> {
-            // check for blacklisted worlds
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && shop_i.getItem().getType().equals(item.getType())
-                    && shop_i.getRemainingStock() > 0
-                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                // check for shop if hidden
-                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                    shopsFoundList.add(new FoundShopItemModel(
-                            shop_i.getPrice(),
-                            shop_i.getRemainingStock(),
-                            shop_i.getOwner(),
-                            shop_i.getLocation(),
-                            shop_i.getItem()
-                    ));
+            // check for quickshop hikari internal per-shop based search permission
+            if(shop_i.playerAuthorize(searchingPlayer.getUniqueId(), qsHikariPluginInstance, BuiltInShopPermission.SEARCH.getRawNode())) {
+                // check for blacklisted worlds
+                if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
+                        && shop_i.getItem().getType().equals(item.getType())
+                        && shop_i.getRemainingStock() > 0
+                        && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                    // check for shop if hidden
+                    if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                        shopsFoundList.add(new FoundShopItemModel(
+                                shop_i.getPrice(),
+                                shop_i.getRemainingStock(),
+                                shop_i.getOwner(),
+                                shop_i.getLocation(),
+                                shop_i.getItem()
+                        ));
+                    }
                 }
             }
         });
@@ -72,7 +77,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return shopsFoundList;
     }
 
-    public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy) {
+    public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -83,21 +88,26 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
         for(Shop shop_i : allShops) {
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())) {
-                if(shop_i.getItem().hasItemMeta()) {
-                    if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
-                        if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                && shop_i.getRemainingStock() > 0
-                                && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                            // check for shop if hidden
-                            if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                                shopsFoundList.add(new FoundShopItemModel(
-                                        shop_i.getPrice(),
-                                        shop_i.getRemainingStock(),
-                                        shop_i.getOwner(),
-                                        shop_i.getLocation(),
-                                        shop_i.getItem()
-                                ));
+            // check for quickshop hikari internal per-shop based search permission
+            if(shop_i.playerAuthorize(searchingPlayer.getUniqueId(), qsHikariPluginInstance, BuiltInShopPermission.SEARCH.getRawNode())) {
+                // check for blacklisted worlds
+                if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())) {
+                    // match the item based on query
+                    if(shop_i.getItem().hasItemMeta()) {
+                        if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
+                            if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
+                                    && shop_i.getRemainingStock() > 0
+                                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                                // check for shop if hidden
+                                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                                    shopsFoundList.add(new FoundShopItemModel(
+                                            shop_i.getPrice(),
+                                            shop_i.getRemainingStock(),
+                                            shop_i.getOwner(),
+                                            shop_i.getLocation(),
+                                            shop_i.getItem()
+                                    ));
+                                }
                             }
                         }
                     }
@@ -118,7 +128,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return shopsFoundList;
     }
 
-    public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy) {
+    public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -129,19 +139,22 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
         allShops.forEach((shop_i) -> {
-            // check for blacklisted worlds
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && shop_i.getRemainingStock() > 0
-                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                // check for shop if hidden
-                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                    shopsFoundList.add(new FoundShopItemModel(
-                            shop_i.getPrice(),
-                            shop_i.getRemainingStock(),
-                            shop_i.getOwner(),
-                            shop_i.getLocation(),
-                            shop_i.getItem()
-                    ));
+            // check for quickshop hikari internal per-shop based search permission
+            if(shop_i.playerAuthorize(searchingPlayer.getUniqueId(), qsHikariPluginInstance, BuiltInShopPermission.SEARCH.getRawNode())) {
+                // check for blacklisted worlds
+                if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
+                        && shop_i.getRemainingStock() > 0
+                        && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                    // check for shop if hidden
+                    if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                        shopsFoundList.add(new FoundShopItemModel(
+                                shop_i.getPrice(),
+                                shop_i.getRemainingStock(),
+                                shop_i.getOwner(),
+                                shop_i.getLocation(),
+                                shop_i.getItem()
+                        ));
+                    }
                 }
             }
         });

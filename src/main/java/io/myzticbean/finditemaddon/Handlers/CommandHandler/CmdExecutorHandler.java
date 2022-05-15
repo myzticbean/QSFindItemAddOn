@@ -65,7 +65,7 @@ public class CmdExecutorHandler {
                 }
 
                 if(itemArg.equalsIgnoreCase("*")) {
-                    List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying);
+                    List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
                     if(searchResultList.size() > 0) {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                             FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
@@ -83,7 +83,7 @@ public class CmdExecutorHandler {
                     Material mat = Material.getMaterial(itemArg.toUpperCase());
                     if(mat != null) {
                         LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying);
+                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
@@ -99,7 +99,7 @@ public class CmdExecutorHandler {
                     }
                     else {
                         LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying);
+                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
                         if(searchResultList.size() > 0) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
