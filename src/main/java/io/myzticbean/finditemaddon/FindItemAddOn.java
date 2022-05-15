@@ -61,8 +61,24 @@ public final class FindItemAddOn extends JavaPlugin {
             LoggerUtils.logWarning("If you find any bugs, please report them here: https://gitlab.com/ronsane/QSFindItemAddOn/-/issues");
         }
 
+        // Enable after server is done loading
+        Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), () -> runPluginStartupTasks());
+    }
+
+    @Override
+    public void onDisable() {
+        // Plugin shutdown logic
+        if(qsApi != null) {
+//            HiddenShopStorageUtil.saveHiddenShopsToFile();
+            ShopSearchActivityStorageUtil.saveShopsToFile();
+//            ShopSearchActivityStorageUtil.saveCooldowns();
+        }
+        LoggerUtils.logInfo("Bye!");
+    }
+
+    private void runPluginStartupTasks() {
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
-            && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+                && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
             LoggerUtils.logError("&cQuickShop is required to use this addon. Please install QuickShop and try again!");
             LoggerUtils.logError("&cBoth QuickShop-Reremake or QuickShop-Hikari are supported by this addon.");
             getServer().getPluginManager().disablePlugin(this);
@@ -127,17 +143,6 @@ public final class FindItemAddOn extends JavaPlugin {
                 LoggerUtils.logWarning("Download the latest version here: &7https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
             }
         });
-    }
-
-    @Override
-    public void onDisable() {
-        // Plugin shutdown logic
-        if(qsApi != null) {
-//            HiddenShopStorageUtil.saveHiddenShopsToFile();
-            ShopSearchActivityStorageUtil.saveShopsToFile();
-//            ShopSearchActivityStorageUtil.saveCooldowns();
-        }
-        LoggerUtils.logInfo("Bye!");
     }
 
     private void initCommands() {
