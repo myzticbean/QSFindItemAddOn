@@ -21,22 +21,23 @@ public interface QSApi<T, V> {
     boolean isShopOwnerCommandRunner(Player player, V shop);
     List<V> getAllShops();
     List<ShopSearchActivityModel> syncShopsListForStorage(List<ShopSearchActivityModel> globalShopsList);
+    void registerSubCommand();
 
     static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
         switch (sortingMethod) {
             // Random
             case 1 -> Collections.shuffle(shopsFoundList);
             // Based on prices (lower to higher)
-            case 2 -> shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
+            case 2 -> shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getShopPrice));
             // Based on stocks (higher to lower)
             case 3 -> {
-                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getRemainingStock));
+                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getRemainingStockOrSpace));
                 Collections.reverse(shopsFoundList);
             }
             default -> {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
-                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
+                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getShopPrice));
             }
         }
         return shopsFoundList;

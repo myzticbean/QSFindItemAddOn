@@ -5,7 +5,7 @@ import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-public class PWPlayerWarpCreateListener implements Listener {
+public class PWPlayerWarpCreateEventListener implements Listener {
     @EventHandler
     public void onPlayerWarpCreate(PlayerWarpCreateEvent e) {
         PlayerWarpsPlugin.updateWarpsOnEventCall(e.getPlayerWarp(), false);

@@ -1,4 +1,4 @@
-package io.myzticbean.finditemaddon.SAPICommands;
+package io.myzticbean.finditemaddon.Commands.SAPICommands;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.CommandHandler.CmdExecutorHandler;

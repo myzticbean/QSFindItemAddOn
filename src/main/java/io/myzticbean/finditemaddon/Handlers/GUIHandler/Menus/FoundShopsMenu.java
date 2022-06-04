@@ -108,10 +108,12 @@ public class FoundShopsMenu extends PaginatedMenu {
                             // Add Player Visit Entry
                             ShopSearchActivityStorageUtil.addPlayerVisitEntryAsync(shopLocation, player);
 
-                            // Add Short Blindness effect
-//                            player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 0, false, false, false));
+                            // Add Short Blindness effect... maybe?
+//                          player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 0, false, false, false));
+                            // or maybe not
 
                             // Teleport
+                            // If EssentialsX is enabled, register last location before teleporting to make /back work
                             if(EssentialsXPlugin.isEnabled()) {
                                 EssentialsXPlugin.getAPI().getUser(player).setLastLocation();
                             }
@@ -199,19 +201,19 @@ public class FoundShopsMenu extends PaginatedMenu {
 
                 if(foundShops.get(index) != null) {
                     // Place Search Results here
-                    FoundShopItemModel shop = foundShops.get(index);
+                    FoundShopItemModel foundShop_i = foundShops.get(index);
                     NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-                    ItemStack item = new ItemStack(shop.getItem().getType());
+                    ItemStack item = new ItemStack(foundShop_i.getItem().getType());
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore;
                     lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
                     String nearestEWarp = null;
 
-                    if(shop.getItem().hasItemMeta()) {
-                        meta = shop.getItem().getItemMeta();
-                        if(shop.getItem().getItemMeta().hasLore()) {
-                            for(String s : shop.getItem().getItemMeta().getLore()) {
+                    if(foundShop_i.getItem().hasItemMeta()) {
+                        meta = foundShop_i.getItem().getItemMeta();
+                        if(foundShop_i.getItem().getItemMeta().hasLore()) {
+                            for(String s : foundShop_i.getItem().getItemMeta().getLore()) {
                                 lore.add(ColorTranslator.translateColorCodes(s));
                             }
                         }
@@ -223,7 +225,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 1:
                                     // EssentialWarp: Check nearest warp
                                     if(EssentialsXPlugin.isEnabled()) {
-                                        nearestEWarp = new EssentialWarpsUtil().findNearestWarp(shop.getLocation());
+                                        nearestEWarp = new EssentialWarpsUtil().findNearestWarp(foundShop_i.getShopLocation());
                                         if(nearestEWarp != null && !StringUtils.isEmpty(nearestEWarp)) {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace("{NEAREST_WARP}", nearestEWarp)));
                                         }
@@ -235,7 +237,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 2:
                                     // PlayerWarp: Check nearest warp
                                     if(PlayerWarpsPlugin.getIsEnabled()) {
-                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(shop.getLocation());
+                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(foundShop_i.getShopLocation());
                                         if(nearestPlayerWarp != null) {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace("{NEAREST_WARP}", nearestPlayerWarp.getWarpName())));
                                         }
@@ -247,7 +249,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 3:
                                     // WG Region: Check nearest WG Region
                                     if(WGPlugin.isEnabled()) {
-                                        String nearestWGRegion = new WGRegionUtils().findNearestWGRegion((shop.getLocation()));
+                                        String nearestWGRegion = new WGRegionUtils().findNearestWGRegion((foundShop_i.getShopLocation()));
                                         if(nearestWGRegion != null && !StringUtils.isEmpty(nearestWGRegion)) {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace("{NEAREST_WARP}", nearestWGRegion)));
                                         }
@@ -261,12 +263,9 @@ public class FoundShopsMenu extends PaginatedMenu {
                             }
                         }
                         else {
-                            lore.add(ColorTranslator.translateColorCodes(replaceLorePlaceholders(shopItemLore_i, shop)));
+                            lore.add(ColorTranslator.translateColorCodes(replaceLorePlaceholders(shopItemLore_i, foundShop_i)));
                         }
                     }
-
-                    // FOR TESTING
-//                    lore.add(ColorTranslator.translateColorCodes("&cPlayer Visits: " + ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getLocation())));
 
                     if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
                         if(playerMenuUtility.getOwner().hasPermission(PlayerPerms.FINDITEM_SHOPTP.toString())) {
@@ -280,10 +279,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                     String locData = StringUtils.EMPTY;
                     // store the coordinates
                     if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
-                        locData = Objects.requireNonNull(shop.getLocation().getWorld()).getName() + ","
-                                + shop.getLocation().getBlockX() + ","
-                                + shop.getLocation().getBlockY() + ","
-                                + shop.getLocation().getBlockZ();
+                        locData = Objects.requireNonNull(foundShop_i.getShopLocation().getWorld()).getName() + ","
+                                + foundShop_i.getShopLocation().getBlockX() + ","
+                                + foundShop_i.getShopLocation().getBlockY() + ","
+                                + foundShop_i.getShopLocation().getBlockZ();
                     }
                     else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP) {
                         // if Nearest Warp is set to EssentialsX Warps, store the warp name
@@ -302,8 +301,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                     meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
 
                     // handling custom model data
-                    if(Objects.requireNonNull(shop.getItem().getItemMeta()).hasCustomModelData()) {
-                        meta.setCustomModelData(shop.getItem().getItemMeta().getCustomModelData());
+                    if(Objects.requireNonNull(foundShop_i.getItem().getItemMeta()).hasCustomModelData()) {
+                        meta.setCustomModelData(foundShop_i.getItem().getItemMeta().getCustomModelData());
                     }
                     item.setItemMeta(meta);
                     inventory.addItem(item);
@@ -322,25 +321,37 @@ public class FoundShopsMenu extends PaginatedMenu {
     private String replaceLorePlaceholders(String text, FoundShopItemModel shop) {
 
         if(text.contains("{ITEM_PRICE}")) {
-            text = text.replace("{ITEM_PRICE}", String.valueOf(shop.getPrice()));
+            text = text.replace("{ITEM_PRICE}", String.valueOf(shop.getShopPrice()));
         }
         if(text.contains("{SHOP_STOCK}")) {
-            text = text.replace("{SHOP_STOCK}", String.valueOf(shop.getRemainingStock()));
+            if(shop.getRemainingStockOrSpace() == -1) {
+                text = text.replace("{SHOP_STOCK}", "Unlimited");
+            }
+            else {
+                text = text.replace("{SHOP_STOCK}", String.valueOf(shop.getRemainingStockOrSpace()));
+            }
         }
         if(text.contains("{SHOP_OWNER}")) {
-            text = text.replace("{SHOP_OWNER}", Objects.requireNonNull(Bukkit.getOfflinePlayer(shop.getOwner()).getName()));
+            OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shop.getShopOwner());
+            if(shopOwner.getName() != null) {
+                text = text.replace("{SHOP_OWNER}", shopOwner.getName());
+            }
+            else {
+                // set a generic name for shops with no owner name
+                text = text.replace("{SHOP_OWNER}", "Admin");
+            }
         }
         if(text.contains("{SHOP_LOC}")) {
             text = text.replace("{SHOP_LOC}",
-                    shop.getLocation().getBlockX() + ", "
-                    + shop.getLocation().getBlockY() + ", "
-                    + shop.getLocation().getBlockZ());
+                    shop.getShopLocation().getBlockX() + ", "
+                    + shop.getShopLocation().getBlockY() + ", "
+                    + shop.getShopLocation().getBlockZ());
         }
         if(text.contains("{SHOP_WORLD}")) {
-            text = text.replace("{SHOP_WORLD}", Objects.requireNonNull(shop.getLocation().getWorld()).getName());
+            text = text.replace("{SHOP_WORLD}", Objects.requireNonNull(shop.getShopLocation().getWorld()).getName());
         }
         if(text.contains("{SHOP_VISITS}")) {
-            text = text.replace("{SHOP_VISITS}", String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getLocation())));
+            text = text.replace("{SHOP_VISITS}", String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getShopLocation())));
         }
         return text;
     }

@@ -1,5 +1,6 @@
 package io.myzticbean.finditemaddon;
 
+import io.myzticbean.finditemaddon.Commands.SAPICommands.*;
 import io.myzticbean.finditemaddon.ConfigUtil.ConfigProvider;
 import io.myzticbean.finditemaddon.ConfigUtil.ConfigSetup;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
@@ -11,19 +12,16 @@ import io.myzticbean.finditemaddon.Metrics.Metrics;
 import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
 import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
-import io.myzticbean.finditemaddon.SAPICommands.*;
 import io.myzticbean.finditemaddon.ScheduledTasks.Task15MinInterval;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import io.myzticbean.finditemaddon.Utils.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.UpdateChecker;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
-import me.kodysimpson.simpapi.command.CommandList;
 import me.kodysimpson.simpapi.command.CommandManager;
 import me.kodysimpson.simpapi.command.SubCommand;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -49,8 +47,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
-    public void onEnable() {
-
+    public void onLoad() {
         LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by ronsane");
 
         // Show warning if it's a snapshot build
@@ -58,6 +55,25 @@ public final class FindItemAddOn extends JavaPlugin {
             LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
             LoggerUtils.logWarning("If you find any bugs, please report them here: https://gitlab.com/ronsane/QSFindItemAddOn/-/issues");
         }
+
+
+    }
+    @Override
+    public void onEnable() {
+
+        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
+                && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+            LoggerUtils.logInfo("Delaying QuickShop hook as they are not enabled yet");
+        }
+        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
+            qSReremakeInstalled = true;
+        }
+        else {
+            qSHikariInstalled = true;
+        }
+
+        // Registering Bukkit event listeners
+        initBukkitEventListeners();
 
         // Handle config file
         this.saveDefaultConfig();
@@ -69,6 +85,7 @@ public final class FindItemAddOn extends JavaPlugin {
         initConfigProvider();
 
         initCommands();
+
         // Run plugin startup logic after server is done loading
         Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), () -> runPluginStartupTasks());
     }
@@ -77,19 +94,40 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onDisable() {
         // Plugin shutdown logic
         if(qsApi != null) {
-//            HiddenShopStorageUtil.saveHiddenShopsToFile();
             ShopSearchActivityStorageUtil.saveShopsToFile();
-//            ShopSearchActivityStorageUtil.saveCooldowns();
         }
         else {
-            LoggerUtils.logError("Uh oh! Looks like this plugin has crashed.");
+            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop or QuickShop-Hikari installed.");
         }
         LoggerUtils.logInfo("Bye!");
     }
 
     private void runPluginStartupTasks() {
-        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
-                && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+//        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
+//                && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+//            LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
+//            LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
+//            LoggerUtils.logError("Download links:");
+//            LoggerUtils.logError("» QuickShop-Reremake: https://www.spigotmc.org/resources/62575");
+//            LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
+//            getServer().getPluginManager().disablePlugin(this);
+//            return;
+//        }
+//        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
+//            qSReremakeInstalled = true;
+//            qsApi = new QSReremakeAPIHandler();
+//            LoggerUtils.logInfo("Found QuickShop-Reremake");
+//        }
+//        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
+//            qSHikariInstalled = true;
+//            qsApi = new QSHikariAPIHandler();
+//            LoggerUtils.logInfo("Found QuickShop-Hikari");
+//        }
+
+        serverVersion = Bukkit.getServer().getVersion();
+        LoggerUtils.logInfo("Server version found: " + serverVersion);
+
+        if(!isQSReremakeInstalled() && !isQSHikariInstalled()) {
             LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
             LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
             LoggerUtils.logError("Download links:");
@@ -98,46 +136,27 @@ public final class FindItemAddOn extends JavaPlugin {
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
-        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
-            qSReremakeInstalled = true;
-            qsApi = new QSReremakeAPIHandler();
+        else if(isQSReremakeInstalled()) {
             LoggerUtils.logInfo("Found QuickShop-Reremake");
-        }
-        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
-            qSHikariInstalled = true;
-            qsApi = new QSHikariAPIHandler();
+            qsApi = new QSReremakeAPIHandler();
+            qsApi.registerSubCommand();
+        } else {
             LoggerUtils.logInfo("Found QuickShop-Hikari");
+            qsApi = new QSHikariAPIHandler();
+            qsApi.registerSubCommand();
         }
 
         // Load all hidden shops from file
-//        shopSearchActivityStorageUtil = new ShopSearchActivityStorageUtil();
-//        HiddenShopStorageUtil.loadHiddenShopsFromFile();
         ShopSearchActivityStorageUtil.loadShopsFromFile();
-//        ShopSearchActivityStorageUtil.setupCooldownsConfigFile();
-//        ShopSearchActivityStorageUtil.restoreCooldowns();
-
-        // Handle config file
-//        this.saveDefaultConfig();
-//        this.getConfig().options().copyDefaults(true);
-//        ConfigSetup.setupConfig();
-//        ConfigSetup.get().options().copyDefaults(true);
-//        ConfigSetup.checkForMissingProperties();
-//        ConfigSetup.saveConfig();
-//        initConfigProvider();
 
         // v2.0.0 - Migrating hiddenShops.json to shops.json
         ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();
-
-        serverVersion = Bukkit.getServer().getVersion();
-        LoggerUtils.logInfo("Server version found: " + serverVersion);
-
-//        initCommands();
 
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
 
-        initEvents();
+        initExternalPluginEventListeners();
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
@@ -148,13 +167,18 @@ public final class FindItemAddOn extends JavaPlugin {
         Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
 
         // Check for plugin updates
-        new UpdateChecker(this, SPIGOT_PLUGIN_ID).getLatestVersion(version -> {
+        new UpdateChecker(SPIGOT_PLUGIN_ID).getLatestVersion(version -> {
             if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                LoggerUtils.logInfo("&2Plugin is up to date!");
+                LoggerUtils.logInfo("Oh awesome! Plugin is up to date");
             } else {
                 isPluginOutdated = true;
-                LoggerUtils.logWarning("Plugin has an update! (Version: " + this.getDescription().getVersion().replace("-SNAPSHOT", "") + ")");
-                LoggerUtils.logWarning("Download the latest version here: &7https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
+                if(version.toLowerCase().contains("snapshot")) {
+                    LoggerUtils.logWarning("Plugin has a new snapshot version available! (Version: " + version + ")");
+                }
+                else {
+                    LoggerUtils.logWarning("Plugin has a new update available! (Version: " + version + ")");
+                }
+                LoggerUtils.logWarning("Download here: https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
             }
         });
     }
@@ -165,14 +189,18 @@ public final class FindItemAddOn extends JavaPlugin {
         initFindItemAdminCmd();
     }
 
-    private void initEvents() {
-        LoggerUtils.logInfo("Registering events");
-        this.getServer().getPluginManager().registerEvents(new PlayerCommandSendListener(), this);
+    private void initBukkitEventListeners() {
+        LoggerUtils.logInfo("Registering Bukkit event listeners");
+        this.getServer().getPluginManager().registerEvents(new PluginEnableEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerCommandSendEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
+    }
+    private void initExternalPluginEventListeners() {
+        LoggerUtils.logInfo("Registering external plugin event listeners");
         if(PlayerWarpsPlugin.getIsEnabled()) {
-            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveListener(), this);
-            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateListener(), this);
+            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveEventListener(), this);
+            this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateEventListener(), this);
         }
     }
     
@@ -220,23 +248,20 @@ public final class FindItemAddOn extends JavaPlugin {
                     "finditem",
                     "Search for items from all shops using an interactive GUI",
                     "/finditem",
-                    new CommandList() {
-                        @Override
-                        public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Commands"));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
-                            for (SubCommand subCommand : subCommandList) {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff9933" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
-                            }
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
-                            alias.forEach(alias_i -> {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
-                            });
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                    (commandSender, subCommandList) -> {
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Commands"));
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&7------------------------"));
+                        for (SubCommand subCommand : subCommandList) {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff9933" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
                         }
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
+                        alias.forEach(alias_i -> {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
+                        });
+                        commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                     },
                     alias,
                     SellSubCmd.class,
@@ -258,29 +283,26 @@ public final class FindItemAddOn extends JavaPlugin {
                     "finditemadmin",
                     "Admin command for Shop Search addon",
                     "/finditemadmin",
-                    new CommandList() {
-                        @Override
-                        public void displayCommandList(CommandSender commandSender, List<SubCommand> subCommandList) {
-                            if (
-                                    (commandSender.isOp())
-                                            || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
-                                            || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString())))
-                            ) {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Admin Commands"));
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                    (commandSender, subCommandList) -> {
+                        if (
+                                (commandSender.isOp())
+                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
+                                        || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString())))
+                        ) {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search Admin Commands"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
 
-                                for (SubCommand subCommand : subCommandList) {
-                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff1a1a" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
-                                }
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
-                                alias.forEach(alias_i -> {
-                                    commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
-                                });
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            for (SubCommand subCommand : subCommandList) {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff1a1a" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
                             }
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
+                            alias.forEach(alias_i -> {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
+                            });
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                         }
                     },
                     alias,
@@ -298,6 +320,14 @@ public final class FindItemAddOn extends JavaPlugin {
 
     public static boolean isQSHikariInstalled() {
         return qSHikariInstalled;
+    }
+
+    public static void setQSReremakeInstalled(boolean qSReremakeInstalled) {
+        FindItemAddOn.qSReremakeInstalled = qSReremakeInstalled;
+    }
+
+    public static void setQSHikariInstalled(boolean qSHikariInstalled) {
+        FindItemAddOn.qSHikariInstalled = qSHikariInstalled;
     }
 
     public static QSApi getQsApiInstance() {

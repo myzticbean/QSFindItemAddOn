@@ -8,7 +8,7 @@ import org.bukkit.event.player.PlayerCommandSendEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlayerCommandSendListener implements Listener {
+public class PlayerCommandSendEventListener implements Listener {
     @EventHandler
     public void onPlayerCommandTab(PlayerCommandSendEvent event) {
         if(!event.getPlayer().isOp()) {

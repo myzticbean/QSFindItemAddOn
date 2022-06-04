@@ -1,5 +1,6 @@
 package io.myzticbean.finditemaddon.QuickShopHandler;
 
+import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdReremakeImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
+import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.util.ArrayList;
@@ -43,13 +45,13 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
                     && shop_i.getItem().getType().equals(item.getType())
-                    && shop_i.getRemainingStock() > 0
+                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 // check for shop if hidden
                 if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                     shopsFoundList.add(new FoundShopItemModel(
                             shop_i.getPrice(),
-                            shop_i.getRemainingStock(),
+                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
                             shop_i.getItem()
@@ -87,13 +89,13 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 if(shop_i.getItem().hasItemMeta()) {
                     if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
                         if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                && shop_i.getRemainingStock() > 0
+                                && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
                                 && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                             // check for shop if hidden
                             if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                                 shopsFoundList.add(new FoundShopItemModel(
                                         shop_i.getPrice(),
-                                        shop_i.getRemainingStock(),
+                                        (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                                         shop_i.getOwner(),
                                         shop_i.getLocation(),
                                         shop_i.getItem()
@@ -132,13 +134,13 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         allShops.forEach((shop_i) -> {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && shop_i.getRemainingStock() > 0
+                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 // check for shop if hidden
                 if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                     shopsFoundList.add(new FoundShopItemModel(
                             shop_i.getPrice(),
-                            shop_i.getRemainingStock(),
+                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
                             shop_i.getItem()
@@ -214,53 +216,25 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 globalShopsList.remove(tempShopToRemove);
         }
 
+        return tempGlobalShopsList;
+    }
 
-
-        // iterate over all shops in globalShopsList
-        // if not available in shops list from API -> remove it from globalShopsList
-//        for(ShopSearchActivityModel shop_i : globalShopsList) {
-//            for(Shop shop : getAllShops()) {
-//                if(shop_i.getX() == shop.getLocation().getX()
-//                        && shop_i.getY() == shop.getLocation().getY()
-//                        && shop_i.getZ() == shop.getLocation().getZ()
-//                        && shop_i.getWorldName().equalsIgnoreCase(shop.getLocation().getWorld().getName())
-//                ) {
-//
-//                    break;
-//                }
-//            }
-//        }
-
-        // iterate over all shops from API
-        // check if its available in the globalShopsList
-        // if not available in globalShopsList -> add it
-//        for(Shop shop_i : getAllShops()) {
-//
-//        }
-
-
-
-            return tempGlobalShopsList;
+    /**
+     * Register finditem sub-command for /qs
+     */
+    @Override
+    public void registerSubCommand() {
+        LoggerUtils.logInfo("Unregistered find sub-command for /qs");
+        for(CommandContainer cmdContainer : api.getCommandManager().getRegisteredCommands()) {
+            if(cmdContainer.getPrefix().equalsIgnoreCase("find")) {
+                api.getCommandManager().unregisterCmd(cmdContainer);
+                break;
+            }
         }
-
-//    private List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
-//        switch (sortingMethod) {
-//            // Random
-//            case 1 -> Collections.shuffle(shopsFoundList);
-//            // Based on prices (lower to higher)
-//            case 2 -> shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
-//            // Based on stocks (higher to lower)
-//            case 3 -> {
-//                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getRemainingStock));
-//                Collections.reverse(shopsFoundList);
-//            }
-//            default -> {
-//                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-//                LoggerUtils.logError("Defaulting to sorting by prices method");
-//                shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getPrice));
-//            }
-//        }
-//        return shopsFoundList;
-//    }
-
+        LoggerUtils.logInfo("Registered finditem sub-command for /qs");
+        api.getCommandManager().registerCmd(CommandContainer.builder()
+                .executor(new FindItemCmdReremakeImpl())
+                .prefix("finditem")
+                .build());
+    }
 }

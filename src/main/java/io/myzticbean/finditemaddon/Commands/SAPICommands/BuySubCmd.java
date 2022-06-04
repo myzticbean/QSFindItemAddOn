@@ -1,4 +1,4 @@
-package io.myzticbean.finditemaddon.SAPICommands;
+package io.myzticbean.finditemaddon.Commands.SAPICommands;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.CommandHandler.CmdExecutorHandler;
@@ -13,22 +13,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Sub Command Handler for /finditem TO_SELL
+ * Sub Command Handler for /finditem TO_BUY
  * @author ronsane
  */
-public class SellSubCmd extends SubCommand {
+public class BuySubCmd extends SubCommand {
 
-    private final String sellSubCommand;
+    private final String buySubCommand;
     private final List<String> itemsList = new ArrayList<>();
     private final CmdExecutorHandler cmdExecutor;
 
-    public SellSubCmd() {
-        // to-sell
-        if(StringUtils.isBlank(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)) {
-            sellSubCommand = "TO_SELL";
+    public BuySubCmd() {
+        // to-buy
+        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
+                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
+            buySubCommand = "TO_BUY";
         }
         else {
-            sellSubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE;
+            buySubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE;
         }
         if(itemsList.isEmpty()) {
             for(Material mat : Material.values()) {
@@ -40,7 +41,7 @@ public class SellSubCmd extends SubCommand {
 
     @Override
     public String getName() {
-        return sellSubCommand;
+        return buySubCommand;
     }
 
     @Override
@@ -50,12 +51,12 @@ public class SellSubCmd extends SubCommand {
 
     @Override
     public String getDescription() {
-        return "Find shops that sell a specific item";
+        return "Find shops that buy a specific item";
     }
 
     @Override
     public String getSyntax() {
-        return "/finditem " + sellSubCommand + " {item type | item name}";
+        return "/finditem " + buySubCommand + " {item type | item name}";
     }
 
     @Override
@@ -65,7 +66,7 @@ public class SellSubCmd extends SubCommand {
                     FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                             + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INCORRECT_USAGE_MSG));
         else
-            cmdExecutor.handleShopSearch(sellSubCommand, commandSender, args[1]);
+            cmdExecutor.handleShopSearch(buySubCommand, commandSender, args[1]);
     }
 
     @Override
