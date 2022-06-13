@@ -47,7 +47,7 @@ command-alias: []
   - Remember, this applies only to Essential Warps.
 - WorldGuard region support for fetching the WorldGuard region the shop is in (if overlapping regions, highest priority will be chosen)
 
->Check out the sample config.yml [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/wikis/Sample-config.yml).
+>Check out the sample config.yml [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/wikis/config.yml-%5BFor-QuickShopAddOn-v2.*%5D).
 
 ## Requires
 - [QuickShop Reremake](https://www.spigotmc.org/resources/62575/) 5.0 or higher (Use add-on v1.7 for QuickShop version 4.0.*)
@@ -63,3 +63,6 @@ OR
 ## Issue Tracking
 Please create a new issue [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
 You can also find the list of features currently being worked on (if any) in the same link.
+
+## BStats Metrics
+[![BigImage](https://bstats.org/signatures/bukkit/QSFindItemAddOn.svg)](https://bstats.org/plugin/bukkit/QSFindItemAddOn/12382)
