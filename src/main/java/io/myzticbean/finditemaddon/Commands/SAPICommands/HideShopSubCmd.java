@@ -9,6 +9,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Sub Command Handler for /finditem hideshop
+ * @author ronsane
+ */
 public class HideShopSubCmd extends SubCommand {
 
     private final String hideSubCommand;

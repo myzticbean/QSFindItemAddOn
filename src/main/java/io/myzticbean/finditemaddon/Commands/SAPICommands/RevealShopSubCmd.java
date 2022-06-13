@@ -9,6 +9,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Sub Command Handler for /finditemadmin revealshop
+ * @author ronsane
+ */
 public class RevealShopSubCmd extends SubCommand {
 
     private final String revealShopSubCommand;

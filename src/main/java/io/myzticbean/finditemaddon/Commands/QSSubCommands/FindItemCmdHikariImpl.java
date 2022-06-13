@@ -14,6 +14,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author ronsane
+ */
 public class FindItemCmdHikariImpl implements CommandHandler<Player> {
 
     private final String hideSubCommand;

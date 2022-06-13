@@ -26,17 +26,6 @@ import java.util.List;
  */
 public class CmdExecutorHandler {
 
-//    QSApi qsApi;
-//
-//    public CmdExecutorHandler() {
-//        if(FindItemAddOn.isQSReremakeInstalled()) {
-//            qsApi = new QSReremakeAPIHandler();
-//        }
-//        else {
-//            qsApi = new QSHikariAPIHandler();
-//        }
-//    }
-
     /**
      * Handles the main shop search process
      * @param buySellSubCommand Whether player is buying or selling

@@ -12,15 +12,51 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public interface QSApi<T, V> {
+/**
+ * Interface for QS API.
+ * Implement it depending on which API is being used (Reremake/Hikari).
+ * @param <QSType>
+ * @param <Shop>
+ * @author ronsane
+ */
+public interface QSApi<QSType, Shop> {
+
+    /**
+     * Search based on Item Type from all server shops
+     * @param item
+     * @param toBuy
+     * @param searchingPlayer
+     * @return
+     */
     List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer);
+
+    /**
+     * Search based on display name of item from all server shops
+     * @param displayName
+     * @param toBuy
+     * @param searchingPlayer
+     * @return
+     */
     List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer);
+
+    /**
+     * Fetch all items from all server shops
+     * @param toBuy
+     * @param searchingPlayer
+     * @return
+     */
     List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer);
+
     Material getShopSignMaterial();
-    V findShopAtLocation(Block block);
-    boolean isShopOwnerCommandRunner(Player player, V shop);
-    List<V> getAllShops();
+
+    Shop findShopAtLocation(Block block);
+
+    boolean isShopOwnerCommandRunner(Player player, Shop shop);
+
+    List<Shop> getAllShops();
+
     List<ShopSearchActivityModel> syncShopsListForStorage(List<ShopSearchActivityModel> globalShopsList);
+
     void registerSubCommand();
 
     static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {

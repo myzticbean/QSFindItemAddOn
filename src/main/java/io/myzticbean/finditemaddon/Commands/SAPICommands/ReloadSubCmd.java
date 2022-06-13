@@ -7,6 +7,10 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * Sub Command Handler for /finditemadmin reload
+ * @author ronsane
+ */
 public class ReloadSubCmd extends SubCommand {
 
     private final CmdExecutorHandler cmdExecutor;

@@ -21,6 +21,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Implementation of QSApi for Reremake
+ * @author ronsane
+ */
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
