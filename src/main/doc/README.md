@@ -1,5 +1,5 @@
 # Shop Search AddOn For QuickShop
-### Version: 1.9.2
+### Version: ${project.version}
 
 An unofficial add-on for the QuickShop Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
