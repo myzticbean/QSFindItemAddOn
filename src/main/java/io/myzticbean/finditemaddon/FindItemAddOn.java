@@ -15,7 +15,7 @@ import io.myzticbean.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import io.myzticbean.finditemaddon.ScheduledTasks.Task15MinInterval;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
-import io.myzticbean.finditemaddon.Utils.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.UpdateChecker;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.CommandManager;
@@ -36,8 +36,9 @@ public final class FindItemAddOn extends JavaPlugin {
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
     public static String serverVersion;
-    private final static int bsPLUGIN_METRIC_ID = 12382;
+    private final static int BS_PLUGIN_METRIC_ID = 12382;
     private final static int SPIGOT_PLUGIN_ID = 95104;
+    private final static int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
     private static ConfigProvider configProvider;
     private static boolean isPluginOutdated = false;
     private static boolean qSReremakeInstalled = false;
@@ -160,11 +161,11 @@ public final class FindItemAddOn extends JavaPlugin {
 
         // Initiate batch tasks
         LoggerUtils.logInfo("Registering tasks");
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, 15*60*20);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, REPEATING_TASK_SCHEDULE_MINS);
 
         // init metrics
         LoggerUtils.logInfo("Registering anonymous bStats metrics");
-        Metrics metrics = new Metrics(this, bsPLUGIN_METRIC_ID);
+        Metrics metrics = new Metrics(this, BS_PLUGIN_METRIC_ID);
 
         // Check for plugin updates
         new UpdateChecker(SPIGOT_PLUGIN_ID).getLatestVersion(version -> {
@@ -286,8 +287,8 @@ public final class FindItemAddOn extends JavaPlugin {
                     (commandSender, subCommandList) -> {
                         if (
                                 (commandSender.isOp())
-                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())
-                                        || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString())))
+                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())
+                                        || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.value())))
                         ) {
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                             commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));

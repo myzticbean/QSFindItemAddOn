@@ -28,11 +28,11 @@ public class ConfigProvider {
     public final String FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG = ConfigSetup.get().getString("find-item-command.shop-already-public-message");
     public final String FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG = ConfigSetup.get().getString("find-item-command.invalid-shop-block-message");
     public final int SHOP_SORTING_METHOD = ConfigSetup.get().getInt("shop-sorting-method");
-    public final Boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
+    public final boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");
     public final int NEAREST_WARP_MODE = ConfigSetup.get().getInt("nearest-warp-mode");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) ConfigSetup.get().getList("shop-gui-item-lore");
-    public final Boolean TP_PLAYER_DIRECTLY_TO_SHOP = ConfigSetup.get().getBoolean("player-shop-teleportation.direct-shop-tp-mode.tp-player-directly-to-shop");
+    public final boolean TP_PLAYER_DIRECTLY_TO_SHOP = ConfigSetup.get().getBoolean("player-shop-teleportation.direct-shop-tp-mode.tp-player-directly-to-shop");
     public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.click-to-teleport-message");
     public final String SHOP_TP_NO_PERMISSION_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.shop-tp-no-permission-message");
     public final String UNSAFE_SHOP_AREA_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.unsafe-shop-area-message");
@@ -51,7 +51,7 @@ public class ConfigProvider {
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-last-page-alert-message");
     public final int SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES = ConfigSetup.get().getInt("shop-player-visit-cooldown-in-minutes");
     public final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
-    public final Boolean DEBUG_MODE = ConfigSetup.get().getBoolean("debug-mode");
+    public final boolean DEBUG_MODE = ConfigSetup.get().getBoolean("debug-mode");
     public final int CONFIG_VERSION = ConfigSetup.get().getInt("config-version");
 
     private final List<World> blacklistedWorldsList = new ArrayList<>();

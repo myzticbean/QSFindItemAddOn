@@ -1,6 +1,7 @@
 package io.myzticbean.finditemaddon.Utils;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -52,7 +53,7 @@ public class UpdateChecker {
 
     public void notifyPlayerAboutUpdateOnJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        if(player.isOp() || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())) {
+        if(player.isOp() || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())) {
             if(FindItemAddOn.getPluginOutdated()) {
                 player.sendMessage(ColorTranslator.translateColorCodes(
                         prefix

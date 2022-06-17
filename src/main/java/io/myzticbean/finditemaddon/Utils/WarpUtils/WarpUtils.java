@@ -14,7 +14,7 @@ public class WarpUtils {
             }
             else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
                 if(PlayerWarpsPlugin.getIsEnabled()) {
-                    PlayerWarpsPlugin.updateAllWarps();
+                    PlayerWarpsPlugin.updateAllWarpsFromAPI();
                 }
             }
         }

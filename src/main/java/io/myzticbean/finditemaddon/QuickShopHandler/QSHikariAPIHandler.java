@@ -11,10 +11,8 @@ import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
-import io.myzticbean.finditemaddon.Utils.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.ComponentLike;
-import net.kyori.adventure.text.format.Style;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,13 +20,10 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
 
 /**
  * Implementation of QSApi for Reremake
@@ -239,6 +234,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     /**
      * Register finditem sub-command for /qs
+     * Unregister /qs find
      */
     @Override
     public void registerSubCommand() {
@@ -250,12 +246,17 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             }
         }
         LoggerUtils.logInfo("Registered finditem sub-command for /qs");
+        /*
+            final TextComponent textComponent = Component.text("Search for items from all shops using an interactive GUI");
+            final Function<String, Component> func = x -> Component.text("Search for items from all shops using an interactive GUI");
+         */
         api.getCommandManager().registerCmd(
                 CommandContainer.builder()
                         .prefix("finditem")
-                        .permission(PlayerPerms.FINDITEM_USE.toString())
-                        .executor(new FindItemCmdHikariImpl())
+                        .permission(PlayerPerms.FINDITEM_USE.value())
                         .hidden(false)
+                        .description(locale -> Component.text("Search for items from all shops using an interactive GUI"))
+                        .executor(new FindItemCmdHikariImpl())
                         .build());
     }
 }

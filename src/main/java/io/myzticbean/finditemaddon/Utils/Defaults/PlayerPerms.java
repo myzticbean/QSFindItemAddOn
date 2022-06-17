@@ -1,5 +1,9 @@
-package io.myzticbean.finditemaddon.Utils;
+package io.myzticbean.finditemaddon.Utils.Defaults;
 
+/**
+ * List of all the permissions used by the addon
+ * @author ronsane
+ */
 public enum PlayerPerms {
     FINDITEM_ADMIN("finditem.admin"),
     FINDITEM_USE("finditem.use"),
@@ -14,8 +18,7 @@ public enum PlayerPerms {
         permName = perm;
     }
 
-    @Override
-    public String toString() {
+    public String value() {
         return permName;
     }
 }

@@ -6,7 +6,7 @@ import io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus.FoundShopsMenu;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
-import io.myzticbean.finditemaddon.Utils.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.WarpUtils;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.apache.commons.lang.StringUtils;
@@ -38,7 +38,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_USE.toString())) {
+            if(player.hasPermission(PlayerPerms.FINDITEM_USE.value())) {
                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG)) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
@@ -122,7 +122,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
+            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     hideShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
@@ -147,7 +147,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.toString())) {
+            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 100);
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
@@ -237,7 +237,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_RELOAD.toString()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())) {
+            if(player.hasPermission(PlayerPerms.FINDITEM_RELOAD.value()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())) {
                 ConfigSetup.reloadConfig();
                 ConfigSetup.checkForMissingProperties();
                 ConfigSetup.saveConfig();
@@ -280,7 +280,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_RESTART.toString()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())) {
+            if(player.hasPermission(PlayerPerms.FINDITEM_RESTART.value()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())) {
                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));

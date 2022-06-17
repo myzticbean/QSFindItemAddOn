@@ -6,6 +6,7 @@ import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -236,9 +237,13 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             }
         }
         LoggerUtils.logInfo("Registered finditem sub-command for /qs");
-        api.getCommandManager().registerCmd(CommandContainer.builder()
-                .executor(new FindItemCmdReremakeImpl())
-                .prefix("finditem")
-                .build());
+        api.getCommandManager().registerCmd(
+                CommandContainer.builder()
+                        .prefix("finditem")
+                        .permission(PlayerPerms.FINDITEM_USE.value())
+                        .hidden(false)
+                        .description("Search for items from all shops using an interactive GUI")
+                        .executor(new FindItemCmdReremakeImpl())
+                        .build());
     }
 }
