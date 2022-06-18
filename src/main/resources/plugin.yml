@@ -1,22 +1,14 @@
 name: QSFindItemAddOn
 version: ${project.version}
-main: me.ronsane.finditemaddon.finditemaddon.FindItemAddOn
-api-version: 1.13
+main: io.myzticbean.finditemaddon.FindItemAddOn
+api-version: 1.16
 authors: [ ronsane ]
-depend:
-  - QuickShop
 softdepend:
+  - QuickShop
+  - QuickShop-Hikari
   - PlayerWarps
   - WorldGuard
   - Essentials
-
-commands:
-  finditem:
-    description: Search for an item from shops
-    aliases:
-      - searchitem
-      - shopsearch
-      - searchshop
 
 permissions:
   finditem.use:
@@ -31,8 +23,8 @@ permissions:
   finditem.restart:
     description: For OP. Enables use of '/finditem restart' to restart the plugin
     default: op
-  finditem.updatelist:
-    description: For OP. Enables use of '/finditem updatelist' to update warps list for essential warps
+  finditem.admin:
+    description: For OP. Enables use of all admin commands
     default: op
   finditem.shoptp:
     description: If 'allow-direct-shop-tp' is enabled in config, players require this permission to be able to teleport

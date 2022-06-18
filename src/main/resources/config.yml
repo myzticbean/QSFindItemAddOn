@@ -1,17 +1,22 @@
-# QuickShop Reremake Shop Search AddOn
+# QuickShop Shop Search AddOn
+# Works with both Reremake and Hikari forks of QuickShop
 
 # PLEASE refer the below link to understand the meaning of all the fields and sample data:
 # https://gitlab.com/ronsane/QSFindItemAddOn/-/wikis/Sample-config.yml
 
-plugin-prefix: "&a&l[Shop Search] &r"
+plugin-prefix: "&8[&a&lShop Search&8] &r"
 find-item-command:
+  command-alias:
+    - "searchshop"
+    - "shopsearch"
+    - "searchitem"
   incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
   invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
   shop-search-loading-message: "&7Searching..."
   no-shop-found-message: "&7No shops found!"
   find-item-command-no-permission-message: "&cNo permission!"
-  to-buy-autocomplete: "TO-BUY"
-  to-sell-autocomplete: "TO-SELL"
+  to-buy-autocomplete: "TO_BUY"
+  to-sell-autocomplete: "TO_SELL"
   hideshop-autocomplete: "hideshop"
   revealshop-autocomplete: "revealshop"
   shop-hide-success-message: "&aShop is now hidden from search list!"
@@ -32,6 +37,7 @@ shop-gui-item-lore:
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
   - "&fWarp: &7{NEAREST_WARP}"
+  - "&fShop Visits: &7{SHOP_VISITS}"
   - ""
 player-shop-teleportation:
   direct-shop-tp-mode:
@@ -40,10 +46,10 @@ player-shop-teleportation:
     shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
     unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
   nearest-warp-tp-mode:
-    warp-player-to-nearest-warp: false
-shop-gui-back-button-material: "RED_CONCRETE"
+    tp-player-to-nearest-warp: false
+shop-gui-back-button-material: ""
 shop-gui-back-button-text: "&7&l« &cBack"
-shop-gui-next-button-material: "GREEN_CONCRETE"
+shop-gui-next-button-material: ""
 shop-gui-next-button-text: "&aNext &7&l»"
 shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
 shop-gui-close-button-material: "BARRIER"
@@ -53,8 +59,9 @@ shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
 shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+shop-player-visit-cooldown-in-minutes: 5
 blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 9
+config-version: 11

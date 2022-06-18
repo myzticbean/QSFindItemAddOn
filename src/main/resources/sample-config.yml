@@ -1,0 +1,154 @@
+# QuickShop Reremake and Hikari Shop Search AddOn
+
+########################################
+# THIS IS JUST A SAMPLE CONFIG FILE
+# PLEASE DON'T MAKE ANY EDITS HERE
+# THIS FILE IS JUST FOR YOUR REFERENCE
+########################################
+
+# Requires finditem.use permission node for players
+# Requires finditem.hideshop permission node for running /finditem hideshop or /finditem revealshop
+# Requires finditem.admin permission node for admin commands (/finditemadmin reload)
+# Do '/finditemadmin reload' to reload this config and update your changes
+# Color codes and Hexcodes are supported below
+# For a hexcode such as #55a800Q you can use &#55a800Q below
+# If you want to keep a field empty, make it as ""
+# DON'T leave it empty without quotes, or bad and soul crushing things might happen!
+
+# Prefix that will be shown in chat for any message from this plugin
+plugin-prefix: "&8[&a&lShop Search&8] &r"
+
+
+# Below messages will be prefixed with the above specified prefix
+find-item-command:
+  # Specify a list of command aliases for /finditem
+  # If you don't wish to use aliases, make the field as 'command-alias: []'
+  command-alias:
+    - "searchshop"
+    - "shopsearch"
+    - "searchitem"
+  incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
+  invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
+  shop-search-loading-message: "&7Searching..."
+  no-shop-found-message: "&7No shops found!"
+  find-item-command-no-permission-message: "&cNo permission!"
+  # Below are tab-autocompletes for categorizing between buying/selling shops
+  # There cannot be spaces in between
+  # NEEDS A SERVER RESTART IF CHANGED
+  to-buy-autocomplete: "TO_BUY"
+  to-sell-autocomplete: "TO_SELL"
+  # Below are tab-autocompletes for hiding and revealing shops from searches
+  # There cannot be spaces in between
+  # NEEDS A SERVER RESTART IF CHANGED
+  hideshop-autocomplete: "hideshop"
+  revealshop-autocomplete: "revealshop"
+  # Messages shown when running /finditem hideshop and /finditem revealshop
+  shop-hide-success-message: "&aShop is now hidden from search list!"
+  shop-reveal-success-message: "&aShop is no longer hidden from search list!"
+  shop-already-hidden-message: "&cThis shop is already hidden!"
+  shop-already-public-message: "&cThis shop is already public!"
+  invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
+
+
+# Shop sorting methods:
+# 1 - Random
+# 2 - Based on prices (lower to higher)
+# 3 - Based on stocks (higher to lower)
+# Enter your choice of method below
+shop-sorting-method: 2
+
+# Set it to true to search shops on loaded chunks only.
+# When set to false, it searches through all shops regardless
+# of them being on loaded chunks or not.
+# If a shop is present in chunk which is currently unloaded,
+# it loads the chunk to search for items in containers.
+search-loaded-shops-only: false
+
+shop-search-gui-title: "&l» &rShops"
+
+# -> Choose which plugin to use to fetch nearest warp/region
+# -> Based on your choice, '{NEAREST_WARP}' in the shop lore will be replaced accordingly
+# -> Ignore this setting if you don't use that placeholder in lore
+# Possible values:
+# 1 - Essential Warp (EssentialsX 2.18.0 and above: https://www.spigotmc.org/resources/9089/)
+# 2 - PlayerWarps (PlayerWarps v6.8.2 and above: https://www.spigotmc.org/resources/66692/)
+# 3 - WorldGuard Region (WorldGuard 7.0.5 and above: https://dev.bukkit.org/projects/worldguard/)
+nearest-warp-mode: 1
+
+# Shop Search GUI Item Lore
+# Placeholders for shop-item-lore:
+# {ITEM_PRICE}          -> Item price in shop
+# {SHOP_STOCK}          -> Remaining stock in shop
+# {SHOP_OWNER}          -> Owner of shop
+# {SHOP_LOC}            -> Shop coordinates
+# {SHOP_WORLD}          -> Name of the world the shop is in
+# {NEAREST_WARP}        -> Warp/Region nearest to shop
+# {SHOP_VISITS}         -> Total Player visits to shop
+# -> To show nearest warp/region, configure 'nearest-warp-mode' first.
+#    If plugin selected is not installed/enabled, it ignores the line containing {NEAREST_WARP}
+# -> Please don't put more than one placeholder in a single lore line
+# -> If you don't want to show the below lore for any item,
+#    set the below field as shop-gui-item-lore: []
+shop-gui-item-lore:
+  - ""
+  - "&fPrice: &a${ITEM_PRICE}"
+  - "&fStock: &7{SHOP_STOCK}"
+  - "&fOwner: &7{SHOP_OWNER}"
+  - "&fLocation: &7{SHOP_LOC}"
+  - "&fWorld: &7{SHOP_WORLD}"
+  - "&fWarp: &7{NEAREST_WARP}"
+  - "&fShop Visits: &7{SHOP_VISITS}"
+  - ""
+
+# Choose how the player is teleported to the shop when they click on the shop icon in search GUI
+# If you want to disable shop teleportation completely,
+# change both 'tp-player-directly-to-shop' and 'tp-player-to-nearest-warp' to false
+player-shop-teleportation:
+  direct-shop-tp-mode:
+    # The player will be teleported directly to the shop
+    # (Players require finditem.shoptp permission node)
+    # When set to false OR if players don't have permission,
+    # 'click-to-teleport-message' will not be shown in the lore
+    tp-player-directly-to-shop: true
+    click-to-teleport-message: '&6&lClick to teleport to the shop!'
+    shop-tp-no-permission-message: '&cYou don''t have permission to teleport to shop!'
+    unsafe-shop-area-message: '&cThe area around the shop is unsafe!'
+  nearest-warp-tp-mode:
+    # The player will be teleported to the nearest warp as if they ran the warp command
+    # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)
+    tp-player-to-nearest-warp: false
+
+shop-gui-back-button-material: "RED_CONCRETE"
+shop-gui-back-button-text: "&7&l« &cBack"
+shop-gui-next-button-material: "GREEN_CONCRETE"
+shop-gui-next-button-text: "&aNext &7&l»"
+shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
+shop-gui-close-button-material: "BARRIER"
+shop-gui-close-button-text: "&fClose Search"
+# Enter Item Custom Model Data below, if available, within quotes
+# or leave as "" if not available
+shop-gui-back-button-custom-model-data: ""
+shop-gui-next-button-custom-model-data: ""
+shop-gui-close-button-custom-model-data: ""
+
+
+# Alert shown when player is already on first/last page and clicks back/next button
+shop-navigation-first-page-alert-message: "&cYou are already on first page!"
+shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+
+# Specify (in minutes) how long the plugin will wait before incrementing the player
+# shop visit when teleporting to it from Search GUI
+shop-player-visit-cooldown-in-minutes: 5
+
+# When fetching shops, the below worlds will be ignored
+blacklisted-worlds:
+  - "world_number_1"
+  - "world_number_2"
+
+# Enabling this will spam your console with logs from the plugin
+# Set this to true only for debugging purposes
+# If set to false, some error messages can still get through if they require immediate attention
+debug-mode: false
+
+# Do not change the below value
+config-version: 11
