@@ -84,6 +84,7 @@ public final class FindItemAddOn extends JavaPlugin {
         ConfigSetup.checkForMissingProperties();
         ConfigSetup.saveConfig();
         initConfigProvider();
+        ConfigSetup.copySampleConfig();
 
         initCommands();
 
