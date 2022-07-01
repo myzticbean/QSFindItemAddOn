@@ -153,19 +153,15 @@ public class FoundShopsMenu extends PaginatedMenu {
                             Bukkit.dispatchCommand(player, "essentials:warp " + warpName);
                         }
                         else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
-                            Warp playerWarp = PlayerWarpsPlugin.getAPI().getPlayerWarp(warpName);
-                            if(playerWarp != null) {
-                                playerWarp.getWarpLocation().teleportWarp(player);
-                            }
-                            else {
-                                LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
-                            }
+                            PlayerWarpsPlugin.executeWarpPlayer(player, warpName);
                         }
                     }
                 }
             }
         }
     }
+
+
 
     /**
      * Empty method in case we need to handle static GUI icons in future
