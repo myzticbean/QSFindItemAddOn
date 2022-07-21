@@ -3,10 +3,11 @@ image: maven:3.8.3-openjdk-17
 build:
   stage: build
   script:
-    - echo "========== Build Started =========="
+    - mvn --version
+    - java --version
     - mvn clean package -DskipTests
   allow_failure: false
   artifacts:
     when: on_success
     paths:
-      - target/*.jar
+      - target/QSFindItemAddOn*.jar
