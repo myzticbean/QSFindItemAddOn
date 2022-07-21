@@ -4,3 +4,6 @@ build:
   stage: build
   script:
     - mvn compile
+  artifacts:
+    paths:
+      - target/QSFindItemAddOn*.jar
