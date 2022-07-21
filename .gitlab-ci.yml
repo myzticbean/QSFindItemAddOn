@@ -1,7 +1,7 @@
 image: maven:3.8.3-openjdk-17
 
 build:
-  stage: Build
+  stage: build
   script:
     - echo "========== Build Started =========="
     - mvn clean package -DskipTests
