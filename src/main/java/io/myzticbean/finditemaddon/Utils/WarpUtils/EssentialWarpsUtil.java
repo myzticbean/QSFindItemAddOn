@@ -20,11 +20,13 @@ public class EssentialWarpsUtil {
         if(allWarps != null && allWarps.size() > 0) {
             Map<Double, String> warpDistanceMap = new TreeMap<>();
             allWarps.forEach(warp -> {
-                Double distance = CommonUtils.calculateDistance2D(
+                Double distance = CommonUtils.calculateDistance3D(
                         shopLocation.getX(),
                         shopLocation.getY(),
+                        shopLocation.getZ(),
                         warp.warpLoc.getX(),
-                        warp.warpLoc.getY()
+                        warp.warpLoc.getY(),
+                        warp.warpLoc.getZ()
                 );
                 warpDistanceMap.put(distance, warp.warpName);
             });

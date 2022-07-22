@@ -5,6 +5,7 @@ import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 import java.util.List;
 
@@ -12,6 +13,7 @@ public class PlayerWarpsPlugin {
 
     private static boolean isEnabled = false;
     private static List<Warp> allWarpsList = null;
+    private static PlayerWarpsAPI playerWarpsAPI = null;
     private static final String ALL_WARPS_LIST_CLASSPATH = PlayerWarpsPlugin.class.getCanonicalName() + ".allWarpsList";
 
     private PlayerWarpsPlugin() { }
@@ -19,31 +21,47 @@ public class PlayerWarpsPlugin {
     public static void setup() {
         if(Bukkit.getPluginManager().isPluginEnabled("PlayerWarps")) {
             LoggerUtils.logInfo("Found PlayerWarps");
-            isEnabled = true;
+            PlayerWarpsAPI.getInstance(api -> {
+                playerWarpsAPI = api;
+                isEnabled = true;
+            });
         }
     }
 
     public static boolean getIsEnabled() { return isEnabled; }
 
+    /**
+     * Issue #24 Fix: Changing all api get references to callback, making this method deprecated
+     * @return
+     */
+    @Deprecated
     public static PlayerWarpsAPI getAPI() {
-        return PlayerWarpsAPI.getInstance();
+        return playerWarpsAPI;
     }
 
-    public static List<Warp> getAllWarps() { return allWarpsList; }
+    public static List<Warp> getAllWarps() {
+        PlayerWarpsAPI.getInstance(api -> {
+            allWarpsList = api.getPlayerWarps(false);
+        });
+        return allWarpsList;
+    }
 
     public static void updateAllWarpsFromAPI() {
         if(isEnabled) {
             LoggerUtils.logInfo("Updating Player warps list...");
-            allWarpsList = PlayerWarpsPlugin.getAPI().getPlayerWarps(false);
-            LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
+            // Issue #24 Fix: Changing api instance to callback
+            PlayerWarpsAPI.getInstance(api -> {
+                allWarpsList = api.getPlayerWarps(false);
+                LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
+            });
         }
     }
 
     public static void updateWarpsOnEventCall(Warp warp, boolean isRemoved) {
         LoggerUtils.logDebugInfo("Got a PlayerWarps event call... checking nearest-warp-mode");
         if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
-            LoggerUtils.logDebugInfo("nearest-warp-mode found set to 2");
-            if (PlayerWarpsPlugin.getIsEnabled()) {
+            LoggerUtils.logDebugInfo("'nearest-warp-mode' found set to 2");
+            if (getIsEnabled()) {
                 LoggerUtils.logDebugInfo("PlayerWarps plugin is enabled");
                 tryUpdateWarps(warp, isRemoved, 1);
             }
@@ -76,11 +94,28 @@ public class PlayerWarpsPlugin {
                 tryUpdateWarps(warp, isRemoved, 2);
             } else {
                 StringBuilder errorMsg = new StringBuilder();
-                errorMsg.append("Error occurred while updating '" + ALL_WARPS_LIST_CLASSPATH + "' as it is null! ");
-                errorMsg.append("Please install PlayerWarps by Olzie-12 if you would like to use 'nearest-warp-mode' as 2. ");
-                errorMsg.append("If PlayerWarps plugin is installed and issue persists, please restart your server!");
+                errorMsg.append("Error occurred while updating '").append(ALL_WARPS_LIST_CLASSPATH).append("' as it is null! ")
+                        .append("Please install PlayerWarps by Olzie-12 if you would like to use 'nearest-warp-mode' as 2. ")
+                        .append("If PlayerWarps plugin is installed and issue persists, please contact the developer!");
                 LoggerUtils.logError(errorMsg.toString());
             }
         }
+    }
+
+    /**
+     * Issue #24 Fix: Extracted method from FoundShopsMenu class
+     * @param player
+     * @param warpName
+     */
+    public static void executeWarpPlayer(Player player, String warpName) {
+        PlayerWarpsAPI.getInstance(api -> {
+            Warp playerWarp = api.getPlayerWarp(warpName);
+            if(playerWarp != null) {
+                playerWarp.getWarpLocation().teleportWarp(player);
+            }
+            else {
+                LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
+            }
+        });
     }
 }

@@ -4,7 +4,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.CommandHandler.CmdExecutorHandler;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.SubCommand;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
