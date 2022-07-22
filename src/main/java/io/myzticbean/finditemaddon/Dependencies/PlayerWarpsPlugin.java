@@ -39,7 +39,12 @@ public class PlayerWarpsPlugin {
         return playerWarpsAPI;
     }
 
-    public static List<Warp> getAllWarps() { return allWarpsList; }
+    public static List<Warp> getAllWarps() {
+        PlayerWarpsAPI.getInstance(api -> {
+            allWarpsList = api.getPlayerWarps(false);
+        });
+        return allWarpsList;
+    }
 
     public static void updateAllWarpsFromAPI() {
         if(isEnabled) {

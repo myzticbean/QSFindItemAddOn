@@ -1,6 +1,5 @@
 package io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus;
 
-import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
@@ -8,17 +7,17 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PaginatedMenu;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.Defaults.ShopLorePlaceholders;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LocationUtils;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.EssentialWarpsUtil;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.PlayerWarpsUtil;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.WGRegionUtils;
 import io.papermc.lib.PaperLib;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
