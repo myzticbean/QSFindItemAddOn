@@ -65,7 +65,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                                 (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                                 shop_i.getOwner(),
                                 shop_i.getLocation(),
-                                shop_i.getItem()
+                                shop_i.getItem(),
+                                shop_i.isBuying()
                         ));
                     }
                 }
@@ -113,7 +114,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                                             (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                                             shop_i.getOwner(),
                                             shop_i.getLocation(),
-                                            shop_i.getItem()
+                                            shop_i.getItem(),
+                                            shop_i.isBuying()
                                     ));
                                 }
                             }
@@ -160,7 +162,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                                 (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
                                 shop_i.getOwner(),
                                 shop_i.getLocation(),
-                                shop_i.getItem()
+                                shop_i.getItem(),
+                                shop_i.isBuying()
                         ));
                     }
                 }
@@ -171,6 +174,11 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             return QSApi.sortShops(sortingMethod, shopsFoundList);
         }
         return shopsFoundList;
+    }
+
+    @Override
+    public List<FoundShopItemModel> fetchAllShopsForPlayer(Player searchingPlayer) {
+        return null;
     }
 
     public Material getShopSignMaterial() {

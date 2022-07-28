@@ -18,4 +18,5 @@ public class FoundShopItemModel {
     private final UUID shopOwner;
     private final Location shopLocation;
     private final ItemStack item;
+    private final boolean isBuyingShop;
 }

@@ -47,6 +47,8 @@ public interface QSApi<QSType, Shop> {
      */
     List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer);
 
+    List<FoundShopItemModel> fetchAllShopsForPlayer(Player searchingPlayer);
+
     Material getShopSignMaterial();
 
     Shop findShopAtLocation(Block block);
