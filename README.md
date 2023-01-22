@@ -1,10 +1,10 @@
 # Shop Search AddOn For QuickShop
-### Version: 2.0.5.0-RELEASE
+### Version: 2.0.5.1-RELEASE
 
 An unofficial add-on for the QuickShop Reremake and Hikari spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
 
-![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.18.2-brightgreen)
+![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.19.3-brightgreen)
 ![Ver](https://img.shields.io/spiget/version/95104?label=Current%20Spigot%20Version)
 
 ## Features
@@ -55,7 +55,7 @@ command-alias: []
 
 OR
 
-- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v2.0.0.0 or higher
+- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v4.0.0.0 or higher
 
 ## Assumptions
 - A compatible economy plugin is installed
