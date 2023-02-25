@@ -13,8 +13,10 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-// Based on an awesome tutorial from https://www.youtube.com/watch?v=xebH6M_7k18
-// Gui pagination: https://www.youtube.com/watch?v=e80NO9Pgz7s
+/**
+ * Based on an awesome tutorial from https://www.youtube.com/watch?v=xebH6M_7k18
+ * Gui pagination: https://www.youtube.com/watch?v=e80NO9Pgz7s
+ */
 public abstract class Menu implements InventoryHolder {
 
     protected Inventory inventory;
@@ -23,7 +25,7 @@ public abstract class Menu implements InventoryHolder {
 
     protected ItemStack GUI_FILLER_ITEM;
 
-    public Menu(PlayerMenuUtility playerMenuUtility) {
+    protected Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
 
         assert FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM != null;

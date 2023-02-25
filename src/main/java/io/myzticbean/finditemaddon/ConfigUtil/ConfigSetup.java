@@ -15,7 +15,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 11;
+    private static final int CURRENT_CONFIG_VERSION = 12;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -170,6 +170,17 @@ public class ConfigSetup {
 
                 // Add option to configure player visit cooldown
                 configFileConfiguration.set("shop-player-visit-cooldown-in-minutes", 5);
+            }
+            // Config v12
+            if(configFileConfiguration.getInt("config-version") < 12) {
+                configFileConfiguration.set("ignore-admin-shops", false);
+                configFileConfiguration.set("ignore-empty-chests", true);
+                configFileConfiguration.set("shop-gui-goto-first-page-button-material", "");
+                configFileConfiguration.set("shop-gui-goto-first-page-button-text", "&7&l« &cGo to First Page");
+                configFileConfiguration.set("shop-gui-goto-first-page-button-custom-model-data", "");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-material", "");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-text", "&aGo to Last Page &7&l»");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-custom-model-data", "");
             }
             boolean userDefinedDebugMode = configFileConfiguration.getBoolean("debug-mode");
             configFileConfiguration.set("debug-mode", null);

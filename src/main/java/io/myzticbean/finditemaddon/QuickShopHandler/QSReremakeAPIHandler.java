@@ -39,29 +39,26 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
-        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY)
             allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        }
-        else {
+        else
             allShops = api.getShopManager().getAllShops();
-        }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        allShops.forEach(shopIterator -> {
             // check for blacklisted worlds
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && shop_i.getItem().getType().equals(item.getType())
-                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
-                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                && shopIterator.getItem().getType().equals(item.getType())
+                && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying())
                 // check for shop if hidden
-                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
                     shopsFoundList.add(new FoundShopItemModel(
-                            shop_i.getPrice(),
-                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
-                            shop_i.getOwner(),
-                            shop_i.getLocation(),
-                            shop_i.getItem()
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner(),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
                     ));
-                }
             }
         });
         if(!shopsFoundList.isEmpty()) {
@@ -73,7 +70,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -82,33 +79,28 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
-        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY)
             allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        }
-        else {
+        else
             allShops = api.getShopManager().getAllShops();
-        }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        for(Shop shop_i : allShops) {
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())) {
-                if(shop_i.getItem().hasItemMeta()) {
-                    if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
-                        if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
-                                && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                            // check for shop if hidden
-                            if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                                shopsFoundList.add(new FoundShopItemModel(
-                                        shop_i.getPrice(),
-                                        (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
-                                        shop_i.getOwner(),
-                                        shop_i.getLocation(),
-                                        shop_i.getItem()
-                                ));
-                            }
-                        }
-                    }
-                }
+
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        for(Shop shopIterator : allShops) {
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                && shopIterator.getItem().hasItemMeta()
+                && Objects.requireNonNull(shopIterator.getItem().getItemMeta()).hasDisplayName()
+                && (shopIterator.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
+                    && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
+                // check for shop if hidden
+                && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
+                    shopsFoundList.add(new FoundShopItemModel(
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner(),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
+                    ));
             }
         }
         if(!shopsFoundList.isEmpty()) {
@@ -120,7 +112,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -129,33 +121,31 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
-        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+        if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY)
             allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        }
-        else {
+        else
             allShops = api.getShopManager().getAllShops();
-        }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        allShops.forEach(shopIterator -> {
             // check for blacklisted worlds
-            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
-                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+            if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying())
                 // check for shop if hidden
-                if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
+                && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
                     shopsFoundList.add(new FoundShopItemModel(
-                            shop_i.getPrice(),
-                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
-                            shop_i.getOwner(),
-                            shop_i.getLocation(),
-                            shop_i.getItem()
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner(),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
                     ));
-                }
             }
         });
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -238,12 +228,12 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         }
         LoggerUtils.logInfo("Registered finditem sub-command for /qs");
         api.getCommandManager().registerCmd(
-                CommandContainer.builder()
-                        .prefix("finditem")
-                        .permission(PlayerPerms.FINDITEM_USE.value())
-                        .hidden(false)
-                        .description("Search for items from all shops using an interactive GUI")
-                        .executor(new FindItemCmdReremakeImpl())
-                        .build());
+            CommandContainer.builder()
+                .prefix("finditem")
+                .permission(PlayerPerms.FINDITEM_USE.value())
+                .hidden(false)
+                .description("Search for items from all shops using an interactive GUI")
+                .executor(new FindItemCmdReremakeImpl())
+                .build());
     }
 }

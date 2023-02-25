@@ -316,6 +316,45 @@ public final class FindItemAddOn extends JavaPlugin {
         }
     }
 
+    private void initMyShopStatsCmd() {
+        List<String> alias = List.of("fiadmin");
+        try {
+            CommandManager.createCoreCommand(
+                    this,
+                    "shopstats",
+                    "Admin command for Shop Search addon",
+                    "/shopstats",
+                    (commandSender, subCommandList) -> {
+                        if (
+                                (commandSender.isOp())
+                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())
+                                        || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.value())))
+                        ) {
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&6&lShop Search - Shop Stats command"));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));
+
+                            for (SubCommand subCommand : subCommandList) {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&#ff1a1a" + subCommand.getSyntax() + " &#a3a3c2" + subCommand.getDescription()));
+                            }
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
+                            alias.forEach(alias_i -> {
+                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
+                            });
+                            commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
+                        }
+                    },
+                    alias,
+                    ReloadSubCmd.class);
+            LoggerUtils.logInfo("Registered /shopstats command");
+        } catch (NoSuchFieldException | IllegalAccessException e) {
+            LoggerUtils.logError(e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
     public static boolean isQSReremakeInstalled() {
         return qSReremakeInstalled;
     }
