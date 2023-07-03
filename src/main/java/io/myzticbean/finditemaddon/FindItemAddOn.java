@@ -316,6 +316,9 @@ public final class FindItemAddOn extends JavaPlugin {
         }
     }
 
+    /**
+     * Feature not implemented yet
+     */
     private void initMyShopStatsCmd() {
         List<String> alias = List.of("fiadmin");
         try {
