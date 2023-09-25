@@ -33,12 +33,9 @@ import java.util.*;
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private QuickShopAPI api;
-    private Plugin qsHikariPluginInstance;
-    private final String QS_HIKARI_PLUGIN_NAME = "QuickShop-Hikari";
 
     public QSHikariAPIHandler() {
-        qsHikariPluginInstance = Bukkit.getPluginManager().getPlugin(QS_HIKARI_PLUGIN_NAME);
-        api = (QuickShopAPI) qsHikariPluginInstance;
+        api = QuickShopAPI.getInstance();
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
