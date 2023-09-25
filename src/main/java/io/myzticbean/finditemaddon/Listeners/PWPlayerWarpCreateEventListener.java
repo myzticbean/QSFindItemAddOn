@@ -1,6 +1,6 @@
 package io.myzticbean.finditemaddon.Listeners;
 
-import com.olziedev.playerwarps.api.events.PlayerWarpCreateEvent;
+import com.olziedev.playerwarps.api.events.warp.PlayerWarpCreateEvent;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import org.bukkit.Bukkit;
