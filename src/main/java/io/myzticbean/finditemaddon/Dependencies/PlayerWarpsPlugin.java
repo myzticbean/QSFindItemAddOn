@@ -1,6 +1,7 @@
 package io.myzticbean.finditemaddon.Dependencies;
 
 import com.olziedev.playerwarps.api.PlayerWarpsAPI;
+import com.olziedev.playerwarps.api.events.warp.PlayerWarpTeleportEvent;
 import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
@@ -109,9 +110,9 @@ public class PlayerWarpsPlugin {
      */
     public static void executeWarpPlayer(Player player, String warpName) {
         PlayerWarpsAPI.getInstance(api -> {
-            Warp playerWarp = api.getPlayerWarp(warpName);
+            Warp playerWarp = api.getPlayerWarp(warpName, player);
             if(playerWarp != null) {
-                playerWarp.getWarpLocation().teleportWarp(player);
+                playerWarp.getWarpLocation().teleportWarp(player, PlayerWarpTeleportEvent.Cause.PLAYER_WARP_MENU);
             }
             else {
                 LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
