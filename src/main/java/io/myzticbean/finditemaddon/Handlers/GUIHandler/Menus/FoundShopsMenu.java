@@ -98,12 +98,7 @@ public class FoundShopsMenu extends PaginatedMenu {
             ItemStack item = event.getCurrentItem();
             ItemMeta meta = item.getItemMeta();
             NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-            if(!meta.getPersistentDataContainer().isEmpty()
-                    && !meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
-                LoggerUtils.logError("PersistentDataContainer doesn't have the right kind of data!");
-                return;
-            }
-            else {
+            if(!meta.getPersistentDataContainer().isEmpty() && meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                 List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
                 if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
@@ -156,6 +151,11 @@ public class FoundShopsMenu extends PaginatedMenu {
                         }
                     }
                 }
+            }
+            else {
+                LoggerUtils.logError("PersistentDataContainer doesn't have the right kind of data!");
+                return;
+
             }
         }
     }

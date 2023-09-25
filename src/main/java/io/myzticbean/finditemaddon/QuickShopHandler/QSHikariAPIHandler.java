@@ -14,7 +14,6 @@ import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
