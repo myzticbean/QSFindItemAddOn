@@ -156,8 +156,40 @@
         </dependency>
         <dependency>
             <groupId>com.ghostchu</groupId>
+            <artifactId>quickshop-api</artifactId>
+            <version>5.2.0.4</version>
+            <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jetbrains</groupId>
+                    <artifactId>annotations</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>net.kyori</groupId>
+                    <artifactId>adventure-platform-bukkit</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.github.juliomarcopineda</groupId>
+                    <artifactId>jdbc-stream</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>one.util</groupId>
+                    <artifactId>streamex</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>tne.tne</groupId>
+                    <artifactId>TheNewEconomy</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>me.xanium</groupId>
+                    <artifactId>GemsEconomy</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-bukkit</artifactId>
-            <version>4.0.0.0</version>
+            <version>5.2.0.4</version>
             <scope>provided</scope>
             <classifier>shaded</classifier>
             <exclusions>
@@ -200,10 +232,10 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>com.olziedev</groupId>
-            <artifactId>playerwarps-api</artifactId>
-            <version>6.18.1</version>
-            <scope>provided</scope>
+                <groupId>com.olziedev</groupId>
+                <artifactId>playerwarps-api</artifactId>
+                <version>6.28.0</version>
+                <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -312,7 +344,8 @@
         <dependency>
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
-            <version>4.12.0</version>
+            <version>4.14.0</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 </project>
