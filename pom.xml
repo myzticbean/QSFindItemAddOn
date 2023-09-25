@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.5.0-RELEASE</version>
+    <version>2.0.5.1-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -133,7 +133,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.19-R0.1-SNAPSHOT</version>
+            <version>1.19.3-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>org.maxgamer</groupId>
             <artifactId>QuickShop</artifactId>
-            <version>5.1.0.9</version>
+            <version>5.1.1.2</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -191,6 +191,7 @@
             <artifactId>quickshop-bukkit</artifactId>
             <version>5.2.0.4</version>
             <scope>provided</scope>
+            <classifier>shaded</classifier>
             <exclusions>
                 <exclusion>
                     <groupId>org.jetbrains</groupId>
