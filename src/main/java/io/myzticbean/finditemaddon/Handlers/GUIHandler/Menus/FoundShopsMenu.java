@@ -86,7 +86,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                 }
             }
         }
-        else if(event.getCurrentItem().getType().equals(Material.BARRIER) && event.getSlot() == 49) {
+        /*
+            Removing condition 'event.getCurrentItem().getType().equals(Material.BARRIER)' to fix issue #31
+         */
+        else if(event.getSlot() == 49) {
             event.getWhoClicked().closeInventory();
         }
         else if(event.getCurrentItem().getType().equals(Material.AIR)) {
