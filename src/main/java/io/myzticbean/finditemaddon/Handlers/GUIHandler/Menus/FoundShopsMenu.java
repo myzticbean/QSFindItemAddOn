@@ -1,5 +1,6 @@
 package io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus;
 
+import io.myzticbean.finditemaddon.ConfigUtil.ConfigProvider;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
@@ -62,33 +63,12 @@ public class FoundShopsMenu extends PaginatedMenu {
     @Override
     public void handleMenu(InventoryClickEvent event) {
         if(event.getSlot() == 45) {
-            if(page == 0) {
-                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG)) {
-                    event.getWhoClicked().sendMessage(
-                            ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                    + FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG));
-                }
-            }
-            else {
-                page = page - 1;
-                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
-            }
+            handleMenuClickForNavToPrevPage(event);
         }
         else if(event.getSlot() == 53) {
-            if(!((index + 1) >= super.playerMenuUtility.getPlayerShopSearchResult().size())) {
-                page = page + 1;
-                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
-            }
-            else {
-                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG)) {
-                    event.getWhoClicked().sendMessage(
-                            ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG));
-                }
-            }
+            handleMenuClickForNavToNextPage(event);
         }
-        /*
-            Removing condition 'event.getCurrentItem().getType().equals(Material.BARRIER)' to fix issue #31
-         */
+        // Issue #31: Removing condition 'event.getCurrentItem().getType().equals(Material.BARRIER)'
         else if(event.getSlot() == 49) {
             event.getWhoClicked().closeInventory();
         }
@@ -125,18 +105,37 @@ public class FoundShopsMenu extends PaginatedMenu {
                             if(EssentialsXPlugin.isEnabled()) {
                                 EssentialsXPlugin.getAPI().getUser(player).setLastLocation();
                             }
-                            PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                            // Check for TP delay
+                            if(StringUtils.isNumeric(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)
+                                && !"0".equals(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)) {
+                                long delay = Long.parseLong(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS);
+                                LoggerUtils.logDebugInfo("Teleporting delay is set to: " + delay);
+                                String tpDelayMsg = FindItemAddOn.getConfigProvider().TP_DELAY_MESSAGE;
+                                if(!StringUtils.isEmpty(tpDelayMsg)) {
+                                    player.sendMessage(
+                                            ColorTranslator.translateColorCodes(
+                                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + replaceDelayPlaceholder(tpDelayMsg,delay)));
+                                }
+                                Bukkit.getScheduler().scheduleSyncDelayedTask(
+                                        FindItemAddOn.getInstance(),
+                                        () -> PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN),
+                                        delay*20);
+                            } else {
+                                PaperLib.teleportAsync(player, locToTeleport, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                            }
                         }
                         else {
                             if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG)) {
-                                player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
+                                player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                        + FindItemAddOn.getConfigProvider().UNSAFE_SHOP_AREA_MSG));
                             }
                         }
                     }
                     else {
                         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
                             playerMenuUtility.getOwner()
-                                    .sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
+                                    .sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                            + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
                             event.getWhoClicked().closeInventory();
                         }
                     }
@@ -158,11 +157,36 @@ public class FoundShopsMenu extends PaginatedMenu {
             else {
                 LoggerUtils.logError("PersistentDataContainer doesn't have the right kind of data!");
                 return;
-
             }
         }
     }
 
+    private void handleMenuClickForNavToNextPage(InventoryClickEvent event) {
+        if(!((index + 1) >= super.playerMenuUtility.getPlayerShopSearchResult().size())) {
+            page = page + 1;
+            super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+        }
+        else {
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG)) {
+                event.getWhoClicked().sendMessage(
+                        ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG));
+            }
+        }
+    }
+
+    private void handleMenuClickForNavToPrevPage(InventoryClickEvent event) {
+        if(page == 0) {
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG)) {
+                event.getWhoClicked().sendMessage(
+                        ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                + FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG));
+            }
+        }
+        else {
+            page = page - 1;
+            super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+        }
+    }
 
 
     /**
@@ -341,5 +365,9 @@ public class FoundShopsMenu extends PaginatedMenu {
             text = text.replace(ShopLorePlaceholders.SHOP_VISITS.value(), String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getShopLocation())));
         }
         return text;
+    }
+
+    private String replaceDelayPlaceholder(String tpDelayMsg, long delay) {
+        return tpDelayMsg.replace("{DELAY}", String.valueOf(delay));
     }
 }

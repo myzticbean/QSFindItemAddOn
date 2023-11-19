@@ -36,6 +36,8 @@ public class ConfigProvider {
     public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.click-to-teleport-message");
     public final String SHOP_TP_NO_PERMISSION_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.shop-tp-no-permission-message");
     public final String UNSAFE_SHOP_AREA_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.unsafe-shop-area-message");
+    public final String TP_DELAY_IN_SECONDS = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.tp-delay-in-seconds");
+    public final String TP_DELAY_MESSAGE = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.tp-delay-message");
     public final boolean TP_PLAYER_TO_NEAREST_WARP = ConfigSetup.get().getBoolean("player-shop-teleportation.nearest-warp-tp-mode.tp-player-to-nearest-warp");
     public final String SHOP_GUI_BACK_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-back-button-material");
     public final String SHOP_GUI_BACK_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-back-button-text");

@@ -29,3 +29,6 @@ permissions:
   finditem.shoptp:
     description: If 'allow-direct-shop-tp' is enabled in config, players require this permission to be able to teleport
     default: op
+  finditem.shoptp.own:
+    description: Allows teleporting to own shops
+    default: true
