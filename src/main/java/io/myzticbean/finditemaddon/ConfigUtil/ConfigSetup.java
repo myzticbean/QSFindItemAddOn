@@ -15,7 +15,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 11;
+    private static final int CURRENT_CONFIG_VERSION = 12;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -170,6 +170,11 @@ public class ConfigSetup {
 
                 // Add option to configure player visit cooldown
                 configFileConfiguration.set("shop-player-visit-cooldown-in-minutes", 5);
+            }
+            // Config 12
+            if(configFileConfiguration.getInt("config-version") < 12) {
+                configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-delay-in-seconds", 0);
+                configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-delay-message", "&6You will be teleported in &c{DELAY} &6seconds...");
             }
             boolean userDefinedDebugMode = configFileConfiguration.getBoolean("debug-mode");
             configFileConfiguration.set("debug-mode", null);
