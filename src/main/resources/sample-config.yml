@@ -113,6 +113,12 @@ player-shop-teleportation:
     click-to-teleport-message: '&6&lClick to teleport to the shop!'
     shop-tp-no-permission-message: '&cYou don''t have permission to teleport to shop!'
     unsafe-shop-area-message: '&cThe area around the shop is unsafe!'
+    # When player clicks on a shop, how long to wait before teleporting to the shop (in seconds)
+    tp-delay-in-seconds: 0
+    # Message to show a player when they have clicked on a shop in GUI (Shown only if there is a non-zero TP delay)
+    # Set as '' if you do not want to show any message to player
+    # {DELAY} will be automatically replaced with value set in 'tp-delay-in-seconds'
+    tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
   nearest-warp-tp-mode:
     # The player will be teleported to the nearest warp as if they ran the warp command
     # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)
@@ -151,4 +157,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 11
+config-version: 12
