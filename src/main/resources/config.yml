@@ -45,6 +45,8 @@ player-shop-teleportation:
     click-to-teleport-message: "&6&lClick to teleport to the shop!"
     shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
     unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
+    tp-delay-in-seconds: 0
+    tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
 shop-gui-back-button-material: ""
@@ -64,4 +66,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 11
+config-version: 12
