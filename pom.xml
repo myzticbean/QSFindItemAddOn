@@ -189,7 +189,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-bukkit</artifactId>
-            <version>5.2.0.4</version>
+            <version>5.2.0.5</version>
             <scope>provided</scope>
             <classifier>shaded</classifier>
             <exclusions>
@@ -322,7 +322,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.24</version>
+            <version>1.18.26</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

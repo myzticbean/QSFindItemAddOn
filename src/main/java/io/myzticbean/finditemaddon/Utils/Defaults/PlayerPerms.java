@@ -10,7 +10,8 @@ public enum PlayerPerms {
     FINDITEM_HIDESHOP("finditem.hideshop"),
     FINDITEM_RELOAD("finditem.reload"),
     FINDITEM_RESTART("finditem.restart"),
-    FINDITEM_SHOPTP("finditem.shoptp");
+    FINDITEM_SHOPTP("finditem.shoptp"),
+    FINDITEM_SHOPTP_OWN("finditem.shoptp.own");
 
     private final String permName;
 
