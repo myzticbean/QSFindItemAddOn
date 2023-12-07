@@ -52,6 +52,14 @@ public class ConfigProvider {
     public final String SHOP_NAV_FIRST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-first-page-alert-message");
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-last-page-alert-message");
     public final int SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES = ConfigSetup.get().getInt("shop-player-visit-cooldown-in-minutes");
+    public final boolean IGNORE_ADMIN_SHOPS = ConfigSetup.get().getBoolean("ignore-admin-shops");
+    public final boolean IGNORE_EMPTY_CHESTS = ConfigSetup.get().getBoolean("ignore-empty-chests");
+    public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-goto-first-page-button-material");
+    public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-goto-first-page-button-text");
+    public final String SHOP_GUI_GOTO_LAST_PAGE_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-goto-last-page-button-material");
+    public final String SHOP_GUI_GOTO_LAST_PAGE_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-goto-last-page-button-text");
+    public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_CMD = ConfigSetup.get().getString("shop-gui-goto-first-page-button-custom-model-data");
+    public final String SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD = ConfigSetup.get().getString("shop-gui-goto-last-page-button-custom-model-data");
     public final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
     public final boolean DEBUG_MODE = ConfigSetup.get().getBoolean("debug-mode");
     public final int CONFIG_VERSION = ConfigSetup.get().getInt("config-version");

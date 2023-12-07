@@ -131,12 +131,18 @@ shop-gui-next-button-text: "&aNext &7&l»"
 shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
 shop-gui-close-button-material: "BARRIER"
 shop-gui-close-button-text: "&fClose Search"
+shop-gui-goto-first-page-button-material: ""
+shop-gui-goto-first-page-button-text: "&7&l« &cGo to First Page"
+shop-gui-goto-last-page-button-material: ""
+shop-gui-goto-last-page-button-text: "&aGo to Last Page &7&l»"
+
 # Enter Item Custom Model Data below, if available, within quotes
 # or leave as "" if not available
 shop-gui-back-button-custom-model-data: ""
 shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
-
+shop-gui-goto-first-page-button-custom-model-data: ""
+shop-gui-goto-last-page-button-custom-model-data: ""
 
 # Alert shown when player is already on first/last page and clicks back/next button
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
@@ -145,6 +151,12 @@ shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 # Specify (in minutes) how long the plugin will wait before incrementing the player
 # shop visit when teleporting to it from Search GUI
 shop-player-visit-cooldown-in-minutes: 5
+
+# Ignore admin shops from search result
+ignore-admin-shops: false
+
+# Ignore empty chests from search result
+ignore-empty-chests: true
 
 # When fetching shops, the below worlds will be ignored
 blacklisted-worlds:
@@ -157,4 +169,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 12
+config-version: 13
