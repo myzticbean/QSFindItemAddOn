@@ -14,15 +14,18 @@ import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Implementation of QSApi for Reremake
@@ -45,37 +48,44 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         } else {
             allShops = api.getShopManager().getAllShops();
         }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        for(Shop shopIterator : allShops) {
             // check for quickshop hikari internal per-shop based search permission
-            if (shop_i.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)) {
-                // check for blacklisted worlds
-                if (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                        && shop_i.getItem().getType().equals(item.getType())
-                        && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
-                        && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+            if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
+                    // check for blacklisted worlds
+                    && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                    && shopIterator.getItem().getType().equals(item.getType())
+                    && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
-                    if (!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                        shopsFoundList.add(new FoundShopItemModel(
-                                shop_i.getPrice(),
-                                (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
-                                shop_i.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                                shop_i.getLocation(),
-                                shop_i.getItem()
-                        ));
-                    }
+                    && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
+                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                    continue;
                 }
+                shopsFoundList.add(new FoundShopItemModel(
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
+                ));
             }
-        });
-        if (!shopsFoundList.isEmpty()) {
+        }
+        return handleShopSorting(toBuy, shopsFoundList);
+    }
+
+    @NotNull
+    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, List<FoundShopItemModel> shopsFoundList) {
+        if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 2;
             try {
                 sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-            } catch (Exception e) {
+            }
+            catch(Exception e) {
                 LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
                 LoggerUtils.logError("Defaulting to sorting by prices method");
             }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -88,45 +98,33 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         } else {
             allShops = api.getShopManager().getAllShops();
         }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        for (Shop shop_i : allShops) {
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        for(Shop shopIterator : allShops) {
             // check for quickshop hikari internal per-shop based search permission
-            if (shop_i.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)) {
-                // check for blacklisted worlds
-                if (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())) {
+            if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
+                    // check for blacklisted worlds
+                    && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
                     // match the item based on query
-                    if (shop_i.getItem().hasItemMeta()) {
-                        if (Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
-                            if (shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
-                                    && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
-                                // check for shop if hidden
-                                if (!HiddenShopStorageUtil.isShopHidden(shop_i)) {
-                                    shopsFoundList.add(new FoundShopItemModel(
-                                            shop_i.getPrice(),
-                                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
-                                            shop_i.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                                            shop_i.getLocation(),
-                                            shop_i.getItem()
-                                    ));
-                                }
-                            }
-                        }
-                    }
+                    && shopIterator.getItem().hasItemMeta()
+                    && Objects.requireNonNull(shopIterator.getItem().getItemMeta()).hasDisplayName()
+                    && (shopIterator.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
+                    && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
+                    // check for shop if hidden
+                    && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
+                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                    continue;
                 }
+                shopsFoundList.add(new FoundShopItemModel(
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
+                ));
             }
         }
-        if (!shopsFoundList.isEmpty()) {
-            int sortingMethod = 2;
-            try {
-                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-            } catch (Exception e) {
-                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-                LoggerUtils.logError("Defaulting to sorting by prices method");
-            }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
-        }
-        return shopsFoundList;
+        return handleShopSorting(toBuy, shopsFoundList);
     }
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
@@ -137,19 +135,67 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         } else {
             allShops = api.getShopManager().getAllShops();
         }
-        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+        LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+        for(Shop shopIterator : allShops) {
+            // check for quickshop hikari internal per-shop based search permission
+            if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
+                    // check for blacklisted worlds
+                    && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                    && (toBuy ? shopIterator.getRemainingStock() != 0 : shopIterator.getRemainingSpace() != 0)
+                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
+                    // check for shop if hidden
+                    && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
+                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                    continue;
+                }
+                shopsFoundList.add(new FoundShopItemModel(
+                        shopIterator.getPrice(),
+                        QSApi.processStockOrSpace((toBuy ? shopIterator.getRemainingStock() : shopIterator.getRemainingSpace())),
+                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
+                        shopIterator.getLocation(),
+                        shopIterator.getItem()
+                ));
+            }
+        }
+        if(!shopsFoundList.isEmpty()) {
+            int sortingMethod = 1;
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
+        }
+        return shopsFoundList;
+    }
+
+    public List<FoundShopItemModel> fetchAllItemsFromAllShopsAsync(boolean toBuy, Player searchingPlayer) {
+        List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
+        AtomicReference<List<Shop>> allShops = null;
+        if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+            allShops.set(new ArrayList<>(api.getShopManager().getLoadedShops()));
+        } else {
+            Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> {
+                allShops.set(api.getShopManager().getAllShops());
+            });
+
+        }
+        LoggerUtils.logDebugInfo("Total shops on server: " + allShops.get().size());
+        for(Shop shop_i: allShops.get()) {
+            // NEEDS TO RUN ON MAIN THREAD
+            AtomicInteger remainingStock = new AtomicInteger();
+            AtomicInteger remainingSpace = new AtomicInteger();
+            Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> {
+                remainingStock.set(shop_i.getRemainingStock());
+                remainingSpace.set(shop_i.getRemainingSpace());
+            });
+
             // check for quickshop hikari internal per-shop based search permission
             if (shop_i.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)) {
                 // check for blacklisted worlds
                 if (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                        && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
+                        && (toBuy ? remainingStock.get() != 0 : remainingSpace.get() != 0)
                         && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                     // check for shop if hidden
                     if (!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                         shopsFoundList.add(new FoundShopItemModel(
                                 shop_i.getPrice(),
-                                (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
+                                (toBuy ? remainingStock.get() : remainingSpace.get()),
                                 shop_i.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                                 shop_i.getLocation(),
                                 shop_i.getItem()
@@ -157,10 +203,10 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     }
                 }
             }
-        });
+        }
         if (!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -259,5 +305,17 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         String username = qUser.getUsernameOptional().orElse("Unknown");
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
+     * If to sell -> If shop has no space -> based on ignore flag, decide to include it or not
+     * @param toBuy
+     * @param shop
+     * @return If shop needs to be ignored from list
+     */
+    private boolean checkIfShopToBeIgnoredForFullOrEmpty(boolean toBuy, Shop shop) {
+        return FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS
+                && ((toBuy && shop.getRemainingStock() == 0) || (!toBuy && shop.getRemainingSpace() == 0));
     }
 }

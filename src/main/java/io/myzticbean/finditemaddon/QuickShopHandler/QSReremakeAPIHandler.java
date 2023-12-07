@@ -13,6 +13,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
@@ -64,18 +65,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 }
             }
         });
-        if(!shopsFoundList.isEmpty()) {
-            int sortingMethod = 2;
-            try {
-                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-            }
-            catch(Exception e) {
-                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-                LoggerUtils.logError("Defaulting to sorting by prices method");
-            }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
-        }
-        return shopsFoundList;
+        return handleShopSorting(toBuy, shopsFoundList);
     }
 
     @Override
@@ -111,18 +101,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 }
             }
         }
-        if(!shopsFoundList.isEmpty()) {
-            int sortingMethod = 2;
-            try {
-                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-            }
-            catch(Exception e) {
-                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
-                LoggerUtils.logError("Defaulting to sorting by prices method");
-            }
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
-        }
-        return shopsFoundList;
+        return handleShopSorting(toBuy, shopsFoundList);
     }
 
     @Override
@@ -155,7 +134,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         });
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-            return QSApi.sortShops(sortingMethod, shopsFoundList);
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
         return shopsFoundList;
     }
@@ -245,5 +224,21 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                         .description("Search for items from all shops using an interactive GUI")
                         .executor(new FindItemCmdReremakeImpl())
                         .build());
+    }
+
+    @NotNull
+    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, List<FoundShopItemModel> shopsFoundList) {
+        if(!shopsFoundList.isEmpty()) {
+            int sortingMethod = 2;
+            try {
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
+            }
+            catch(Exception e) {
+                LoggerUtils.logError("Invalid value in config.yml : 'shop-sorting-method'");
+                LoggerUtils.logError("Defaulting to sorting by prices method");
+            }
+            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
+        }
+        return shopsFoundList;
     }
 }

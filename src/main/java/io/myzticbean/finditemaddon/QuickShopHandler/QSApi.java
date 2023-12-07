@@ -1,5 +1,6 @@
 package io.myzticbean.finditemaddon.QuickShopHandler;
 
+import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
@@ -20,6 +21,9 @@ import java.util.List;
  * @author ronsane
  */
 public interface QSApi<QSType, Shop> {
+
+    String QS_TOTAL_SHOPS_ON_SERVER = "Total shops on server: ";
+    String QS_REMAINING_STOCK_OR_SPACE = "Remaining Stock/Space: ";
 
     /**
      * Search based on Item Type from all server shops
@@ -59,7 +63,7 @@ public interface QSApi<QSType, Shop> {
 
     void registerSubCommand();
 
-    static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList) {
+    static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList, boolean toBuy) {
         switch (sortingMethod) {
             // Random
             case 1 -> Collections.shuffle(shopsFoundList);
@@ -76,6 +80,15 @@ public interface QSApi<QSType, Shop> {
                 shopsFoundList.sort(Comparator.comparing(FoundShopItemModel::getShopPrice));
             }
         }
+        if(FindItemAddOn.getConfigProvider().DEBUG_MODE)
+            shopsFoundList.forEach(foundShopItem ->
+                    LoggerUtils.logDebugInfo(QS_REMAINING_STOCK_OR_SPACE + foundShopItem.getRemainingStockOrSpace()));
         return shopsFoundList;
+    }
+
+    static int processStockOrSpace(int stockOrSpace) {
+        if(stockOrSpace == -1)
+            return Integer.MAX_VALUE;
+        return stockOrSpace;
     }
 }

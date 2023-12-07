@@ -62,9 +62,19 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     @Override
     public void handleMenu(InventoryClickEvent event) {
+        // Previous Page
         if(event.getSlot() == 45) {
             handleMenuClickForNavToPrevPage(event);
         }
+        // First Page
+        else if(event.getSlot() == 46) {
+            handleFirstPageClick(event);
+        }
+        // Last Page
+        else if(event.getSlot() == 52) {
+            handleLastPageClick(event);
+        }
+        // Next Page
         else if(event.getSlot() == 53) {
             handleMenuClickForNavToNextPage(event);
         }
@@ -87,7 +97,9 @@ public class FoundShopsMenu extends PaginatedMenu {
                 if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
                     if(playerMenuUtility.getOwner().hasPermission(PlayerPerms.FINDITEM_SHOPTP.value())) {
                         World world = Bukkit.getWorld(locDataList.get(0));
-                        int locX = Integer.parseInt(locDataList.get(1)), locY = Integer.parseInt(locDataList.get(2)), locZ = Integer.parseInt(locDataList.get(3));
+                        int locX = Integer.parseInt(locDataList.get(1));
+                        int locY = Integer.parseInt(locDataList.get(2));
+                        int locZ = Integer.parseInt(locDataList.get(3));
                         Location shopLocation = new Location(world, locX, locY, locZ);
                         Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
                         if(locToTeleport != null) {
@@ -95,12 +107,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                             ShopSearchActivityStorageUtil.addPlayerVisitEntryAsync(shopLocation, player);
 
                             // Add Short Blindness effect... maybe?
-                            /**
-                             * @// TODO: 16/06/22 Make this an option in config
-                             */
-//                          player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 0, false, false, false));
+                            // TODO: 16/06/22 Make this an option in config -> player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 10, 0, false, false, false));
 
-                            // Teleport
                             // If EssentialsX is enabled, register last location before teleporting to make /back work
                             if(EssentialsXPlugin.isEnabled()) {
                                 EssentialsXPlugin.getAPI().getUser(player).setLastLocation();
@@ -141,16 +149,15 @@ public class FoundShopsMenu extends PaginatedMenu {
                     }
                     player.closeInventory();
                 }
-                else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP) {
+                else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP
                     // if list size = 1, it contains Warp name
-                    if(locDataList.size() == 1) {
-                        String warpName = locDataList.get(0);
-                        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
-                            Bukkit.dispatchCommand(player, "essentials:warp " + warpName);
-                        }
-                        else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
-                            PlayerWarpsPlugin.executeWarpPlayer(player, warpName);
-                        }
+                    && locDataList.size() == 1) {
+                    String warpName = locDataList.get(0);
+                    if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
+                        Bukkit.dispatchCommand(player, "essentials:warp " + warpName);
+                    }
+                    else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
+                        PlayerWarpsPlugin.executeWarpPlayer(player, warpName);
                     }
                 }
             }
@@ -185,6 +192,44 @@ public class FoundShopsMenu extends PaginatedMenu {
         else {
             page = page - 1;
             super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+        }
+    }
+
+    private void handleFirstPageClick(InventoryClickEvent event) {
+        if(page == 0) {
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG)) {
+                event.getWhoClicked().sendMessage(
+                        ColorTranslator.translateColorCodes(
+                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                        + FindItemAddOn.getConfigProvider().SHOP_NAV_FIRST_PAGE_ALERT_MSG));
+            }
+        } else {
+            page = 0;
+            super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+        }
+    }
+
+    private void handleLastPageClick(InventoryClickEvent event) {
+        int listSize = super.playerMenuUtility.getPlayerShopSearchResult().size();
+        if(!((index + 1) >= listSize)) {
+            double totalPages = listSize / maxItemsPerPage;
+            if(totalPages % 10 == 0) {
+                page = (int) Math.floor(totalPages);
+                LoggerUtils.logDebugInfo("Floor page value: " + page);
+            }
+            else {
+                page = (int) Math.ceil(totalPages);
+                LoggerUtils.logDebugInfo("Ceiling page value: " + page);
+            }
+            super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+        }
+        else {
+            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG)) {
+                event.getWhoClicked().sendMessage(
+                        ColorTranslator.translateColorCodes(
+                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
+                                        + FindItemAddOn.getConfigProvider().SHOP_NAV_LAST_PAGE_ALERT_MSG));
+            }
         }
     }
 
@@ -334,7 +379,7 @@ public class FoundShopsMenu extends PaginatedMenu {
             text = text.replace(ShopLorePlaceholders.ITEM_PRICE.value(), String.valueOf(shop.getShopPrice()));
         }
         if(text.contains(ShopLorePlaceholders.SHOP_STOCK.value())) {
-            if(shop.getRemainingStockOrSpace() == -1) {
+            if(shop.getRemainingStockOrSpace() == Integer.MAX_VALUE) {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unlimited");
             }
             else {
