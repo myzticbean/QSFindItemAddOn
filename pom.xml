@@ -133,7 +133,7 @@
         <dependency>
             <groupId>org.spigotmc</groupId>
             <artifactId>spigot-api</artifactId>
-            <version>1.20.1-R0.1-SNAPSHOT</version>
+            <version>1.20.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -145,7 +145,7 @@
         <dependency>
             <groupId>org.maxgamer</groupId>
             <artifactId>QuickShop</artifactId>
-            <version>5.1.2.4</version>
+            <version>5.1.2.5</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -157,7 +157,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-api</artifactId>
-            <version>5.2.0.4</version>
+            <version>5.2.0.6</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -232,10 +232,10 @@
             </exclusions>
         </dependency>
         <dependency>
-                <groupId>com.olziedev</groupId>
-                <artifactId>playerwarps-api</artifactId>
-                <version>6.28.0</version>
-                <scope>provided</scope>
+            <groupId>com.olziedev</groupId>
+            <artifactId>playerwarps-api</artifactId>
+            <version>6.28.0</version>
+            <scope>provided</scope>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
@@ -340,6 +340,12 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>*</groupId>
+                    <artifactId>*</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.kyori</groupId>

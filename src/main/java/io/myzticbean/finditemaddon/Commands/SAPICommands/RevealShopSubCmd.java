@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Sub Command Handler for /finditemadmin revealshop
- * @author ronsane
+ * @author myzticbean
  */
 public class RevealShopSubCmd extends SubCommand {
 

@@ -190,6 +190,7 @@ public class ConfigSetup {
             }
 
             // AT LAST
+            // Moving debug-mode and config-version to the last
             boolean userDefinedDebugMode = configFileConfiguration.getBoolean("debug-mode");
             configFileConfiguration.set("debug-mode", null);
             configFileConfiguration.set("debug-mode", userDefinedDebugMode);

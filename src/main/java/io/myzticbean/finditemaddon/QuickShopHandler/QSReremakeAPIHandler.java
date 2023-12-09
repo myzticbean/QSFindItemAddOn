@@ -25,7 +25,7 @@ import java.util.Objects;
 
 /**
  * Implementation of QSApi for Reremake
- * @author ronsane
+ * @author myzticbean
  */
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 

@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Sub Command Handler for /finditem restart
  * @deprecated No longer used, will be removed in future versions
- * @author ronsane
+ * @author myzticbean
  */
 @Deprecated
 public class RestartSubCmd extends SubCommand {

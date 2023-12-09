@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Sub Command Handler for /finditem hideshop
- * @author ronsane
+ * @author myzticbean
  */
 public class HideShopSubCmd extends SubCommand {
 

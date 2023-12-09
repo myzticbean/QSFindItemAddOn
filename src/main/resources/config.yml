@@ -1,8 +1,8 @@
 # QuickShop Shop Search AddOn
-# Works with both Reremake and Hikari forks of QuickShop
+# Works with both Hikari and Reremake forks of QuickShop
 
 # PLEASE refer the below link to understand the meaning of all the fields and sample data:
-# https://gitlab.com/ronsane/QSFindItemAddOn/-/wikis/Sample-config.yml
+# https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml
 
 plugin-prefix: "&8[&a&lShop Search&8] &r"
 find-item-command:
