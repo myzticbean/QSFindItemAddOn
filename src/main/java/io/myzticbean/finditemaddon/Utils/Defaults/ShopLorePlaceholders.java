@@ -2,7 +2,7 @@ package io.myzticbean.finditemaddon.Utils.Defaults;
 
 /**
  * List of all the placeholds used in the Shop lore in GUI
- * @author ronsane
+ * @author myzticbean
  */
 public enum ShopLorePlaceholders {
     ITEM_PRICE("{ITEM_PRICE}"),

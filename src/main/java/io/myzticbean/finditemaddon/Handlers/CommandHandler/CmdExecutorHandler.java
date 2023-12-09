@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Handler for different parameters of /finditem command
- * @author ronsane
+ * @author myzticbean
  */
 public class CmdExecutorHandler {
 
@@ -262,9 +262,11 @@ public class CmdExecutorHandler {
     }
 
     /**
+     * @deprecated
      * Handles plugin restart
      * @param commandSender Who is the command sender: console or player
      */
+    @Deprecated(forRemoval = true)
     public void handlePluginRestart(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
@@ -306,7 +308,7 @@ public class CmdExecutorHandler {
      * @param shop
      * @param player
      */
-    private void hideShop(Shop shop, Player player) {
+    private void hideShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {

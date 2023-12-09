@@ -1,6 +1,5 @@
 package io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus;
 
-import io.myzticbean.finditemaddon.ConfigUtil.ConfigProvider;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
@@ -34,7 +33,7 @@ import java.util.Objects;
 
 /**
  * Handler class for FoundShops GUI
- * @author ronsane
+ * @author myzticbean
  */
 public class FoundShopsMenu extends PaginatedMenu {
 
@@ -115,7 +114,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                             }
                             // Check for TP delay
                             if(StringUtils.isNumeric(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)
-                                && !"0".equals(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)) {
+                                && !"0".equals(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)
+                                && !PlayerPerms.hasShopTpDelayBypassPermOrAdmin(player)) {
                                 long delay = Long.parseLong(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS);
                                 LoggerUtils.logDebugInfo("Teleporting delay is set to: " + delay);
                                 String tpDelayMsg = FindItemAddOn.getConfigProvider().TP_DELAY_MESSAGE;
@@ -238,7 +238,9 @@ public class FoundShopsMenu extends PaginatedMenu {
      * Empty method in case we need to handle static GUI icons in future
      */
     @Override
-    public void setMenuItems() {}
+    public void setMenuItems() {
+        // Just overriding
+    }
 
     /**
      * Sets the slots in the search result GUI

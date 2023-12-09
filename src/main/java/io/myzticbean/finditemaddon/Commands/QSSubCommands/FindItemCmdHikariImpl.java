@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * @author ronsane
+ * @author myzticbean
  */
 public class FindItemCmdHikariImpl implements CommandHandler<Player> {
 

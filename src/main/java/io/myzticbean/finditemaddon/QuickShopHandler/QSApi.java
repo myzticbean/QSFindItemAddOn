@@ -18,7 +18,7 @@ import java.util.List;
  * Implement it depending on which API is being used (Reremake/Hikari).
  * @param <QSType>
  * @param <Shop>
- * @author ronsane
+ * @author myzticbean
  */
 public interface QSApi<QSType, Shop> {
 

@@ -49,12 +49,12 @@ public final class FindItemAddOn extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by ronsane");
+        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by myzticbean");
 
         // Show warning if it's a snapshot build
         if(this.getDescription().getVersion().toLowerCase().contains("snapshot")) {
             LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
-            LoggerUtils.logWarning("If you find any bugs, please report them here: https://gitlab.com/ronsane/QSFindItemAddOn/-/issues");
+            LoggerUtils.logWarning("If you find any bugs, please report them here: https://github.com/myzticbean/QSFindItemAddOn/issues");
         }
 
 

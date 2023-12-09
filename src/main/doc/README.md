@@ -1,10 +1,10 @@
 # Shop Search AddOn For QuickShop
 ### Version: ${project.version}
 
-An unofficial add-on for the QuickShop Reremake and Hikari spigot plugin.
+An unofficial add-on for the QuickShop Hikari and Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
 
-![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.19.3-brightgreen)
+![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.20.1-brightgreen)
 ![Ver](https://img.shields.io/spiget/version/95104?label=Current%20Spigot%20Version)
 
 ## Features
@@ -48,25 +48,25 @@ command-alias: []
     - Remember, this applies only to Essential Warps.
 - WorldGuard region support for fetching the WorldGuard region the shop is in (if overlapping regions, highest priority will be chosen)
 
->Check out the sample config.yml [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/wikis/config.yml-%5BFor-QuickShopAddOn-v2.*%5D).
+>Check out the sample config.yml [here](https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml).
 
 ## Requires
-- [QuickShop Reremake](https://www.spigotmc.org/resources/62575/) 5.0 or higher (Use add-on v1.7 for QuickShop version 4.0.*)
+- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v5.2 or higher
 
-OR
+**OR**
 
-- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v4.0.0.0 or higher
+- [QuickShop Reremake](https://www.spigotmc.org/resources/62575/) 5.1 or higher (Use add-on v1.7 for QuickShop version 4.0.*)
 
 ## Assumptions
 - A compatible economy plugin is installed
 - [Vault](https://www.spigotmc.org/resources/34315/) 1.7.3 or higher is installed
 
 ## Issue Tracking
-Please create a new issue [here](https://gitlab.com/ronsane/QSFindItemAddOn/-/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
+Please create a new issue [here](https://github.com/myzticbean/QSFindItemAddOn/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
 You can also find the list of features currently being worked on (if any) in the same link.
 
 ## How to contribute?
-See more details [here](../../../CONTRIBUTING.md).
+See more details [here](https://github.com/myzticbean/QSFindItemAddOn/blob/master/CONTRIBUTING.md).
 
 ## BStats Metrics
 [![BigImage](https://bstats.org/signatures/bukkit/QSFindItemAddOn.svg)](https://bstats.org/plugin/bukkit/QSFindItemAddOn/12382)
