@@ -179,7 +179,7 @@ public class ConfigSetup {
             }
             // Config 13
             if(configFileConfiguration.getInt("config-version") < 13) {
-                configFileConfiguration.set("ignore-admin-shops", false);
+//                configFileConfiguration.set("ignore-admin-shops", false);
                 configFileConfiguration.set("ignore-empty-chests", true);
                 configFileConfiguration.set("shop-gui-goto-first-page-button-material", "");
                 configFileConfiguration.set("shop-gui-goto-first-page-button-text", "&7&l« &cGo to First Page");

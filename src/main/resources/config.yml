@@ -68,7 +68,6 @@ shop-gui-close-button-custom-model-data: ""
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
 shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 shop-player-visit-cooldown-in-minutes: 5
-ignore-admin-shops: false
 ignore-empty-chests: true
 blacklisted-worlds:
   - "world_number_1"

@@ -11,9 +11,12 @@ import lombok.Getter;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
 import java.io.*;
 import java.time.Instant;
 import java.util.*;
@@ -321,5 +324,35 @@ public class ShopSearchActivityStorageUtil {
             }
         }
         return 0;
+    }
+
+    @Nullable
+    public static OfflinePlayer getShopOwner(@NotNull Location shopLocation) {
+        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
+            if (shopSearchActivity.compareWith(
+                    shopLocation.getWorld().getName(),
+                    shopLocation.getX(),
+                    shopLocation.getY(),
+                    shopLocation.getZ()
+            )) {
+                return Bukkit.getOfflinePlayer(UUID.fromString(shopSearchActivity.getShopOwnerUUID()));
+            }
+        }
+        return null;
+    }
+
+    @Nullable
+    public static UUID getShopOwnerUUID(@NotNull Location shopLocation) {
+        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
+            if (shopSearchActivity.compareWith(
+                    shopLocation.getWorld().getName(),
+                    shopLocation.getX(),
+                    shopLocation.getY(),
+                    shopLocation.getZ()
+            )) {
+                return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
+            }
+        }
+        return null;
     }
 }

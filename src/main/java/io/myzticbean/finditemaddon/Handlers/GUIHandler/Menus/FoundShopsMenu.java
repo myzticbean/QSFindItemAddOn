@@ -26,10 +26,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Handler class for FoundShops GUI
@@ -100,6 +97,11 @@ public class FoundShopsMenu extends PaginatedMenu {
                         int locY = Integer.parseInt(locDataList.get(2));
                         int locZ = Integer.parseInt(locDataList.get(3));
                         Location shopLocation = new Location(world, locX, locY, locZ);
+                        UUID shopOwner = ShopSearchActivityStorageUtil.getShopOwnerUUID(shopLocation);
+                        if(player.getUniqueId().equals(shopOwner) && !PlayerPerms.canPlayerTpToOwnShop(player)) {
+                            player.sendMessage(ColorTranslator.translateColorCodes(
+                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
+                        }
                         Location locToTeleport = LocationUtils.findSafeLocationAroundShop(shopLocation);
                         if(locToTeleport != null) {
                             // Add Player Visit Entry

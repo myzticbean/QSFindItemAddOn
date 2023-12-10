@@ -36,11 +36,11 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
-    private QuickShopAPI api;
+    private final QuickShopAPI api;
 
     private final ConcurrentMap<Long, CachedShop> shopCache;
 
-    private final int SHOP_CACHE_TIMEOUT_SECONDS = 30;
+    private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
 
     public QSHikariAPIHandler() {
         api = QuickShopAPI.getInstance();
@@ -63,7 +63,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     // check for blacklisted worlds
                     && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
                     && shopIterator.getItem().getType().equals(item.getType())
-                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
+//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
@@ -116,7 +116,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && shopIterator.getItem().hasItemMeta()
                     && Objects.requireNonNull(shopIterator.getItem().getItemMeta()).hasDisplayName()
                     && (shopIterator.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
+//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
@@ -149,7 +149,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
                     // check for blacklisted worlds
                     && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
+//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
@@ -269,7 +269,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     /**
-     * TODO: Logic is incorrect
      * If IGNORE_EMPTY_CHESTS is true -> do not add empty stock or space
      * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
      * If to sell -> If shop has no space -> based on ignore flag, decide to include it or not
@@ -278,9 +277,15 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
      * @return If shop needs to be ignored from list
      */
     private boolean checkIfShopToBeIgnoredForFullOrEmpty(boolean toBuy, Shop shop) {
-        return FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS
-                && ((toBuy && getRemainingStockOrSpaceFromShopCache(shop, true) == 0) 
-                    || (!toBuy && getRemainingStockOrSpaceFromShopCache(shop, false) == 0));
+        boolean ignoreEmptyChests = FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS;
+        if(ignoreEmptyChests) {
+            if(toBuy) {
+                return getRemainingStockOrSpaceFromShopCache(shop, true) == 0;
+
+            } else return getRemainingStockOrSpaceFromShopCache(shop, false) == 0;
+
+        }
+        return false;
     }
 
     /**
@@ -292,7 +297,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
         LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
         CachedShop cachedShop = shopCache.get(shop.getShopId());
-        if (cachedShop == null || isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
+        if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
             cachedShop = CachedShop.builder()
                     .shopId(shop.getShopId())
                     .remainingStock(shop.getRemainingStock())
@@ -303,24 +308,5 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             LoggerUtils.logDebugInfo("Adding to ShopCache: " + shop.getShopId());
         }
         return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
-    }
-
-    /**
-     * Function to check if the time difference between two dates is greater than or equal to the specified seconds
-     * @param date1
-     * @param date2
-     * @param seconds
-     * @return
-     */
-    private static boolean isTimeDifferenceGreaterThanSeconds(Date date1, Date date2, int seconds) {
-        Instant instant1 = date1.toInstant();
-        Instant instant2 = date2.toInstant();
-
-        Duration duration = Duration.between(instant1, instant2);
-        long secondsDifference = Math.abs(duration.getSeconds());
-
-        LoggerUtils.logDebugInfo("Difference: " + secondsDifference);
-
-        return secondsDifference >= seconds;
     }
 }
