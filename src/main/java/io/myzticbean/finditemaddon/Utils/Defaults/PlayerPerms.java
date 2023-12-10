@@ -39,4 +39,8 @@ public enum PlayerPerms {
     public static boolean hasShopTpDelayBypassPerm(Player p) {
         return p.hasPermission(FINDITEM_SHOPTP_BYPASS_DELAY.permName);
     }
+
+    public static boolean canPlayerTpToOwnShop(Player p) {
+        return p.hasPermission(FINDITEM_SHOPTP_OWN.permName);
+    }
 }

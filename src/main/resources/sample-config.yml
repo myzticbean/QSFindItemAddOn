@@ -152,9 +152,6 @@ shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 # shop visit when teleporting to it from Search GUI
 shop-player-visit-cooldown-in-minutes: 5
 
-# Ignore admin shops from search result
-ignore-admin-shops: false
-
 # Ignore empty chests from search result
 ignore-empty-chests: true
 

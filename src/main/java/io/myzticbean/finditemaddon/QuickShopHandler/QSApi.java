@@ -9,8 +9,11 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -90,5 +93,24 @@ public interface QSApi<QSType, Shop> {
         if(stockOrSpace == -1)
             return Integer.MAX_VALUE;
         return stockOrSpace;
+    }
+
+    /**
+     * Function to check if the time difference between two dates is greater than or equal to the specified seconds
+     * @param date1
+     * @param date2
+     * @param seconds
+     * @return
+     */
+    static boolean isTimeDifferenceGreaterThanSeconds(Date date1, Date date2, int seconds) {
+        Instant instant1 = date1.toInstant();
+        Instant instant2 = date2.toInstant();
+
+        Duration duration = Duration.between(instant1, instant2);
+        long secondsDifference = Math.abs(duration.getSeconds());
+
+        LoggerUtils.logDebugInfo("Difference: " + secondsDifference);
+
+        return secondsDifference >= seconds;
     }
 }

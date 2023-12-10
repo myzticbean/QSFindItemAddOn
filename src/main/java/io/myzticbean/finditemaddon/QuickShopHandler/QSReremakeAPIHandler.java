@@ -2,6 +2,7 @@ package io.myzticbean.finditemaddon.QuickShopHandler;
 
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdReremakeImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
+import io.myzticbean.finditemaddon.Models.CachedShop;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
@@ -10,6 +11,7 @@ import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -19,9 +21,14 @@ import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Implementation of QSApi for Reremake
@@ -30,10 +37,16 @@ import java.util.Objects;
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
+
+    private final ConcurrentMap<Location, CachedShop> shopCache;
+
+    private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
     private final String QS_REREMAKE_PLUGIN_NAME = "QuickShop";
 
     public QSReremakeAPIHandler() {
         api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin(QS_REREMAKE_PLUGIN_NAME);
+        LoggerUtils.logInfo("Initializing Shop caching");
+        shopCache = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -47,24 +60,29 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             allShops = api.getShopManager().getAllShops();
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+        for(Shop shop_i : allShops) {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
                     && shop_i.getItem().getType().equals(item.getType())
-                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
+//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) != 0 : getRemainingStockOrSpaceFromShopCache(shop_i, false) != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i)) {
+                    continue;
+                }
+//                if(checkIfShopToBeIgnoredIfAdminShop(shop_i))
+//                    continue;
                 // check for shop if hidden
                 if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                     shopsFoundList.add(new FoundShopItemModel(
                             shop_i.getPrice(),
-                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
+                            QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
                             shop_i.getItem()
                     ));
                 }
             }
-        });
+        }
         return handleShopSorting(toBuy, shopsFoundList);
     }
 
@@ -84,13 +102,17 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 if(shop_i.getItem().hasItemMeta()) {
                     if(Objects.requireNonNull(shop_i.getItem().getItemMeta()).hasDisplayName()) {
                         if(shop_i.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
+//                                && (toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) != 0 : getRemainingStockOrSpaceFromShopCache(shop_i, false) != 0)
                                 && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                            if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i))
+                                continue;
+//                            if(checkIfShopToBeIgnoredIfAdminShop(shop_i))
+//                                continue;
                             // check for shop if hidden
                             if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                                 shopsFoundList.add(new FoundShopItemModel(
                                         shop_i.getPrice(),
-                                        (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
+                                        QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                                         shop_i.getOwner(),
                                         shop_i.getLocation(),
                                         shop_i.getItem()
@@ -115,23 +137,27 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             allShops = api.getShopManager().getAllShops();
         }
         LoggerUtils.logDebugInfo("Total shops on server: " + allShops.size());
-        allShops.forEach((shop_i) -> {
+        for(Shop shop_i : allShops) {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
-                    && (toBuy ? shop_i.getRemainingStock() != 0 : shop_i.getRemainingSpace() != 0)
+//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) != 0 : getRemainingStockOrSpaceFromShopCache(shop_i, false) != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
+                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i))
+                    continue;
+//                if(checkIfShopToBeIgnoredIfAdminShop(shop_i))
+//                    continue;
                 // check for shop if hidden
                 if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                     shopsFoundList.add(new FoundShopItemModel(
                             shop_i.getPrice(),
-                            (toBuy ? shop_i.getRemainingStock() : shop_i.getRemainingSpace()),
+                            QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
                             shop_i.getItem()
                     ));
                 }
             }
-        });
+        }
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
             return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
@@ -241,4 +267,62 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         }
         return shopsFoundList;
     }
+
+    /**
+     * If IGNORE_EMPTY_CHESTS is true -> do not add empty stock or space
+     * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
+     * If to sell -> If shop has no space -> based on ignore flag, decide to include it or not
+     * @param toBuy
+     * @param shop
+     * @return If shop needs to be ignored from list
+     */
+    private boolean checkIfShopToBeIgnoredForFullOrEmpty(boolean toBuy, Shop shop) {
+        boolean ignoreEmptyChests = FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS;
+        if(ignoreEmptyChests) {
+            if(toBuy) {
+                return getRemainingStockOrSpaceFromShopCache(shop, true) == 0;
+
+            } else return getRemainingStockOrSpaceFromShopCache(shop, false) == 0;
+
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param shop
+     * @return True if shop to be ignored
+     */
+    /*private boolean checkIfShopToBeIgnoredIfAdminShop(Shop shop) {
+        boolean ignoreAdminShops = FindItemAddOn.getConfigProvider().IGNORE_ADMIN_SHOPS;
+        if(ignoreAdminShops) {
+            OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shop.getOwner());
+            return shopOwner.getName() == null;
+        }
+        return false;
+    }*/
+
+    /**
+     * Fallback to fetching info from ShopCache to avoid lag
+     * @param shop QuickShop Shop instance
+     * @param fetchRemainingStock True if fetching remaning stock, False if fetching remaining space
+     * @return
+     */
+    private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
+        LoggerUtils.logDebugInfo("Shop Location: " + shop.getLocation());
+        CachedShop cachedShop = shopCache.get(shop.getLocation());
+        if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
+            cachedShop = CachedShop.builder()
+                    .shopLocation(shop.getLocation())
+                    .remainingStock(shop.getRemainingStock())
+                    .remainingSpace(shop.getRemainingSpace())
+                    .lastFetched(new Date())
+                    .build();
+            shopCache.put(cachedShop.getShopLocation(), cachedShop);
+            LoggerUtils.logDebugInfo("Adding to ShopCache: " + shop.getLocation());
+        }
+        return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
+    }
+
+
 }
