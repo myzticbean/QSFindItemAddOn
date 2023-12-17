@@ -119,6 +119,9 @@ player-shop-teleportation:
     # Set as '' if you do not want to show any message to player
     # {DELAY} will be automatically replaced with value set in 'tp-delay-in-seconds'
     tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
+    # Players require 'finditem.shoptp.own' permission to teleport to their own shop.
+    # If no permission, below message will be shown.
+    tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
   nearest-warp-tp-mode:
     # The player will be teleported to the nearest warp as if they ran the warp command
     # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)

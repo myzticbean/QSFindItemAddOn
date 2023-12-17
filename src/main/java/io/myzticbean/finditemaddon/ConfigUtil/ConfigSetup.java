@@ -179,7 +179,7 @@ public class ConfigSetup {
             }
             // Config 13
             if(configFileConfiguration.getInt("config-version") < 13) {
-//                configFileConfiguration.set("ignore-admin-shops", false);
+                configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-to-own-shop-no-permission-message", "&cYou cannot teleport to your own shop!");
                 configFileConfiguration.set("ignore-empty-chests", true);
                 configFileConfiguration.set("shop-gui-goto-first-page-button-material", "");
                 configFileConfiguration.set("shop-gui-goto-first-page-button-text", "&7&l« &cGo to First Page");
@@ -211,20 +211,6 @@ public class ConfigSetup {
      * Added in 2.0
      */
     public static void copySampleConfig() {
-
         FindItemAddOn.getInstance().saveResource("sample-config.yml", true);
-
-//        sampleConfigFile = new File(FindItemAddOn.getInstance().getDataFolder(), "sample-config.yml");
-//        if(!sampleConfigFile.exists()) {
-//            try {
-//                boolean isConfigGenerated = sampleConfigFile.createNewFile();
-//                if(isConfigGenerated) {
-//                    LoggerUtils.logInfo("Generated a new config.yml");
-//                }
-//            }
-//            catch (IOException e) {
-//                LoggerUtils.logError("Error generating config.yml");
-//            }
-//        }
     }
 }
