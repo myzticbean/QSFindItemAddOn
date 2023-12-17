@@ -1,11 +1,13 @@
 package io.myzticbean.finditemaddon.QuickShopHandler;
 
+import cc.carm.lib.easysql.api.SQLQuery;
 import com.ghostchu.quickshop.QuickShop;
 import com.ghostchu.quickshop.api.QuickShopAPI;
 import com.ghostchu.quickshop.api.command.CommandContainer;
 import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
+import com.ghostchu.quickshop.database.DataTables;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdHikariImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
@@ -23,6 +25,8 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.charset.StandardCharsets;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
@@ -58,6 +62,11 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
+
+            // @TODO: Testing
+            testQuickShopHikariExternalCache(shopIterator);
+            LoggerUtils.logWarning("2: Location: " + shopIterator.getLocation() + "Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace());
+
             // check for quickshop hikari internal per-shop based search permission
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
                     // check for blacklisted worlds
@@ -308,5 +317,32 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             LoggerUtils.logDebugInfo("Adding to ShopCache: " + shop.getShopId());
         }
         return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
+    }
+
+    // An empty ResultSet or a value that returns -1 means that the value is not cached.
+    // Normally when space is -1, stock is not, and vice versa.
+    // In special cases, neither value may be -1.
+    // If Stock 0 -> Shop is admin or no stock
+    private void testQuickShopHikariExternalCache(Shop shop) throws RuntimeException {
+        long shopId = shop.getShopId();
+        try (SQLQuery query = DataTables.EXTERNAL_CACHE.createQuery()
+                .addCondition("shop", shopId)
+                .selectColumns("space", "stock")
+                .setLimit(1)
+                .build()
+                .execute(); ResultSet resultSet = query.getResultSet()) {
+            if(resultSet.next()){
+                long stock = resultSet.getLong("stock");
+                long space = resultSet.getLong("space");
+                // stock or space can be `-1`
+                LoggerUtils.logWarning("1: Location: " + shop.getLocation() + "Stock: " + stock + " | Space: " + space);
+            }else{
+                // no cached data
+                LoggerUtils.logWarning("No cached data found!");
+            }
+        }
+        catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

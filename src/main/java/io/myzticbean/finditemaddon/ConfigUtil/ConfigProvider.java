@@ -38,6 +38,7 @@ public class ConfigProvider {
     public final String UNSAFE_SHOP_AREA_MSG = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.unsafe-shop-area-message");
     public final String TP_DELAY_IN_SECONDS = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.tp-delay-in-seconds");
     public final String TP_DELAY_MESSAGE = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.tp-delay-message");
+    public final String TP_TO_OWN_SHOP_NO_PERMISSION_MESSAGE = ConfigSetup.get().getString("player-shop-teleportation.direct-shop-tp-mode.tp-to-own-shop-no-permission-message");
     public final boolean TP_PLAYER_TO_NEAREST_WARP = ConfigSetup.get().getBoolean("player-shop-teleportation.nearest-warp-tp-mode.tp-player-to-nearest-warp");
     public final String SHOP_GUI_BACK_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-back-button-material");
     public final String SHOP_GUI_BACK_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-back-button-text");
@@ -52,7 +53,6 @@ public class ConfigProvider {
     public final String SHOP_NAV_FIRST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-first-page-alert-message");
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString("shop-navigation-last-page-alert-message");
     public final int SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES = ConfigSetup.get().getInt("shop-player-visit-cooldown-in-minutes");
-//    public final boolean IGNORE_ADMIN_SHOPS = ConfigSetup.get().getBoolean("ignore-admin-shops");
     public final boolean IGNORE_EMPTY_CHESTS = ConfigSetup.get().getBoolean("ignore-empty-chests");
     public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-goto-first-page-button-material");
     public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-goto-first-page-button-text");

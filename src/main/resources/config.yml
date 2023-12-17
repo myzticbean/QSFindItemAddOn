@@ -47,6 +47,7 @@ player-shop-teleportation:
     unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
     tp-delay-in-seconds: 0
     tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
+    tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
 shop-gui-back-button-material: ""

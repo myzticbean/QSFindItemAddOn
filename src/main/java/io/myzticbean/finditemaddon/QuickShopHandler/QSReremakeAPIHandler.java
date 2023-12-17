@@ -11,18 +11,16 @@ import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
 
-import java.time.Duration;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -38,6 +36,8 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
 
+    private final QuickShop quickShop;
+
     private final ConcurrentMap<Location, CachedShop> shopCache;
 
     private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
@@ -45,12 +45,14 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     public QSReremakeAPIHandler() {
         api = (QuickShopAPI) Bukkit.getPluginManager().getPlugin(QS_REREMAKE_PLUGIN_NAME);
+        quickShop = (QuickShop) Bukkit.getPluginManager().getPlugin(QS_REREMAKE_PLUGIN_NAME);
         LoggerUtils.logInfo("Initializing Shop caching");
         shopCache = new ConcurrentHashMap<>();
     }
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -83,11 +85,15 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 }
             }
         }
-        return handleShopSorting(toBuy, shopsFoundList);
+        List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
+        long end = System.currentTimeMillis();
+        logTimeTookMsg((end-begin));
+        return sortedShops;
     }
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -123,11 +129,15 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 }
             }
         }
-        return handleShopSorting(toBuy, shopsFoundList);
+        List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
+        long end = System.currentTimeMillis();
+        logTimeTookMsg((end-begin));
+        return sortedShops;
     }
 
     @Override
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -162,6 +172,8 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             int sortingMethod = 1;
             return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
+        long end = System.currentTimeMillis();
+        logTimeTookMsg((end-begin));
         return shopsFoundList;
     }
 
@@ -225,7 +237,6 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             if(tempShopToRemove != null)
                 globalShopsList.remove(tempShopToRemove);
         }
-
         return tempGlobalShopsList;
     }
 
@@ -312,6 +323,40 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         LoggerUtils.logDebugInfo("Shop Location: " + shop.getLocation());
         CachedShop cachedShop = shopCache.get(shop.getLocation());
         if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
+            Shop possibleCachedShop = getRemainingStockOrSpaceFromQSCache(shop);
+            if(possibleCachedShop != null) {
+                cachedShop = CachedShop.builder()
+                        .shopLocation(possibleCachedShop.getLocation())
+                        .remainingStock(possibleCachedShop.getRemainingStock())
+                        .remainingSpace(possibleCachedShop.getRemainingSpace())
+                        .lastFetched(new Date())
+                        .build();
+                shopCache.put(cachedShop.getShopLocation(), cachedShop);
+                LoggerUtils.logDebugInfo("Added to ShopCache: " + shop.getLocation());
+            } else {
+                LoggerUtils.logError("No shop found from QS cache for location: " + shop.getLocation());
+            }
+        } else {
+            LoggerUtils.logInfo("Shop found from cache: " + shop.getLocation());
+        }
+        return (fetchRemainingStock ?
+                (cachedShop != null ? cachedShop.getRemainingStock() : -1)
+                : (cachedShop != null ? cachedShop.getRemainingSpace() : -1));
+    }
+
+    /**
+     * Fallback to fetching info from ShopCache to avoid lag
+     * @param shop QuickShop Shop instance
+     * @return
+     */
+    private @Nullable Shop getRemainingStockOrSpaceFromQSCache(Shop shop) {
+        LoggerUtils.logDebugInfo("Shop Location: " + shop.getLocation());
+
+        return quickShop.getShopCache().find(shop.getLocation(), false);
+
+        /*
+        CachedShop cachedShop = shopCache.get(shop.getLocation());
+        if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
             cachedShop = CachedShop.builder()
                     .shopLocation(shop.getLocation())
                     .remainingStock(shop.getRemainingStock())
@@ -322,6 +367,11 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             LoggerUtils.logDebugInfo("Adding to ShopCache: " + shop.getLocation());
         }
         return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
+         */
+    }
+
+    private void logTimeTookMsg(long timeTook) {
+        LoggerUtils.logInfo("Shop search took: " + timeTook + " milliseconds");
     }
 
 
