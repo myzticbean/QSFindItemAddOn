@@ -1,3 +1,11 @@
+## Release 2.0.5.4
+### Features
+- Added Go to First and Last page GUI buttons (#3)
+- Added new config option to include empty chests in the search result (#3)
+### Bug fixes
+- Full/out of space chests will be excluded from `/finditem TO-SELL <item_name>` (#3)
+- Bug fix to prevent lag when during `/finditem TO_BUY *` on large servers (Only for QS Hikari)
+
 ## Release 2.0.5.3
 ### Features
 - Added shop TP delay ([#28](https://gitlab.com/ronsane/QSFindItemAddOn/-/issues/28))

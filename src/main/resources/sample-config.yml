@@ -48,6 +48,9 @@ find-item-command:
   shop-already-hidden-message: "&cThis shop is already hidden!"
   shop-already-public-message: "&cThis shop is already public!"
   invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
+  # Added this config option to temporarily remove hideshop/revealshop sub-commands (Issue #5)
+  # Set it to 'true' if you want to remove those sub-commands
+  remove-hideshop-revealshop-subcommands: false
 
 
 # Shop sorting methods:

@@ -18,7 +18,6 @@ public class ConfigProvider {
     public final String FIND_ITEM_REVEALSHOP_AUTOCOMPLETE = ConfigSetup.get().getString("find-item-command.revealshop-autocomplete");
     public final String FIND_ITEM_CMD_INCORRECT_USAGE_MSG = ConfigSetup.get().getString("find-item-command.incorrect-usage-message");
     public final String FIND_ITEM_CMD_INVALID_MATERIAL_MSG = ConfigSetup.get().getString("find-item-command.invalid-material-message");
-    public final String FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG = ConfigSetup.get().getString("find-item-command.hiding-shop-owner-invalid-message");
     public final String SHOP_SEARCH_LOADING_MSG = ConfigSetup.get().getString("find-item-command.shop-search-loading-message");
     public final String NO_SHOP_FOUND_MSG = ConfigSetup.get().getString("find-item-command.no-shop-found-message");
     public final String FIND_ITEM_CMD_NO_PERMISSION_MSG = ConfigSetup.get().getString("find-item-command.find-item-command-no-permission-message");
@@ -27,6 +26,8 @@ public class ConfigProvider {
     public final String FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG = ConfigSetup.get().getString("find-item-command.shop-already-hidden-message");
     public final String FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG = ConfigSetup.get().getString("find-item-command.shop-already-public-message");
     public final String FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG = ConfigSetup.get().getString("find-item-command.invalid-shop-block-message");
+    public final String FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG = ConfigSetup.get().getString("find-item-command.hiding-shop-owner-invalid-message");
+    public final boolean FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS = ConfigSetup.get().getBoolean("find-item-command.remove-hideshop-revealshop-subcommands");
     public final int SHOP_SORTING_METHOD = ConfigSetup.get().getInt("shop-sorting-method");
     public final boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");

@@ -123,7 +123,8 @@ public class CmdExecutorHandler {
         else {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
-                Block playerLookAtBlock = player.getTargetBlock(null, 100);
+                Block playerLookAtBlock = player.getTargetBlock(null, 3);
+                LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     hideShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
@@ -148,12 +149,17 @@ public class CmdExecutorHandler {
         else {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
-                Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                if(FindItemAddOn.isQSReremakeInstalled()) {
-                    revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                }
-                else {
-                    revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                Block playerLookAtBlock = player.getTargetBlock(null, 5);
+                if(playerLookAtBlock != null) {
+                    LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
+                    if(FindItemAddOn.isQSReremakeInstalled()) {
+                        revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    }
+                    else {
+                        revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    }
+                } else {
+                    LoggerUtils.logDebugInfo("TargetBlock is null!");
                 }
             }
             else {

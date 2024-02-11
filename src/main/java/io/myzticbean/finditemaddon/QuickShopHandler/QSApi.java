@@ -11,10 +11,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Interface for QS API.
@@ -65,6 +62,7 @@ public interface QSApi<QSType, Shop> {
     List<ShopSearchActivityModel> syncShopsListForStorage(List<ShopSearchActivityModel> globalShopsList);
 
     void registerSubCommand();
+    UUID convertNameToUuid(String playerName);
 
     static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList, boolean toBuy) {
         switch (sortingMethod) {
