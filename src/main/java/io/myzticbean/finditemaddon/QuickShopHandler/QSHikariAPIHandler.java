@@ -8,6 +8,7 @@ import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.database.DataTables;
+import com.vdurmont.semver4j.Semver;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdHikariImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
@@ -44,7 +45,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final ConcurrentMap<Long, CachedShop> shopCache;
 
-    private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
+    private final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
 
     public QSHikariAPIHandler() {
         api = QuickShopAPI.getInstance();
@@ -64,8 +65,9 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         for(Shop shopIterator : allShops) {
 
             // @TODO: Testing
-            testQuickShopHikariExternalCache(shopIterator);
-            LoggerUtils.logWarning("2: Location: " + shopIterator.getLocation() + "Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace());
+//            testQuickShopHikariExternalCache(shopIterator);
+            LoggerUtils.logDebugInfo("1: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + getRemainingStockOrSpaceFromShopCache(shopIterator, true) + " | Space: " + getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+            LoggerUtils.logDebugInfo("2: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace() + "\n");
 
             // check for quickshop hikari internal per-shop based search permission
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
@@ -191,7 +193,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
-        return shop.getOwner().toString().equalsIgnoreCase(player.getUniqueId().toString());
+        LoggerUtils.logDebugInfo("Shop owner: " + shop.getOwner() + " | Player: " + player.getUniqueId());
+        return shop.getOwner().getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString());
     }
 
     @Override
@@ -213,7 +216,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     shopLoc.getZ(),
                     shopLoc.getPitch(),
                     shopLoc.getYaw(),
-                    shop_i.getOwner().toString(),
+                    convertQUserToUUID(shop_i.getOwner()).toString(),
                     new ArrayList<>(),
                     false
             ));
@@ -277,6 +280,10 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return UUID.nameUUIDFromBytes(("OfflinePlayer:" + username).getBytes(StandardCharsets.UTF_8));
     }
 
+    public UUID convertNameToUuid(String playerName) {
+        return api.getPlayerFinder().name2Uuid(playerName);
+    }
+
     /**
      * If IGNORE_EMPTY_CHESTS is true -> do not add empty stock or space
      * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
@@ -300,10 +307,10 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     /**
      * Fallback to fetching info from ShopCache to avoid lag
      * @param shop QuickShop Shop instance
-     * @param fetchRemainingStock True if fetching remaning stock, False if fetching remaining space
+     * @param fetchRemainingStock True if fetching remaining stock, False if fetching remaining space
      * @return
      */
-    private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
+    private int getRemainingStockOrSpaceFromShopCache___test(Shop shop, boolean fetchRemainingStock) {
         LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
         CachedShop cachedShop = shopCache.get(shop.getShopId());
         if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
@@ -319,11 +326,36 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
     }
 
+    private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
+        LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
+        Semver semver = api.getSemVersion();
+        if (semver.getMajor() >= 6) {
+            // New feature available
+            return (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
+        }
+        else {
+            // PREPARE FOR LAG
+            CachedShop cachedShop = shopCache.get(shop.getShopId());
+            if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {
+                cachedShop = CachedShop.builder()
+                        .shopId(shop.getShopId())
+                        .remainingStock(shop.getRemainingStock())
+                        .remainingSpace(shop.getRemainingSpace())
+                        .lastFetched(new Date())
+                        .build();
+                shopCache.put(cachedShop.getShopId(), cachedShop);
+                LoggerUtils.logDebugInfo("Adding to ShopCache: " + shop.getShopId());
+            }
+            return (fetchRemainingStock ? cachedShop.getRemainingStock() : cachedShop.getRemainingSpace());
+        }
+    }
+
     // An empty ResultSet or a value that returns -1 means that the value is not cached.
     // Normally when space is -1, stock is not, and vice versa.
     // In special cases, neither value may be -1.
     // If Stock 0 -> Shop is admin or no stock
     private void testQuickShopHikariExternalCache(Shop shop) throws RuntimeException {
+        boolean fetchRemainingStock = false;
         long shopId = shop.getShopId();
         try (SQLQuery query = DataTables.EXTERNAL_CACHE.createQuery()
                 .addCondition("shop", shopId)
@@ -335,7 +367,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 long stock = resultSet.getLong("stock");
                 long space = resultSet.getLong("space");
                 // stock or space can be `-1`
-                LoggerUtils.logWarning("1: Location: " + shop.getLocation() + "Stock: " + stock + " | Space: " + space);
+                LoggerUtils.logWarning("1: Location: " + shop.getLocation() + " | Stock: " + stock + " | Space: " + space);
             }else{
                 // no cached data
                 LoggerUtils.logWarning("No cached data found!");

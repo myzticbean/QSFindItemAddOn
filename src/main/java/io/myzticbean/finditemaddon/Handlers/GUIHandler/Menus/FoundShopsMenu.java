@@ -386,6 +386,9 @@ public class FoundShopsMenu extends PaginatedMenu {
             if(shop.getRemainingStockOrSpace() == Integer.MAX_VALUE) {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unlimited");
             }
+            else if(shop.getRemainingStockOrSpace() == -2) {
+                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unknown");
+            }
             else {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
             }

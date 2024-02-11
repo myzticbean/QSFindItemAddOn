@@ -6,6 +6,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.HiddenShopModel;
 import io.myzticbean.finditemaddon.Models.PlayerShopVisitModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
+import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import lombok.Getter;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
@@ -222,23 +223,6 @@ public class ShopSearchActivityStorageUtil {
         }
     }
 
-    /*
-    public static void setupCooldownsConfigFile() {
-        cooldownsYaml = new File(FindItemAddOn.getInstance().getDataFolder(), COOLDOWNS_YAML_FILE_NAME);
-        if(!cooldownsYaml.exists()) {
-            try {
-                boolean isConfigGenerated = cooldownsYaml.createNewFile();
-                if(isConfigGenerated) {
-                    LoggerUtils.logInfo("Generated a new " + COOLDOWNS_YAML_FILE_NAME);
-                }
-            } catch (IOException e) {
-                LoggerUtils.logError("Error generating " + COOLDOWNS_YAML_FILE_NAME);
-            }
-        }
-        cooldownsConfig = YamlConfiguration.loadConfiguration(cooldownsYaml);
-    }
-     */
-
     public static void migrateHiddenShopsToShopsJson() {
         File hiddenShopsJsonfile = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/" + HiddenShopStorageUtil.HIDDEN_SHOP_STORAGE_JSON_FILE_NAME);
         if(hiddenShopsJsonfile.exists()) {
@@ -293,21 +277,6 @@ public class ShopSearchActivityStorageUtil {
                     }
                     i++;
                 }
-//                for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-//                    if(shopSearchActivity.compareWith(
-//                            shopLocation.getWorld().getName(),
-//                            shopLocation.getX(),
-//                            shopLocation.getY(),
-//                            shopLocation.getZ()
-//                    )) {
-//                        PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
-//                        playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
-//                        playerShopVisit.setVisitDateTime();
-//                        shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
-//                        LoggerUtils.logDebugInfo("Added new player visit entry at " + shopLocation.toString());
-//                        break;
-//                    }
-//                }
             }
         });
     }
@@ -343,6 +312,29 @@ public class ShopSearchActivityStorageUtil {
 
     @Nullable
     public static UUID getShopOwnerUUID(@NotNull Location shopLocation) {
+        Iterator<ShopSearchActivityModel> globalShopsListIterator = globalShopsList.iterator();
+        while(globalShopsListIterator.hasNext()) {
+            ShopSearchActivityModel shopSearchActivity = globalShopsListIterator.next();
+            if (shopSearchActivity.compareWith(
+                    shopLocation.getWorld().getName(),
+                    shopLocation.getX(),
+                    shopLocation.getY(),
+                    shopLocation.getZ()
+            )) {
+                String uuidStr = shopSearchActivity.getShopOwnerUUID();
+                try {
+                    return UUID.fromString(uuidStr);
+                } catch (IllegalArgumentException e) {
+                    if(!FindItemAddOn.isQSReremakeInstalled()) {
+                        UUID uuid = FindItemAddOn.getQsApiInstance().convertNameToUuid(uuidStr);
+                        int index = globalShopsList.indexOf(shopSearchActivity);
+                        globalShopsList.get(index).setShopOwnerUUID(uuid.toString());
+                    }
+                }
+                return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
+            }
+        }
+        /*
         for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
             if (shopSearchActivity.compareWith(
                     shopLocation.getWorld().getName(),
@@ -350,9 +342,13 @@ public class ShopSearchActivityStorageUtil {
                     shopLocation.getY(),
                     shopLocation.getZ()
             )) {
+                String uuid = shopSearchActivity.getShopOwnerUUID();
+
                 return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
             }
         }
+
+         */
         return null;
     }
 }
