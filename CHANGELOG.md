@@ -5,6 +5,7 @@
 ### Bug fixes
 - Full/out of space chests will be excluded from `/finditem TO-SELL <item_name>` (#3)
 - Bug fix to prevent lag when during `/finditem TO_BUY *` on large servers (Only for QS Hikari)
+- Fix for issue [#5](https://github.com/myzticbean/QSFindItemAddOn/issues/5)
 
 ## Release 2.0.5.3
 ### Features
