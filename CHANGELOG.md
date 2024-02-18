@@ -2,6 +2,7 @@
 ### Features
 - Added Go to First and Last page GUI buttons (#3)
 - Added new config option to include empty chests in the search result (#3)
+- Added compatibility with QS Hikari 6.* shop stock/space fetch from cache feature. This should help prevent massive lag spikes.
 ### Bug fixes
 - Full/out of space chests will be excluded from `/finditem TO-SELL <item_name>` (#3)
 - Bug fix to prevent lag when during `/finditem TO_BUY *` on large servers (Only for QS Hikari)
