@@ -43,21 +43,6 @@ public class ShopSearchActivityStorageUtil {
      * @return
      */
     private static boolean handleCooldownIfPresent(Location shopLocation, Player player) {
-        // The below logic is flawed
-        /*
-        // check player is inside hashmap
-        if(cooldowns.containsKey(player.getName())) {
-            // check if player still has cooldown
-            if(cooldowns.get(player.getName()) > (System.currentTimeMillis()/1000)) {
-                long timeLeft = (cooldowns.get(player.getName()) - System.currentTimeMillis()/1000);
-                LoggerUtils.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " still has cooldown of " + timeLeft + " seconds!"));
-                return false;
-            }
-        }
-        cooldowns.put(player.getName(), (System.currentTimeMillis()/1000) + FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60);
-        LoggerUtils.logDebugInfo(ColorTranslator.translateColorCodes("&aCooldown added for " + FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60 + " seconds for " + player.getName()));
-        return true;
-         */
 
         // New logic
         for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
@@ -99,27 +84,6 @@ public class ShopSearchActivityStorageUtil {
     public static void syncShops() {
         globalShopsList = FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList);
     }
-
-//    public static void saveCooldowns() {
-//        try {
-//            for(Map.Entry<String, Long> entry : cooldowns.entrySet()) {
-//                cooldownsConfig.set("cooldowns." + entry.getKey(), entry.getValue());
-//            }
-//            cooldownsConfig.save(cooldownsYaml);
-//        }
-//        catch (IOException e) {
-//            LoggerUtils.logError("Error saving config.yml");
-//        }
-//    }
-
-//    public static void restoreCooldowns() {
-//        if(cooldownsConfig.isConfigurationSection("cooldowns")) {
-//            cooldownsConfig.getConfigurationSection("cooldowns").getKeys(false).forEach(key -> {
-//                long timeLeft = cooldownsConfig.getLong("cooldowns." + key);
-//                cooldowns.put(key, timeLeft);
-//            });
-//        }
-//    }
 
     /**
      * QuickShop Reremake
@@ -169,14 +133,6 @@ public class ShopSearchActivityStorageUtil {
         globalShopsList.add(shopModel);
     }
 
-//    public void deleteShop(org.maxgamer.quickshop.api.shop.Shop shop) {
-//
-//    }
-//
-//    public void deleteShop(com.ghostchu.quickshop.api.shop.Shop shop) {
-//
-//    }
-
     public static void loadShopsFromFile() {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File(FindItemAddOn.getInstance().getDataFolder().getAbsolutePath() + "/" + SHOP_SEARCH_ACTIVITY_JSON_FILE_NAME);
@@ -195,15 +151,6 @@ public class ShopSearchActivityStorageUtil {
                 e.printStackTrace();
             }
         }
-//        else {
-//            try {
-//                file.createNewFile();
-//                LoggerUtils.logInfo("Generated new " + SHOP_SEARCH_ACTIVITY_JSON_FILE_NAME);
-//            } catch (IOException e) {
-//                LoggerUtils.logError("Error generating " + SHOP_SEARCH_ACTIVITY_JSON_FILE_NAME);
-//                e.printStackTrace();
-//            }
-//        }
         globalShopsList = FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList);
     }
 
@@ -270,7 +217,6 @@ public class ShopSearchActivityStorageUtil {
                         PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
                         playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
                         playerShopVisit.setVisitDateTime();
-//                        shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
                         globalShopsList.get(i).getPlayerVisitList().add(playerShopVisit);
                         LoggerUtils.logDebugInfo("Added new player visit entry at " + shopLocation.toString());
                         break;
@@ -334,21 +280,6 @@ public class ShopSearchActivityStorageUtil {
                 return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
             }
         }
-        /*
-        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-            if (shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                String uuid = shopSearchActivity.getShopOwnerUUID();
-
-                return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
-            }
-        }
-
-         */
         return null;
     }
 }

@@ -179,7 +179,7 @@ public class ConfigSetup {
             }
             // Config 13
             if(configFileConfiguration.getInt("config-version") < 13) {
-                configFileConfiguration.set("find-item-command.remove-hideshop-revealshop-subcommands", true);
+                configFileConfiguration.set("find-item-command.remove-hideshop-revealshop-subcommands", false);
                 configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-to-own-shop-no-permission-message", "&cYou cannot teleport to your own shop!");
                 configFileConfiguration.set("ignore-empty-chests", true);
                 configFileConfiguration.set("shop-gui-goto-first-page-button-material", "");
