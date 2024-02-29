@@ -15,7 +15,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 12;
+    private static final int CURRENT_CONFIG_VERSION = 13;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -114,6 +114,7 @@ public class ConfigSetup {
             configFileConfiguration.set("config-version", CURRENT_CONFIG_VERSION);
         }
         else {
+            // Automatic Config upgrade process
             // Config v10
             if(configFileConfiguration.getInt("config-version") < 10) {
                 boolean allowDirectShopTp = configFileConfiguration.getBoolean("allow-direct-shop-tp");
@@ -176,6 +177,21 @@ public class ConfigSetup {
                 configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-delay-in-seconds", 0);
                 configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-delay-message", "&6You will be teleported in &c{DELAY} &6seconds...");
             }
+            // Config 13
+            if(configFileConfiguration.getInt("config-version") < 13) {
+                configFileConfiguration.set("find-item-command.remove-hideshop-revealshop-subcommands", false);
+                configFileConfiguration.set("player-shop-teleportation.direct-shop-tp-mode.tp-to-own-shop-no-permission-message", "&cYou cannot teleport to your own shop!");
+                configFileConfiguration.set("ignore-empty-chests", true);
+                configFileConfiguration.set("shop-gui-goto-first-page-button-material", "");
+                configFileConfiguration.set("shop-gui-goto-first-page-button-text", "&7&l« &cGo to First Page");
+                configFileConfiguration.set("shop-gui-goto-first-page-button-custom-model-data", "");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-material", "");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-text", "&aGo to Last Page &7&l»");
+                configFileConfiguration.set("shop-gui-goto-last-page-button-custom-model-data", "");
+            }
+
+            // AT LAST
+            // Moving debug-mode and config-version to the last
             boolean userDefinedDebugMode = configFileConfiguration.getBoolean("debug-mode");
             configFileConfiguration.set("debug-mode", null);
             configFileConfiguration.set("debug-mode", userDefinedDebugMode);
@@ -196,20 +212,6 @@ public class ConfigSetup {
      * Added in 2.0
      */
     public static void copySampleConfig() {
-
         FindItemAddOn.getInstance().saveResource("sample-config.yml", true);
-
-//        sampleConfigFile = new File(FindItemAddOn.getInstance().getDataFolder(), "sample-config.yml");
-//        if(!sampleConfigFile.exists()) {
-//            try {
-//                boolean isConfigGenerated = sampleConfigFile.createNewFile();
-//                if(isConfigGenerated) {
-//                    LoggerUtils.logInfo("Generated a new config.yml");
-//                }
-//            }
-//            catch (IOException e) {
-//                LoggerUtils.logError("Error generating config.yml");
-//            }
-//        }
     }
 }

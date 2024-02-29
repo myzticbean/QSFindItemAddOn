@@ -1,4 +1,4 @@
-# QuickShop Reremake and Hikari Shop Search AddOn
+# QuickShop Hikari and Reremake Shop Search AddOn
 
 ########################################
 # THIS IS JUST A SAMPLE CONFIG FILE
@@ -48,6 +48,9 @@ find-item-command:
   shop-already-hidden-message: "&cThis shop is already hidden!"
   shop-already-public-message: "&cThis shop is already public!"
   invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
+  # Added this config option to temporarily remove hideshop/revealshop sub-commands (Issue #5)
+  # Set it to 'true' if you want to remove those sub-commands
+  remove-hideshop-revealshop-subcommands: false
 
 
 # Shop sorting methods:
@@ -119,6 +122,9 @@ player-shop-teleportation:
     # Set as '' if you do not want to show any message to player
     # {DELAY} will be automatically replaced with value set in 'tp-delay-in-seconds'
     tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
+    # Players require 'finditem.shoptp.own' permission to teleport to their own shop.
+    # If no permission, below message will be shown.
+    tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
   nearest-warp-tp-mode:
     # The player will be teleported to the nearest warp as if they ran the warp command
     # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)
@@ -131,12 +137,18 @@ shop-gui-next-button-text: "&aNext &7&l»"
 shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
 shop-gui-close-button-material: "BARRIER"
 shop-gui-close-button-text: "&fClose Search"
+shop-gui-goto-first-page-button-material: ""
+shop-gui-goto-first-page-button-text: "&7&l« &cGo to First Page"
+shop-gui-goto-last-page-button-material: ""
+shop-gui-goto-last-page-button-text: "&aGo to Last Page &7&l»"
+
 # Enter Item Custom Model Data below, if available, within quotes
 # or leave as "" if not available
 shop-gui-back-button-custom-model-data: ""
 shop-gui-next-button-custom-model-data: ""
 shop-gui-close-button-custom-model-data: ""
-
+shop-gui-goto-first-page-button-custom-model-data: ""
+shop-gui-goto-last-page-button-custom-model-data: ""
 
 # Alert shown when player is already on first/last page and clicks back/next button
 shop-navigation-first-page-alert-message: "&cYou are already on first page!"
@@ -145,6 +157,9 @@ shop-navigation-last-page-alert-message: "&cYou are already on last page!"
 # Specify (in minutes) how long the plugin will wait before incrementing the player
 # shop visit when teleporting to it from Search GUI
 shop-player-visit-cooldown-in-minutes: 5
+
+# Ignore empty chests from search result
+ignore-empty-chests: true
 
 # When fetching shops, the below worlds will be ignored
 blacklisted-worlds:
@@ -157,4 +172,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 12
+config-version: 13

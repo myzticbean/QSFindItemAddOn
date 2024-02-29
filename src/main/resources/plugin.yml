@@ -2,7 +2,7 @@ name: QSFindItemAddOn
 version: ${project.version}
 main: io.myzticbean.finditemaddon.FindItemAddOn
 api-version: 1.16
-authors: [ ronsane ]
+authors: [ myzticbean ]
 softdepend:
   - QuickShop
   - QuickShop-Hikari
@@ -18,10 +18,7 @@ permissions:
     description: Enables players to use the /finditem hideshop & /finditem revealshop
     default: true
   finditem.reload:
-    description: For OP. Enables use of '/finditem reload' to reload the config
-    default: op
-  finditem.restart:
-    description: For OP. Enables use of '/finditem restart' to restart the plugin
+    description: For OP. Enables use of '/finditemadmin reload' to reload the config
     default: op
   finditem.admin:
     description: For OP. Enables use of all admin commands
@@ -32,3 +29,6 @@ permissions:
   finditem.shoptp.own:
     description: Allows teleporting to own shops
     default: true
+  finditem.shoptp-delay.bypass:
+    description: Bypass the TP delay for teleporting to shop
+    default: op

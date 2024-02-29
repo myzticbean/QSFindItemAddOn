@@ -2,9 +2,7 @@ package io.myzticbean.finditemaddon.Utils.WarpUtils;
 
 import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
-import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Utils.CommonUtils;
-import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,11 +27,12 @@ public class PlayerWarpsUtil {
                         warp.getWarpLocation().getZ()
                 ), warp);
             });
+            /*
             if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
                 for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
                     LoggerUtils.logDebugInfo(entry.getValue().getWarpName() + " : " + entry.getKey());
                 }
-            }
+            }*/
 
             return warpDistanceMap.entrySet().iterator().next().getValue();
         }

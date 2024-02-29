@@ -14,7 +14,7 @@ But, please don't increase the plugin version number.
 
 **Compiling from source**
 ```shell
-git clone https://gitlab.com/ronsane/QSFindItemAddOn.git
+git clone https://github.com/myzticbean/QSFindItemAddOn.git
 cd QSFindItemAddOn/
 mvn clean install
 ```
