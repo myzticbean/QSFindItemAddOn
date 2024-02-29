@@ -11,7 +11,7 @@ import java.util.List;
 
 /**
  * Hook for EssentialsX Plugin
- * @author ronsane
+ * @author myzticbean
  */
 public class EssentialsXPlugin {
 

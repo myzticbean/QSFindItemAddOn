@@ -9,7 +9,7 @@ import java.util.List;
 
 /**
  * Sub Command Handler for /finditemadmin reload
- * @author ronsane
+ * @author myzticbean
  */
 public class ReloadSubCmd extends SubCommand {
 
