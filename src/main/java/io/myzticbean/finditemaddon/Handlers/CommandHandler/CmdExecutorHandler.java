@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * Handler for different parameters of /finditem command
- * @author ronsane
+ * @author myzticbean
  */
 public class CmdExecutorHandler {
 
@@ -123,7 +123,8 @@ public class CmdExecutorHandler {
         else {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
-                Block playerLookAtBlock = player.getTargetBlock(null, 100);
+                Block playerLookAtBlock = player.getTargetBlock(null, 3);
+                LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
                 if(FindItemAddOn.isQSReremakeInstalled()) {
                     hideShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
@@ -148,12 +149,17 @@ public class CmdExecutorHandler {
         else {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
-                Block playerLookAtBlock = player.getTargetBlock(null, 100);
-                if(FindItemAddOn.isQSReremakeInstalled()) {
-                    revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                }
-                else {
-                    revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                Block playerLookAtBlock = player.getTargetBlock(null, 5);
+                if(playerLookAtBlock != null) {
+                    LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
+                    if(FindItemAddOn.isQSReremakeInstalled()) {
+                        revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    }
+                    else {
+                        revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    }
+                } else {
+                    LoggerUtils.logDebugInfo("TargetBlock is null!");
                 }
             }
             else {
@@ -262,9 +268,11 @@ public class CmdExecutorHandler {
     }
 
     /**
+     * @deprecated
      * Handles plugin restart
      * @param commandSender Who is the command sender: console or player
      */
+    @Deprecated(forRemoval = true)
     public void handlePluginRestart(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
             Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
@@ -306,7 +314,7 @@ public class CmdExecutorHandler {
      * @param shop
      * @param player
      */
-    private void hideShop(Shop shop, Player player) {
+    private void hideShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {

@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * Sub Command Handler for /finditem TO_BUY
- * @author ronsane
+ * @author myzticbean
  */
 public class BuySubCmd extends SubCommand {
 

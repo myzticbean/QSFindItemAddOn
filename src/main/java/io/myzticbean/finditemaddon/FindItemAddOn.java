@@ -49,12 +49,12 @@ public final class FindItemAddOn extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by ronsane");
+        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by myzticbean");
 
         // Show warning if it's a snapshot build
         if(this.getDescription().getVersion().toLowerCase().contains("snapshot")) {
             LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
-            LoggerUtils.logWarning("If you find any bugs, please report them here: https://gitlab.com/ronsane/QSFindItemAddOn/-/issues");
+            LoggerUtils.logWarning("If you find any bugs, please report them here: https://github.com/myzticbean/QSFindItemAddOn/issues");
         }
 
 
@@ -243,6 +243,17 @@ public final class FindItemAddOn extends JavaPlugin {
         else {
             alias = FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS;
         }
+
+        Class<? extends SubCommand>[] subCommands;
+        if(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+            subCommands = new Class[] {
+                    SellSubCmd.class, BuySubCmd.class
+            };
+        } else {
+            subCommands = new Class[] {
+                    SellSubCmd.class, BuySubCmd.class, HideShopSubCmd.class, RevealShopSubCmd.class
+            };
+        }
         // Register the subcommands under a core command
         try {
             CommandManager.createCoreCommand(
@@ -260,20 +271,14 @@ public final class FindItemAddOn extends JavaPlugin {
                         }
                         commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                         commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
-                        alias.forEach(alias_i -> {
-                            commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
-                        });
+                        alias.forEach(alias_i -> commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i)));
                         commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                     },
                     alias,
-                    SellSubCmd.class,
-                    BuySubCmd.class,
-                    HideShopSubCmd.class,
-                    RevealShopSubCmd.class);
+                    subCommands);
             LoggerUtils.logInfo("Registered /finditem command");
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerUtils.logError(e.getMessage());
-            e.printStackTrace();
+            LoggerUtils.logError(e);
         }
     }
 
@@ -301,9 +306,7 @@ public final class FindItemAddOn extends JavaPlugin {
                             }
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                             commandSender.sendMessage(ColorTranslator.translateColorCodes("&#b3b300Command alias:"));
-                            alias.forEach(alias_i -> {
-                                commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i));
-                            });
+                            alias.forEach(alias_i -> commandSender.sendMessage(ColorTranslator.translateColorCodes("&8&l» &#2db300/" + alias_i)));
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                         }
                     },
@@ -311,8 +314,7 @@ public final class FindItemAddOn extends JavaPlugin {
                     ReloadSubCmd.class);
             LoggerUtils.logInfo("Registered /finditemadmin command");
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerUtils.logError(e.getMessage());
-            e.printStackTrace();
+            LoggerUtils.logError(e);
         }
     }
 
