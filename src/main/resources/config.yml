@@ -26,6 +26,7 @@ find-item-command:
   invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
   hiding-shop-owner-invalid-message: "&cThat shop is not yours!"
   remove-hideshop-revealshop-subcommands: false
+  disable-search-all-shops: false
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: "&l» &rShops"

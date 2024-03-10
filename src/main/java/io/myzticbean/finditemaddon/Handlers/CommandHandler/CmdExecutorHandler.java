@@ -39,11 +39,14 @@ public class CmdExecutorHandler {
         else {
             Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPerms.FINDITEM_USE.value())) {
+
+                // Show searching... message
                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG)) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG));
                 }
+
                 boolean isBuying;
                 if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
                         || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
@@ -53,7 +56,7 @@ public class CmdExecutorHandler {
                     isBuying = buySellSubCommand.equalsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
                 }
 
-                if(itemArg.equalsIgnoreCase("*")) {
+                if(itemArg.equalsIgnoreCase("*") && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_DISABLE_SEARCH_ALL_SHOPS) {
                     List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
                     if(searchResultList.size() > 0) {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
