@@ -1,3 +1,13 @@
+## Snapshot 2.0.5.6
+### Bug fixes
+- Fixed a code refactoring bug where search all shops would return no shops for Quickshop Reremake
+- Added a INFO level logger to log time taken for a search process
+
+## Release 2.0.5.5
+### Bug fixes
+- Fixed /finditem command not working in some cases ([#9](https://github.com/myzticbean/QSFindItemAddOn/issues/9))
+- Added a config option to disable the `/finditem {TO_BUY | TO_SELL} *`
+
 ## Release 2.0.5.4
 ### Features
 - Added Go to First and Last page GUI buttons ([#3](https://github.com/myzticbean/QSFindItemAddOn/issues/3))
