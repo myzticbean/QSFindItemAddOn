@@ -15,7 +15,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 13;
+    private static final int CURRENT_CONFIG_VERSION = 14;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -188,6 +188,10 @@ public class ConfigSetup {
                 configFileConfiguration.set("shop-gui-goto-last-page-button-material", "");
                 configFileConfiguration.set("shop-gui-goto-last-page-button-text", "&aGo to Last Page &7&l»");
                 configFileConfiguration.set("shop-gui-goto-last-page-button-custom-model-data", "");
+            }
+            // Config 14
+            if(configFileConfiguration.getInt("config-version") < 14) {
+                configFileConfiguration.set("find-item-command.disable-search-all-shops", false);
             }
 
             // AT LAST

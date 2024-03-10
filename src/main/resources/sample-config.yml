@@ -51,6 +51,8 @@ find-item-command:
   # Added this config option to temporarily remove hideshop/revealshop sub-commands (Issue #5)
   # Set it to 'true' if you want to remove those sub-commands
   remove-hideshop-revealshop-subcommands: false
+  # If below option is set to 'true', it will remove the 'finditem TO_BUY/TO_SELL *' command
+  disable-search-all-shops: false
 
 
 # Shop sorting methods:
