@@ -28,6 +28,7 @@ public class ConfigProvider {
     public final String FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG = ConfigSetup.get().getString("find-item-command.invalid-shop-block-message");
     public final String FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG = ConfigSetup.get().getString("find-item-command.hiding-shop-owner-invalid-message");
     public final boolean FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS = ConfigSetup.get().getBoolean("find-item-command.remove-hideshop-revealshop-subcommands");
+    public final boolean FIND_ITEM_CMD_DISABLE_SEARCH_ALL_SHOPS = ConfigSetup.get().getBoolean("find-item-command.disable-search-all-shops");
     public final int SHOP_SORTING_METHOD = ConfigSetup.get().getInt("shop-sorting-method");
     public final boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");

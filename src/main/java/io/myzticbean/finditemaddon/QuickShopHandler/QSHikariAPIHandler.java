@@ -18,6 +18,7 @@ import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import net.kyori.adventure.text.Component;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -43,17 +44,21 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
 
+    private final String pluginVersion;
+
     private final ConcurrentMap<Long, CachedShop> shopCache;
 
     private final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
 
     public QSHikariAPIHandler() {
         api = QuickShopAPI.getInstance();
+        pluginVersion = Bukkit.getPluginManager().getPlugin("QuickShop-Hikari").getDescription().getVersion();
         LoggerUtils.logInfo("Initializing Shop caching");
         shopCache = new ConcurrentHashMap<>();
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -90,7 +95,9 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 ));
             }
         }
-        return handleShopSorting(toBuy, shopsFoundList);
+        List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
+        QSApi.logTimeTookMsg(begin);
+        return sortedShops;
     }
 
     @NotNull
@@ -110,6 +117,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -143,10 +151,13 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 ));
             }
         }
-        return handleShopSorting(toBuy, shopsFoundList);
+        List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
+        QSApi.logTimeTookMsg(begin);
+        return sortedShops;
     }
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
+        long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -176,11 +187,13 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                 ));
             }
         }
+        List<FoundShopItemModel> sortedShops = new ArrayList<>(shopsFoundList);
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
-            return QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
+            sortedShops = QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
-        return shopsFoundList;
+        QSApi.logTimeTookMsg(begin);
+        return sortedShops;
     }
 
     public Material getShopSignMaterial() {
@@ -328,8 +341,9 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
         LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
-        Semver semver = api.getSemVersion();
-        if (semver.getMajor() >= 6) {
+        String mainVersionStr = pluginVersion.split("\\.")[0];
+        int mainVersion = Integer.parseInt(mainVersionStr);
+        if (mainVersion >= 6) {
             // New feature available
             return (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
         }
