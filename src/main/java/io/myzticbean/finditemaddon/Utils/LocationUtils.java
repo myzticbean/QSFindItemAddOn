@@ -86,13 +86,6 @@ public class LocationUtils {
     @Nullable
     public static Location findSafeLocationAroundShop(Location shopLocation) {
         Location roundedShopLoc = getRoundedDestination(shopLocation);
-        QSApi qsApi;
-        if(FindItemAddOn.isQSReremakeInstalled()) {
-            qsApi = new QSReremakeAPIHandler();
-        }
-        else {
-            qsApi = new QSHikariAPIHandler();
-        }
         LoggerUtils.logDebugInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
         // Creating a list of four block locations in 4 sides of the shop
         List<Location> possibleSafeLocList = new ArrayList<>();
@@ -122,7 +115,7 @@ public class LocationUtils {
         ));
         for(Location loc_i : possibleSafeLocList) {
             LoggerUtils.logDebugInfo("Possible safe location: " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
-            if(loc_i.getBlock().getType().equals(qsApi.getShopSignMaterial())) {
+            if(loc_i.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
                 LoggerUtils.logDebugInfo("Shop sign block found at " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
                 // check if the block above is suffocating
                 Location blockAbove = new Location(
@@ -147,7 +140,7 @@ public class LocationUtils {
                         if(blockBelow.getBlock().getType().equals(Material.AIR)
                             || blockBelow.getBlock().getType().equals(Material.CAVE_AIR)
                             || blockBelow.getBlock().getType().equals(Material.VOID_AIR)
-                            || blockBelow.getBlock().getType().equals(qsApi.getShopSignMaterial())) {
+                            || blockBelow.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
                             // do nothing and let the loop run
                             LoggerUtils.logDebugInfo("Shop or Air found below");
                         }

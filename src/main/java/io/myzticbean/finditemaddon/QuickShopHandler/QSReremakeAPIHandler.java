@@ -83,8 +83,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
-        long end = System.currentTimeMillis();
-        logTimeTookMsg((end-begin));
+        QSApi.logTimeTookMsg(begin);
         return sortedShops;
     }
 
@@ -127,8 +126,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
-        long end = System.currentTimeMillis();
-        logTimeTookMsg((end-begin));
+        QSApi.logTimeTookMsg(begin);
         return sortedShops;
     }
 
@@ -163,13 +161,12 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                 }
             }
         }
-        List<FoundShopItemModel> sortedShops = new ArrayList<>();
+        List<FoundShopItemModel> sortedShops = new ArrayList<>(shopsFoundList);
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 1;
             sortedShops = QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
         }
-        long end = System.currentTimeMillis();
-        logTimeTookMsg((end-begin));
+        QSApi.logTimeTookMsg(begin);
         return sortedShops;
     }
 
@@ -355,9 +352,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         return quickShop.getShopCache().find(shop.getLocation(), false);
     }
 
-    private void logTimeTookMsg(long timeTook) {
-        LoggerUtils.logInfo("Shop search took: " + timeTook + " milliseconds");
-    }
+
 
     private static void logTotalShopsOnServer(int allShopsCount) {
         LoggerUtils.logDebugInfo("Total shops on server: " + allShopsCount);
