@@ -47,7 +47,7 @@ public class FindItemCmdReremakeImpl implements CommandHandler<Player> {
             commandSender.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
         }
         else if(args.length == 1) {
-            if(commandSender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
+            if(commandSender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
                 if(args[0].equalsIgnoreCase(hideSubCommand)) {
                     cmdExecutor.handleHideShop(commandSender);
                 } else if(args[0].equalsIgnoreCase(revealShopSubCommand)) {
@@ -88,7 +88,7 @@ public class FindItemCmdReremakeImpl implements CommandHandler<Player> {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
             }
             // hide
-            if(sender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
+            if(sender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE);
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE);
             }
