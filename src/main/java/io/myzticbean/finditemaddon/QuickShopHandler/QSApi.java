@@ -64,6 +64,8 @@ public interface QSApi<QSType, Shop> {
     void registerSubCommand();
     UUID convertNameToUuid(String playerName);
 
+    boolean isQSShopCacheImplemented();
+
     static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList, boolean toBuy) {
         switch (sortingMethod) {
             // Random
