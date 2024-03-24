@@ -2,6 +2,7 @@
 ### Bug fixes
 - Fixed a code refactoring bug where search all shops would return no shops for Quickshop Reremake
 - Added a INFO level logger to log time taken for a search process
+- Fix the lag issue caused due to new QS-Hikari cache feature impl ([#12](https://github.com/myzticbean/QSFindItemAddOn/issues/12))
 
 ## Release 2.0.5.5
 ### Bug fixes

@@ -242,7 +242,7 @@
         <dependency>
             <groupId>com.olziedev</groupId>
             <artifactId>playerwarps-api</artifactId>
-            <version>6.28.0</version>
+            <version>6.30.0</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
