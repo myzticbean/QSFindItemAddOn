@@ -1,5 +1,5 @@
 # Shop Search AddOn For QuickShop
-### Version: 2.0.5.6-SNAPSHOT
+### Version: 2.0.5.7-SNAPSHOT
 
 An unofficial add-on for the QuickShop Hikari and Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.

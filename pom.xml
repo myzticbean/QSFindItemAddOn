@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.5.6-SNAPSHOT</version>
+    <version>2.0.5.7-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -49,9 +49,9 @@
                 <version>2.3.1</version>
                 <configuration>
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
-                    <!-- <outputDirectory>E:\MCServer_1.18\plugins</outputDirectory> -->
+                    <outputDirectory>D:\${user.name}\MCServers\MCServer_1.20.1\plugins</outputDirectory>
                     <!-- Comment out if on a PC -->
-                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.20.1/plugins</outputDirectory>
+                    <!--<outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.20.1/plugins</outputDirectory>-->
                 </configuration>
             </plugin>
             <plugin>
