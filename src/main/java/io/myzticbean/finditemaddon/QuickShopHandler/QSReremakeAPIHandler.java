@@ -358,7 +358,10 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         LoggerUtils.logDebugInfo("Total shops on server: " + allShopsCount);
     }
 
-
+    @Override
+    public boolean isQSShopCacheImplemented() {
+        return false;
+    }
 
 
 }

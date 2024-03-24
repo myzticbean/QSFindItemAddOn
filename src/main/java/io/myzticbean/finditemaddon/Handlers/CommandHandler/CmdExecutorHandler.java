@@ -57,26 +57,26 @@ public class CmdExecutorHandler {
                 }
 
                 if(itemArg.equalsIgnoreCase("*") && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_DISABLE_SEARCH_ALL_SHOPS) {
-                    List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
-                    if(searchResultList.size() > 0) {
+                    // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
+                    if(!FindItemAddOn.isQSReremakeInstalled() && FindItemAddOn.getQsApiInstance().isQSShopCacheImplemented()) {
+                        LoggerUtils.logWarning("Should run in async thread...");
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
-                            FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                            Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                            List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
+                            if(!searchResultList.isEmpty()) {
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                            }
+                            else {
+                                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
+                                    player.sendMessage(ColorTranslator.translateColorCodes(
+                                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
+                                }
+                            }
                         });
-                    }
-                    else {
-                        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
-                            player.sendMessage(ColorTranslator.translateColorCodes(
-                                    FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
-                        }
-                    }
-                }
-                else {
-                    Material mat = Material.getMaterial(itemArg.toUpperCase());
-                    if(mat != null) {
-                        LoggerUtils.logDebugInfo("Material found: " + mat.toString());
-                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
-                        if(searchResultList.size() > 0) {
+                    } else {
+                        // Else run in MAIN thread
+                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
+                        if(!searchResultList.isEmpty()) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
                                 Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
@@ -89,20 +89,74 @@ public class CmdExecutorHandler {
                             }
                         }
                     }
+                }
+                else {
+                    Material mat = Material.getMaterial(itemArg.toUpperCase());
+                    if(mat != null) {
+                        LoggerUtils.logDebugInfo("Material found: " + mat);
+                        // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
+                        if(!FindItemAddOn.isQSReremakeInstalled() && FindItemAddOn.getQsApiInstance().isQSShopCacheImplemented()) {
+                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                                List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
+                                if(!searchResultList.isEmpty()) {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                }
+                                else {
+                                    if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
+                                        player.sendMessage(ColorTranslator.translateColorCodes(
+                                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
+                                    }
+                                }
+                            });
+                        } else {
+                            List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
+                            if(!searchResultList.isEmpty()) {
+                                Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                });
+                            }
+                            else {
+                                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
+                                    player.sendMessage(ColorTranslator.translateColorCodes(
+                                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
+                                }
+                            }
+                        }
+                    }
                     else {
                         LoggerUtils.logDebugInfo("Material not found! Performing query based search..");
-                        List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
-                        if(searchResultList.size() > 0) {
+                        // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
+                        if(!FindItemAddOn.isQSReremakeInstalled() && FindItemAddOn.getQsApiInstance().isQSShopCacheImplemented()) {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
+                                if(!searchResultList.isEmpty()) {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                }
+                                else {
+                                    // Invalid Material
+                                    if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
+                                        player.sendMessage(ColorTranslator.translateColorCodes(
+                                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                                    }
+                                }
                             });
-                        }
-                        else {
-                            // Invalid Material
-                            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
-                                player.sendMessage(ColorTranslator.translateColorCodes(
-                                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                        } else {
+                            List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
+                            if(!searchResultList.isEmpty()) {
+                                Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                });
+                            }
+                            else {
+                                // Invalid Material
+                                if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG)) {
+                                    player.sendMessage(ColorTranslator.translateColorCodes(
+                                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                                }
                             }
                         }
                     }

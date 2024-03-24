@@ -174,4 +174,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 13
+config-version: 14
