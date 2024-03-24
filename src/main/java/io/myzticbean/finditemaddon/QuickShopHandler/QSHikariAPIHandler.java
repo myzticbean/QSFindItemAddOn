@@ -8,7 +8,6 @@ import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.database.DataTables;
-import com.vdurmont.semver4j.Semver;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdHikariImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
@@ -29,8 +28,6 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -50,14 +47,18 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
 
+    private final boolean isQSHikariShopCacheImplemented;
+
     public QSHikariAPIHandler() {
         api = QuickShopAPI.getInstance();
         pluginVersion = Bukkit.getPluginManager().getPlugin("QuickShop-Hikari").getDescription().getVersion();
         LoggerUtils.logInfo("Initializing Shop caching");
         shopCache = new ConcurrentHashMap<>();
+        isQSHikariShopCacheImplemented = checkIfQSHikariShopCacheImplemented();
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
+        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
@@ -117,6 +118,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
+        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
@@ -157,6 +159,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
+        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
@@ -270,10 +273,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             }
         }
         LoggerUtils.logInfo("Registered finditem sub-command for /qs");
-        /*
-            final TextComponent textComponent = Component.text("Search for items from all shops using an interactive GUI");
-            final Function<String, Component> func = x -> Component.text("Search for items from all shops using an interactive GUI");
-         */
         api.getCommandManager().registerCmd(
                 CommandContainer.builder()
                         .prefix("finditem")
@@ -390,5 +389,16 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private boolean checkIfQSHikariShopCacheImplemented() {
+        String mainVersionStr = pluginVersion.split("\\.")[0];
+        int mainVersion = Integer.parseInt(mainVersionStr);
+        return mainVersion >= 6;
+    }
+
+    @Override
+    public boolean isQSShopCacheImplemented() {
+        return isQSHikariShopCacheImplemented;
     }
 }
