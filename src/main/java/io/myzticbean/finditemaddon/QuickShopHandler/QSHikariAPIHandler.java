@@ -8,6 +8,7 @@ import com.ghostchu.quickshop.api.obj.QUser;
 import com.ghostchu.quickshop.api.shop.Shop;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.database.DataTables;
+import com.ghostchu.quickshop.util.Util;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdHikariImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
@@ -61,12 +62,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
-        List<Shop> allShops;
-        if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
-            allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        } else {
-            allShops = getAllShops();
-        }
+        List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
 
@@ -92,7 +88,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                         QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
-                        shopIterator.getItem()
+                        shopIterator.getItem(),
+                        toBuy
                 ));
             }
         }
@@ -121,12 +118,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
-        List<Shop> allShops;
-        if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
-            allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        } else {
-            allShops = getAllShops();
-        }
+        List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
             // check for quickshop hikari internal per-shop based search permission
@@ -149,7 +141,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                         QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
-                        shopIterator.getItem()
+                        shopIterator.getItem(),
+                        toBuy
                 ));
             }
         }
@@ -162,12 +155,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
-        List<Shop> allShops;
-        if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
-            allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
-        } else {
-            allShops = getAllShops();
-        }
+        List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
             // check for quickshop hikari internal per-shop based search permission
@@ -186,7 +174,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                         QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
-                        shopIterator.getItem()
+                        shopIterator.getItem(),
+                        toBuy
                 ));
             }
         }
@@ -197,6 +186,16 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         }
         QSApi.logTimeTookMsg(begin);
         return sortedShops;
+    }
+
+    private List<Shop> fetchAllShopsFromQS() {
+        List<Shop> allShops;
+        if (FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
+            allShops = new ArrayList<>(api.getShopManager().getLoadedShops());
+        } else {
+            allShops = getAllShops();
+        }
+        return allShops;
     }
 
     public Material getShopSignMaterial() {
@@ -400,5 +399,18 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     @Override
     public boolean isQSShopCacheImplemented() {
         return isQSHikariShopCacheImplemented;
+    }
+
+    @Override
+    public int processUnknownStockSpace(Location shopLoc, boolean toBuy) {
+        // This process needs to run in MAIN thread
+        Util.ensureThread(false);
+        LoggerUtils.logInfo("Fetching stock/space from MAIN thread...");
+        Shop qsShop = api.getShopManager().getShop(shopLoc);
+        if(qsShop != null) {
+            return (toBuy ? qsShop.getRemainingStock() : qsShop.getRemainingSpace());
+        } else {
+            return -2;
+        }
     }
 }
