@@ -4,6 +4,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -65,6 +66,8 @@ public interface QSApi<QSType, Shop> {
     UUID convertNameToUuid(String playerName);
 
     boolean isQSShopCacheImplemented();
+
+    int processUnknownStockSpace(Location shopLoc, boolean toBuy);
 
     static List<FoundShopItemModel> sortShops(int sortingMethod, List<FoundShopItemModel> shopsFoundList, boolean toBuy) {
         switch (sortingMethod) {
