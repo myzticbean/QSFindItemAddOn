@@ -387,7 +387,11 @@ public class FoundShopsMenu extends PaginatedMenu {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unlimited");
             }
             else if(shop.getRemainingStockOrSpace() == -2) {
-                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unknown");
+                int stockOrSpace = processUnknownStockSpace(shop);
+                if(stockOrSpace != -2)
+                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(stockOrSpace));
+                else
+                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unknown");
             }
             else {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
@@ -417,6 +421,10 @@ public class FoundShopsMenu extends PaginatedMenu {
             text = text.replace(ShopLorePlaceholders.SHOP_VISITS.value(), String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getShopLocation())));
         }
         return text;
+    }
+
+    private int processUnknownStockSpace(FoundShopItemModel shop) {
+        return FindItemAddOn.getQsApiInstance().processUnknownStockSpace(shop.getShopLocation(), shop.isToBuy());
     }
 
     private String replaceDelayPlaceholder(String tpDelayMsg, long delay) {

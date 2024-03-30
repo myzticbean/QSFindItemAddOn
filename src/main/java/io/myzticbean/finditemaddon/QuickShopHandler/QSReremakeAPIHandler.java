@@ -77,7 +77,8 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                             QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
-                            shop_i.getItem()
+                            shop_i.getItem(),
+                            toBuy
                     ));
                 }
             }
@@ -117,7 +118,8 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                                         QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                                         shop_i.getOwner(),
                                         shop_i.getLocation(),
-                                        shop_i.getItem()
+                                        shop_i.getItem(),
+                                        toBuy
                                 ));
                             }
                         }
@@ -156,7 +158,8 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                             QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) : getRemainingStockOrSpaceFromShopCache(shop_i, false))),
                             shop_i.getOwner(),
                             shop_i.getLocation(),
-                            shop_i.getItem()
+                            shop_i.getItem(),
+                            toBuy
                     ));
                 }
             }
@@ -361,6 +364,12 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
     @Override
     public boolean isQSShopCacheImplemented() {
         return false;
+    }
+
+    @Override
+    public int processUnknownStockSpace(Location shopLoc, boolean toBuy) {
+        // This method will not be called from QS-Reremake context, but keeping it here as a placeholder
+        return -2;
     }
 
 
