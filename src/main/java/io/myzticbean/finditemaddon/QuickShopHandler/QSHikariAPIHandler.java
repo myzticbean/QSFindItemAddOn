@@ -65,9 +65,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
-
-            // @TODO: Testing
-//            testQuickShopHikariExternalCache(shopIterator);
             LoggerUtils.logDebugInfo("1: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + getRemainingStockOrSpaceFromShopCache(shopIterator, true) + " | Space: " + getRemainingStockOrSpaceFromShopCache(shopIterator, false));
             LoggerUtils.logDebugInfo("2: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace() + "\n");
 
@@ -76,7 +73,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     // check for blacklisted worlds
                     && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
                     && shopIterator.getItem().getType().equals(item.getType())
-//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
@@ -129,7 +125,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && shopIterator.getItem().hasItemMeta()
                     && Objects.requireNonNull(shopIterator.getItem().getItemMeta()).hasDisplayName()
                     && (shopIterator.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
@@ -162,7 +157,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
                     // check for blacklisted worlds
                     && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) != 0 : getRemainingStockOrSpaceFromShopCache(shopIterator, false) != 0)
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
@@ -346,6 +340,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             return (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
         }
         else {
+            // Show warning
+            LoggerUtils.logWarning("Update recommended to QuickShop-Hikari v6+! You are still using v" + pluginVersion);
             // PREPARE FOR LAG
             CachedShop cachedShop = shopCache.get(shop.getShopId());
             if (cachedShop == null || QSApi.isTimeDifferenceGreaterThanSeconds(cachedShop.getLastFetched(), new Date(), SHOP_CACHE_TIMEOUT_SECONDS)) {

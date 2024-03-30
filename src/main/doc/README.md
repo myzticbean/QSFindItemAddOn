@@ -4,8 +4,10 @@
 An unofficial add-on for the QuickShop Hikari and Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
 
-![MC](https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.20.4-brightgreen)
-![Ver](https://img.shields.io/spiget/version/95104?label=Current%20Spigot%20Version)
+[//]: # (![MC]&#40;https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.20.4-brightgreen&#41;)
+![ModrinthAvailableFor](https://img.shields.io/badge/dynamic/json?label=Minecraft%20Java%20Edition:&color=4bab62&query=version&url=https://api.blueish.dev/api/minecraft/version?id=asp13ugE)
+![Ver](https://img.shields.io/spiget/version/95104?label=Latest%20Spigot%20Version)
+![Build Status](https://github.com/myzticbean/QSFindItemAddOn/actions/workflows/maven.yml/badge.svg?branch=master)
 
 ## Features
 - Search items based on buying/selling shops
@@ -23,7 +25,7 @@ Adds a `/finditem` command in game for searching through all the shops on the se
 
 
 **QuickShop-Hikari Support**
-- It supports both [QuickShop-Reremake](https://www.spigotmc.org/resources/62575/) and [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/).
+- It supports both [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) and [QuickShop-Reremake](https://www.spigotmc.org/resources/62575/).
 
 **Hexcode color support**
 - All messages in the config.yml support hexcodes.
@@ -43,15 +45,15 @@ command-alias: []
 ## Integrations
 - Supports [PlayerWarps](https://www.spigotmc.org/resources/66692/) (by Olzie-12) integration. It shows the nearest warp to each shop in the search result GUI.
 - Supports EssentialsX Warps integration for fetching nearest warps.
-    - Global warps list for essentials is updated in batches every 15 minutes due to technical limitations, which is then used in every search query.
-    - If you added a new warp and want it to get updated immediately, run **/finditemadmin reload**
-    - Remember, this applies only to Essential Warps.
+  - Global warps list for essentials is updated in batches every 15 minutes due to technical limitations, which is then used in every search query.
+  - If you added a new warp and want it to get updated immediately, run **/finditemadmin reload**
+  - Remember, this applies only to Essential Warps.
 - WorldGuard region support for fetching the WorldGuard region the shop is in (if overlapping regions, highest priority will be chosen)
 
 >Check out the sample config.yml [here](https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml).
 
 ## Requires
-- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v5.2 or higher
+- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v6.0 or higher
 
 **OR**
 
@@ -73,13 +75,13 @@ See more details [here](https://github.com/myzticbean/QSFindItemAddOn/blob/maste
 
 ## Demo
 ### How to use `/finditem`?
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618006512959518/upload_2021-8-22_15-46-29-png.png?ex=65b4a50a&is=65a2300a&hm=470a64e63d7346eee58faaf0ab41502e5ffb10d6e9a35c113c5d310237e7d820&=&format=webp&quality=lossless&width=1000&height=652)
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618804751941672/upload_2021-8-22_15-46-34-png.png?ex=65b4a5c8&is=65a230c8&hm=0855e8be534da6e88501a14ec49f07ee74f8f70a7020055ab1999347bea32aad&=&format=webp&quality=lossless&width=1000&height=652)
+![/finditem_usage](https://cdn.modrinth.com/data/asp13ugE/images/bb37966809c9d7ab3201988ef58b2060688584f3.png)
+![alt text](https://cdn.modrinth.com/data/asp13ugE/images/878e9b703343a65c963d790d875ad5dbe6ac309d.png)
 ### Multiple search result pages:
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618837601718272/upload_2021-8-22_15-50-28-png.png?ex=65b4a5d0&is=65a230d0&hm=40bf7698ef4d6a6847587d39fffcd032a021406052995228a6ae5b1a67ed00f8&=&format=webp&quality=lossless&width=1000&height=576)
+![alt text](https://cdn.modrinth.com/data/asp13ugE/images/33cb7d96cabb709bc630685c9e6fdc1b9cd7b3bb.png)
 ### Shows item enchantments:
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618864944394291/upload_2021-8-22_15-47-10-png.png?ex=65b4a5d6&is=65a230d6&hm=d2bac9ac052b20cccd826b245c4ec36b1d7b4086a225117cb99368629d79a931&=&format=webp&quality=lossless&width=1000&height=484)
+![alt text](https://cdn.modrinth.com/data/asp13ugE/images/8ac5643bc042b897e549400e29186d87024b3a71.png)
 ### Shows Potion colors and effects:
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618954136268840/upload_2021-8-22_15-52-40-png.png?ex=65b4a5ec&is=65a230ec&hm=415f00b45b850d5f6c976871da56fa36709dd2a1c35c63f2ffa0b779cc7436c9&=&format=webp&quality=lossless&width=1000&height=432)
+![alt text](https://cdn.modrinth.com/data/asp13ugE/images/786ce10d42c5e92cbbd12b7f1ee81011796acbe0.png)
 ### Shows custom item names and lore:
-![alt text](https://media.discordapp.net/attachments/875008602706956368/1195618980610723841/upload_2021-8-22_15-47-1-png.png?ex=65b4a5f2&is=65a230f2&hm=734dae6fa9715411aab9ad34a5a0c358b1d1c828f677e126c88ff505fd0724e3&=&format=webp&quality=lossless&width=1000&height=504)
+![alt text](https://cdn.modrinth.com/data/asp13ugE/images/0c30b767bfc9df1f4a79afef677c0fc262fa62c5.png)
