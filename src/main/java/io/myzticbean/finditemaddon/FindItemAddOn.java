@@ -105,26 +105,6 @@ public final class FindItemAddOn extends JavaPlugin {
     }
 
     private void runPluginStartupTasks() {
-//        if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
-//                && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
-//            LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
-//            LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
-//            LoggerUtils.logError("Download links:");
-//            LoggerUtils.logError("» QuickShop-Reremake: https://www.spigotmc.org/resources/62575");
-//            LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
-//            getServer().getPluginManager().disablePlugin(this);
-//            return;
-//        }
-//        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
-//            qSReremakeInstalled = true;
-//            qsApi = new QSReremakeAPIHandler();
-//            LoggerUtils.logInfo("Found QuickShop-Reremake");
-//        }
-//        else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
-//            qSHikariInstalled = true;
-//            qsApi = new QSHikariAPIHandler();
-//            LoggerUtils.logInfo("Found QuickShop-Hikari");
-//        }
 
         serverVersion = Bukkit.getServer().getVersion();
         LoggerUtils.logInfo("Server version found: " + serverVersion);
@@ -151,7 +131,7 @@ public final class FindItemAddOn extends JavaPlugin {
         // Load all hidden shops from file
         ShopSearchActivityStorageUtil.loadShopsFromFile();
 
-        // v2.0.0 - Migrating hiddenShops.json to shops.json
+        // v2.0.0.0 - Migrating hiddenShops.json to shops.json
         ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();
 
         PlayerWarpsPlugin.setup();

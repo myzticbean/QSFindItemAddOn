@@ -1,4 +1,9 @@
-## Snapshot 2.0.5.6
+## Snapshot 2.0.5.7
+### Bug fixes
+- Fixed a bug where disabling hideshop/revealshop will not disable it for `/qs finditem` ([#13](https://github.com/myzticbean/QSFindItemAddOn/issues/13))
+- Fixed stock/space not updating properly from QS cache ([#17](https://github.com/myzticbean/QSFindItemAddOn/issues/17))
+
+## Release 2.0.5.6
 ### Bug fixes
 - Fixed a code refactoring bug where search all shops would return no shops for Quickshop Reremake
 - Added a INFO level logger to log time taken for a search process
