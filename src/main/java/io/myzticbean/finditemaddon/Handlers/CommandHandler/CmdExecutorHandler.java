@@ -59,7 +59,7 @@ public class CmdExecutorHandler {
                 if(itemArg.equalsIgnoreCase("*") && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_DISABLE_SEARCH_ALL_SHOPS) {
                     // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
                     if(!FindItemAddOn.isQSReremakeInstalled() && FindItemAddOn.getQsApiInstance().isQSShopCacheImplemented()) {
-                        LoggerUtils.logWarning("Should run in async thread...");
+                        LoggerUtils.logDebugInfo("Should run in async thread...");
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                             List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
                             if(!searchResultList.isEmpty()) {

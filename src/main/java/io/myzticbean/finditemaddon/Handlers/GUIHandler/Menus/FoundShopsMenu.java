@@ -34,6 +34,8 @@ import java.util.*;
  */
 public class FoundShopsMenu extends PaginatedMenu {
 
+    public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
+    public static final String SHOP_STOCK_UNKNOWN = "Unknown";
     private final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
     private final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
 
@@ -383,17 +385,19 @@ public class FoundShopsMenu extends PaginatedMenu {
             text = text.replace(ShopLorePlaceholders.ITEM_PRICE.value(), String.valueOf(shop.getShopPrice()));
         }
         if(text.contains(ShopLorePlaceholders.SHOP_STOCK.value())) {
-            if(shop.getRemainingStockOrSpace() == Integer.MAX_VALUE) {
-                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unlimited");
-            }
-            else if(shop.getRemainingStockOrSpace() == -2) {
+            if(shop.getRemainingStockOrSpace() == -2) {
+                // if -2 (cache doesn't have value) -> try to fetch from MAIN thread
                 int stockOrSpace = processUnknownStockSpace(shop);
-                if(stockOrSpace != -2)
-                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(stockOrSpace));
-                else
-                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), "Unknown");
-            }
-            else {
+                if(stockOrSpace == -2) {
+                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), SHOP_STOCK_UNKNOWN);
+                }
+                else {
+                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(),
+                            (stockOrSpace == -1 ? SHOP_STOCK_UNLIMITED : String.valueOf(stockOrSpace)));
+                }
+            } else if(shop.getRemainingStockOrSpace() == Integer.MAX_VALUE) {
+                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), SHOP_STOCK_UNLIMITED);
+            } else {
                 text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
             }
         }
