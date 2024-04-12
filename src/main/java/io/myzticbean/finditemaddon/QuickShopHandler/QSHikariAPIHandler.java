@@ -40,6 +40,7 @@ import java.util.concurrent.ConcurrentMap;
  */
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
+    public static final String IS_MAIN_THREAD = "Is MAIN Thread? ";
     private final QuickShopAPI api;
 
     private final String pluginVersion;
@@ -59,15 +60,14 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
-        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
+        LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
-            LoggerUtils.logDebugInfo("1: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + getRemainingStockOrSpaceFromShopCache(shopIterator, true) + " | Space: " + getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-            LoggerUtils.logDebugInfo("2: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace() + "\n");
-
+//            LoggerUtils.logDebugInfo("1: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + getRemainingStockOrSpaceFromShopCache(shopIterator, true) + " | Space: " + getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+//            LoggerUtils.logDebugInfo("2: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace());
             // check for quickshop hikari internal per-shop based search permission
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
                     // check for blacklisted worlds
@@ -76,12 +76,14 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                LoggerUtils.logDebugInfo("Shop match found: " + shopIterator.getLocation());
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }
                 shopsFoundList.add(new FoundShopItemModel(
                         shopIterator.getPrice(),
-                        QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
+                        QSApi.processStockOrSpace(stockOrSpace),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
                         shopIterator.getItem(),
@@ -111,7 +113,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
-        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
+        LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
@@ -128,12 +130,13 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
-                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }
                 shopsFoundList.add(new FoundShopItemModel(
                         shopIterator.getPrice(),
-                        QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
+                        QSApi.processStockOrSpace(stockOrSpace),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
                         shopIterator.getItem(),
@@ -147,7 +150,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
-        LoggerUtils.logDebugInfo("Is MAIN Thread?" + Bukkit.isPrimaryThread());
+        LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
         long begin = System.currentTimeMillis();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
@@ -160,12 +163,13 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shopIterator)) {
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }
                 shopsFoundList.add(new FoundShopItemModel(
                         shopIterator.getPrice(),
-                        QSApi.processStockOrSpace((toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false))),
+                        QSApi.processStockOrSpace(stockOrSpace),
                         shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
                         shopIterator.getLocation(),
                         shopIterator.getItem(),
@@ -297,14 +301,10 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
      * @param shop
      * @return If shop needs to be ignored from list
      */
-    private boolean checkIfShopToBeIgnoredForFullOrEmpty(boolean toBuy, Shop shop) {
+    private boolean checkIfShopToBeIgnoredForFullOrEmpty(int stockOrSpace) {
         boolean ignoreEmptyChests = FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS;
         if(ignoreEmptyChests) {
-            if(toBuy) {
-                return getRemainingStockOrSpaceFromShopCache(shop, true) == 0;
-
-            } else return getRemainingStockOrSpaceFromShopCache(shop, false) == 0;
-
+            return stockOrSpace == 0;
         }
         return false;
     }
@@ -332,12 +332,15 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     }
 
     private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
-        LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
+//        LoggerUtils.logDebugInfo("Shop ID: " + shop.getShopId());
         String mainVersionStr = pluginVersion.split("\\.")[0];
         int mainVersion = Integer.parseInt(mainVersionStr);
         if (mainVersion >= 6) {
             // New feature available
-            return (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
+            Util.ensureThread(true);
+            int stockOrSpace = (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
+            LoggerUtils.logDebugInfo("Stock/Space from cache: " + stockOrSpace);
+            return stockOrSpace;
         }
         else {
             // Show warning
@@ -401,7 +404,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
     public int processUnknownStockSpace(Location shopLoc, boolean toBuy) {
         // This process needs to run in MAIN thread
         Util.ensureThread(false);
-        LoggerUtils.logInfo("Fetching stock/space from MAIN thread...");
+        LoggerUtils.logDebugInfo("Fetching stock/space from MAIN thread...");
         Shop qsShop = api.getShopManager().getShop(shopLoc);
         if(qsShop != null) {
             return (toBuy ? qsShop.getRemainingStock() : qsShop.getRemainingSpace());
