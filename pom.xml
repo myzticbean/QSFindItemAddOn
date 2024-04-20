@@ -92,6 +92,10 @@
 
     <repositories>
         <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+        <repository>
             <id>sonatype</id>
             <url>https://oss.sonatype.org/content/groups/public/</url>
         </repository>
@@ -122,10 +126,6 @@
         <repository>
             <id>sk89q-repo</id>
             <url>https://maven.enginehub.org/repo/</url>
-        </repository>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
         </repository>
         <repository>
             <id>central</id>
@@ -340,7 +340,7 @@
         <dependency>
             <groupId>com.github.KodySimpson</groupId>
             <artifactId>SimpAPI</artifactId>
-            <version>4.3.2</version>
+            <version>4.5.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
