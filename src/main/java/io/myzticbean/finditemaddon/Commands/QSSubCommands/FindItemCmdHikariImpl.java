@@ -3,7 +3,7 @@ package io.myzticbean.finditemaddon.Commands.QSSubCommands;
 import com.ghostchu.quickshop.api.command.CommandHandler;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.CommandHandler.CmdExecutorHandler;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
@@ -53,7 +53,7 @@ public class FindItemCmdHikariImpl implements CommandHandler<Player> {
             commandSender.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
         }
         else if(args.length == 1) {
-            if(commandSender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+            if(commandSender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
                 if(args[0].equalsIgnoreCase(hideSubCommand)) {
                     cmdExecutor.handleHideShop(commandSender);
                 } else if(args[0].equalsIgnoreCase(revealShopSubCommand)) {
@@ -94,7 +94,7 @@ public class FindItemCmdHikariImpl implements CommandHandler<Player> {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
             }
             // hide
-            if(sender.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+            if(sender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE);
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE);
             }

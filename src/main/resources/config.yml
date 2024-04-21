@@ -52,6 +52,7 @@ player-shop-teleportation:
     tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
+    do-not-tp-if-warp-locked: true
 shop-gui-back-button-material: ""
 shop-gui-back-button-text: "&7&l« &cBack"
 shop-gui-next-button-material: ""
@@ -76,4 +77,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 14
+config-version: 15
