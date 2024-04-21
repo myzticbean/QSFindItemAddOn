@@ -15,7 +15,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 14;
+    private static final int CURRENT_CONFIG_VERSION = 15;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -192,6 +192,45 @@ public class ConfigSetup {
             // Config 14
             if(configFileConfiguration.getInt("config-version") < 14) {
                 configFileConfiguration.set("find-item-command.disable-search-all-shops", false);
+            }
+            // Config 15
+            if(configFileConfiguration.getInt("config-version") < 15) {
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.do-not-tp-if-warp-locked", true);
+                // capture old config data
+                String shopGuiBackButtonMaterial = configFileConfiguration.getString("shop-gui-back-button-material");
+                String shopGuiBackButtonText = configFileConfiguration.getString("shop-gui-back-button-text");
+                String shopGuiNextButtonMaterial = configFileConfiguration.getString("shop-gui-next-button-material");
+                String shopGuiNNextButtonText = configFileConfiguration.getString("shop-gui-next-button-text");
+                String shopGuiFillerItem = configFileConfiguration.getString("shop-gui-filler-item");
+                String shopGuiCloseButtonMaterial = configFileConfiguration.getString("shop-gui-close-button-material");
+                String shopGuiCloseButtonText = configFileConfiguration.getString("shop-gui-close-button-text");
+                String shopGuiGotoFirstPageButtonMaterial = configFileConfiguration.getString("shop-gui-goto-first-page-button-material");
+                String shopGuiGotoFirstPageButtonText = configFileConfiguration.getString("shop-gui-goto-first-page-button-text");
+                String shopGuiGotoLastPageButtonMaterial = configFileConfiguration.getString("shop-gui-goto-last-page-button-material");
+                String shopGuiGotoLastPageButtonText = configFileConfiguration.getString("shop-gui-goto-last-page-button-text");
+                String shopNavFirstPageAlertMsg = configFileConfiguration.getString("shop-navigation-first-page-alert-message");
+                String shopNavLastPageAlertMsg = configFileConfiguration.getString("shop-navigation-last-page-alert-message");
+                String shopGuiBackButtonCMD = configFileConfiguration.getString("shop-gui-back-button-custom-model-data");
+                String shopGuiNextButtonCMD = configFileConfiguration.getString("shop-gui-next-button-custom-model-data");
+                String shopGuiCloseButtonCMD = configFileConfiguration.getString("shop-gui-close-button-custom-model-data");
+                String shopGuiGotoFirstPageButtonCMD = configFileConfiguration.getString("shop-gui-goto-first-page-button-custom-model-data");
+                String shopGuiGotoLastPageButtonCMD = configFileConfiguration.getString("shop-gui-goto-last-page-button-custom-model-data");
+                // remove old config options
+                configFileConfiguration.set("shop-gui-back-button-material", null);
+                configFileConfiguration.set("shop-gui-back-button-text", null);
+                configFileConfiguration.set("shop-gui-next-button-material", null);
+                configFileConfiguration.set("shop-gui-next-button-text", null);
+                configFileConfiguration.set("shop-gui-filler-item", null);
+                configFileConfiguration.set("shop-gui-close-button-material", null);
+                configFileConfiguration.set("shop-gui-close-button-text", null);
+                configFileConfiguration.set("shop-gui-goto-first-page-button-material", null);
+                configFileConfiguration.set("shop-gui-goto-first-page-button-text", null);
+                configFileConfiguration.set("shop-gui-goto-last-page-button-material", null);
+                configFileConfiguration.set("shop-gui-goto-last-page-button-text", null);
+                configFileConfiguration.set("shop-navigation-first-page-alert-message", null);
+                configFileConfiguration.set("shop-navigation-last-page-alert-message", null);
+
+
             }
 
             // AT LAST

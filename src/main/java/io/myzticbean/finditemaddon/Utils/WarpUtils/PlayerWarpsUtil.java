@@ -27,13 +27,6 @@ public class PlayerWarpsUtil {
                         warp.getWarpLocation().getZ()
                 ), warp);
             });
-            /*
-            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
-                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
-                    LoggerUtils.logDebugInfo(entry.getValue().getWarpName() + " : " + entry.getKey());
-                }
-            }*/
-
             return warpDistanceMap.entrySet().iterator().next().getValue();
         }
         else {
