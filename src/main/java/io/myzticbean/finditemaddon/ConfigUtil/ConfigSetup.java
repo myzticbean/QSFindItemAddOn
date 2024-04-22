@@ -229,17 +229,46 @@ public class ConfigSetup {
                 configFileConfiguration.set("shop-gui-goto-last-page-button-text", null);
                 configFileConfiguration.set("shop-navigation-first-page-alert-message", null);
                 configFileConfiguration.set("shop-navigation-last-page-alert-message", null);
-
-
+                configFileConfiguration.set("shop-gui-back-button-custom-model-data", null);
+                configFileConfiguration.set("shop-gui-next-button-custom-model-data", null);
+                configFileConfiguration.set("shop-gui-close-button-custom-model-data", null);
+                configFileConfiguration.set("shop-navigation-first-page-button-custom-model-data", null);
+                configFileConfiguration.set("shop-navigation-last-page-button-custom-model-data", null);
+                configFileConfiguration.set("shop-gui-goto-first-page-button-custom-model-data", null);
+                configFileConfiguration.set("shop-gui-goto-last-page-button-custom-model-data", null);
+                // add the new config properties and transfer the data
+                final String SHOP_GUI_OPTION = "shop-gui.";
+                final String SHOP_GUI_NAVIGATION_OPTION = "shop-navigation.";
+                final String SHOP_GUI_CMD_OPTION = "custom-model-data.";
+                configFileConfiguration.set(SHOP_GUI_OPTION + "back-button-material", shopGuiBackButtonMaterial);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "back-button-text", shopGuiBackButtonText);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "next-button-material", shopGuiNextButtonMaterial);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "next-button-text", shopGuiNNextButtonText);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "filler-item", shopGuiFillerItem);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "close-button-material", shopGuiCloseButtonMaterial);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "close-button-text", shopGuiCloseButtonText);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "goto-first-page-button-material", shopGuiGotoFirstPageButtonMaterial);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "goto-first-page-button-text", shopGuiGotoFirstPageButtonText);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "goto-last-page-button-material", shopGuiGotoLastPageButtonMaterial);
+                configFileConfiguration.set(SHOP_GUI_OPTION + "goto-last-page-button-text", shopGuiGotoLastPageButtonText);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_NAVIGATION_OPTION + "first-page-alert-message", shopNavFirstPageAlertMsg);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_NAVIGATION_OPTION + "last-page-alert-message", shopNavLastPageAlertMsg);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "back-button-custom-model-data", shopGuiBackButtonCMD);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "next-button-custom-model-data", shopGuiNextButtonCMD);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "close-button-custom-model-data", shopGuiCloseButtonCMD);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "goto-first-page-button-custom-model-data", shopGuiGotoFirstPageButtonCMD);
+                configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "goto-last-page-button-custom-model-data", shopGuiGotoLastPageButtonCMD);
             }
 
             // AT LAST
             // Moving debug-mode and config-version to the last
-            boolean userDefinedDebugMode = configFileConfiguration.getBoolean("debug-mode");
-            configFileConfiguration.set("debug-mode", null);
-            configFileConfiguration.set("debug-mode", userDefinedDebugMode);
-            configFileConfiguration.set("config-version", null);
-            configFileConfiguration.set("config-version", CURRENT_CONFIG_VERSION);
+            final String DEBUG_MODE_OPTION = "debug-mode";
+            final String CONFIG_VERSION_OPTION = "config-version";
+            boolean userDefinedDebugMode = configFileConfiguration.getBoolean(DEBUG_MODE_OPTION);
+            configFileConfiguration.set(DEBUG_MODE_OPTION, null);
+            configFileConfiguration.set(DEBUG_MODE_OPTION, userDefinedDebugMode);
+            configFileConfiguration.set(CONFIG_VERSION_OPTION, null);
+            configFileConfiguration.set(CONFIG_VERSION_OPTION, CURRENT_CONFIG_VERSION);
         }
     }
 
