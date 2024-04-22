@@ -97,7 +97,7 @@ public final class FindItemAddOn extends JavaPlugin {
             ShopSearchActivityStorageUtil.saveShopsToFile();
         }
         else {
-            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop or QuickShop-Hikari installed.");
+            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
         }
         LoggerUtils.logInfo("Bye!");
     }
@@ -109,10 +109,10 @@ public final class FindItemAddOn extends JavaPlugin {
 
         if(!isQSReremakeInstalled() && !isQSHikariInstalled()) {
             LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
-            LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
+            LoggerUtils.logError("Both QuickShop-Hikari and QuickShop-Reremake are supported by this addon.");
             LoggerUtils.logError("Download links:");
-            LoggerUtils.logError("» QuickShop-Reremake: https://www.spigotmc.org/resources/62575");
             LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
+            LoggerUtils.logError("» QuickShop-Reremake (Support ending soon): https://www.spigotmc.org/resources/62575");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
