@@ -4,7 +4,7 @@ import io.myzticbean.finditemaddon.ConfigUtil.ConfigSetup;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus.FoundShopsMenu;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.WarpUtils;
@@ -38,7 +38,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_USE.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_USE.value())) {
 
                 // Show searching... message
                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG)) {
@@ -179,7 +179,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 3);
                 LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
                 if(FindItemAddOn.isQSReremakeInstalled()) {
@@ -205,7 +205,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_HIDESHOP.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 5);
                 if(playerLookAtBlock != null) {
                     LoggerUtils.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
@@ -300,7 +300,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_RELOAD.value()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_RELOAD.value()) || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value())) {
                 ConfigSetup.reloadConfig();
                 ConfigSetup.checkForMissingProperties();
                 ConfigSetup.saveConfig();
@@ -345,7 +345,7 @@ public class CmdExecutorHandler {
         }
         else {
             Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_RESTART.value()) || player.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_RESTART.value()) || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value())) {
                 Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
                 Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aPlugin restarted!"));
