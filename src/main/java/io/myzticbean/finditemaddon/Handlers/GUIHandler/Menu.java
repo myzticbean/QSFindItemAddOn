@@ -4,6 +4,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;

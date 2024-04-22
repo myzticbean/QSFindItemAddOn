@@ -1,12 +1,11 @@
 package io.myzticbean.finditemaddon.QuickShopHandler;
 
-import cc.carm.lib.easysql.api.SQLQuery;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdReremakeImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
@@ -21,7 +20,6 @@ import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
-import org.maxgamer.quickshop.database.DatabaseTask;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +29,7 @@ import java.util.concurrent.ConcurrentMap;
  * Implementation of QSApi for Reremake
  * @author myzticbean
  */
+@Deprecated(since = "2.0.6.0")
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
@@ -252,7 +251,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         api.getCommandManager().registerCmd(
                 CommandContainer.builder()
                         .prefix("finditem")
-                        .permission(PlayerPerms.FINDITEM_USE.value())
+                        .permission(PlayerPermsEnum.FINDITEM_USE.value())
                         .hidden(false)
                         .description("Search for items from all shops using an interactive GUI")
                         .executor(new FindItemCmdReremakeImpl())

@@ -4,6 +4,7 @@ import com.olziedev.playerwarps.api.PlayerWarpsAPI;
 import com.olziedev.playerwarps.api.events.warp.PlayerWarpTeleportEvent;
 import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.FindItemAddOn;
+import io.myzticbean.finditemaddon.Utils.Defaults.NearestWarpModeEnum;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -49,18 +50,19 @@ public class PlayerWarpsPlugin {
 
     public static void updateAllWarpsFromAPI() {
         if(isEnabled) {
-            LoggerUtils.logInfo("Updating Player warps list...");
+            long start = System.currentTimeMillis();
+//            LoggerUtils.logInfo("Updating Player warps list...");
             // Issue #24 Fix: Changing api instance to callback
             PlayerWarpsAPI.getInstance(api -> {
                 allWarpsList = api.getPlayerWarps(false);
-                LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
+                LoggerUtils.logInfo("Update complete for PlayerWarps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
             });
         }
     }
 
     public static void updateWarpsOnEventCall(Warp warp, boolean isRemoved) {
         LoggerUtils.logDebugInfo("Got a PlayerWarps event call... checking nearest-warp-mode");
-        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
+        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == NearestWarpModeEnum.PLAYER_WARPS.value()) {
             LoggerUtils.logDebugInfo("'nearest-warp-mode' found set to 2");
             if (getIsEnabled()) {
                 LoggerUtils.logDebugInfo("PlayerWarps plugin is enabled");
@@ -118,5 +120,12 @@ public class PlayerWarpsPlugin {
                 LoggerUtils.logError("&e" + player.getName() + " &cis trying to teleport to a PlayerWarp that does not exist!");
             }
         });
+    }
+
+    public static boolean isWarpLocked(Player player, String warpName) {
+        Warp warp = playerWarpsAPI.getPlayerWarp(warpName, player);
+        if(warp == null)
+            return false;
+        return warp.isWarpLocked();
     }
 }
