@@ -38,7 +38,8 @@ public class EssentialsXPlugin {
     public static List<EssentialWarpModel> getAllWarps() { return allWarpsList; }
 
     public static void updateAllWarps() {
-        LoggerUtils.logInfo("Updating Essentials warps list...");
+        long start = System.currentTimeMillis();
+//        LoggerUtils.logInfo("Updating Essentials warps list...");
         if(essAPI.isEnabled()) {
             Collection<String> allWarps = EssentialsXPlugin.getAPI().getWarps().getList();
             allWarpsList = new ArrayList<>();
@@ -51,7 +52,7 @@ public class EssentialsXPlugin {
                 } catch (Exception ignored) { }
             });
         }
-        LoggerUtils.logInfo("Update complete! Found " + getAllWarps().size() + " warps.");
+        LoggerUtils.logInfo("Update complete for Essentials warps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
     }
 
 }

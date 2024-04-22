@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
  * List of all the permissions used by the addon
  * @author myzticbean
  */
-public enum PlayerPerms {
+public enum PlayerPermsEnum {
     FINDITEM_ADMIN("finditem.admin"),
     FINDITEM_USE("finditem.use"),
     FINDITEM_HIDESHOP("finditem.hideshop"),
@@ -20,7 +20,7 @@ public enum PlayerPerms {
 
     private final String permName;
 
-    PlayerPerms(String perm) {
+    PlayerPermsEnum(String perm) {
         permName = perm;
     }
 
