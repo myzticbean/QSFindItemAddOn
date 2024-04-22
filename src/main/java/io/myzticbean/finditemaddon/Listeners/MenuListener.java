@@ -11,18 +11,12 @@ public class MenuListener implements Listener {
 
     @EventHandler
     public void onMenuClick(InventoryClickEvent e) {
-        Player p = (Player) e.getWhoClicked();
-
         InventoryHolder holder = e.getInventory().getHolder();
-
-        if(holder instanceof Menu) {
+        if(holder instanceof Menu menu) {
             e.setCancelled(true);
-
             if(e.getCurrentItem() == null) {
                 return;
             }
-
-            Menu menu = (Menu) holder;
             menu.handleMenu(e);
         }
     }
