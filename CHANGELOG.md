@@ -1,8 +1,16 @@
 ## Snapshot 2.0.6.0
 ### Changes (Mostly to accommodate feature request [#23](https://github.com/myzticbean/QSFindItemAddOn/issues/23))
 - Changed 15Min Scheduled Task to run in async thread.
-- Deprecated QSReremakeAPIHandler. Reremake implementation will no longer be updated. Last support is for QS v5.1.2.5.
+- Deprecated QSReremakeAPIHandler. Reremake implementation will no longer be updated. Last support is for QS-Reremake v5.1.2.5.
 - Changed logger statements to show Main/Async thread state.
+- Structural changes in the config.yml, specifically for shop-gui related options.
+- New config option added as below to toggle if players should be allowed to warp to locked warps (Only for PlayerWarps).
+```yaml
+player-shop-teleportation:
+  nearest-warp-tp-mode:
+    do-not-tp-if-warp-locked: true
+```
+- 
 
 ## Release 2.0.5.7
 ### Bug fixes

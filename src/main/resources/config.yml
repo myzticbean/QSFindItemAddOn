@@ -34,7 +34,7 @@ nearest-warp-mode: 1
 shop-gui-item-lore:
   - ""
   - "&fPrice: &a${ITEM_PRICE}"
-  - "&fStock: &7{SHOP_STOCK}"
+  - "&fStock/Space: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
