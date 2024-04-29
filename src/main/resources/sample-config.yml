@@ -83,7 +83,7 @@ nearest-warp-mode: 1
 # Shop Search GUI Item Lore
 # Placeholders for shop-item-lore:
 # {ITEM_PRICE}          -> Item price in shop
-# {SHOP_STOCK}          -> Remaining stock in shop
+# {SHOP_STOCK}          -> Remaining stock or space in shop depending on type of shop
 # {SHOP_OWNER}          -> Owner of shop
 # {SHOP_LOC}            -> Shop coordinates
 # {SHOP_WORLD}          -> Name of the world the shop is in
@@ -97,7 +97,7 @@ nearest-warp-mode: 1
 shop-gui-item-lore:
   - ""
   - "&fPrice: &a${ITEM_PRICE}"
-  - "&fStock: &7{SHOP_STOCK}"
+  - "&fStock/Space: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
   - "&fWorld: &7{SHOP_WORLD}"
@@ -132,6 +132,7 @@ player-shop-teleportation:
     # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)
     tp-player-to-nearest-warp: false
     # Below option is applicable to PlayerWarps only. If set to true, player will not be teleported if the warp is locked
+    # So it will try to find a PlayerWarp that is not locked, if unable to find, an error will be shown
     do-not-tp-if-warp-locked: true
 
 shop-gui:
@@ -158,31 +159,9 @@ shop-gui:
     close-button-custom-model-data: ""
     goto-first-page-button-custom-model-data: ""
     goto-last-page-button-custom-model-data: ""
-
-
-shop-gui-back-button-material: "RED_CONCRETE"
-shop-gui-back-button-text: "&7&l« &cBack"
-shop-gui-next-button-material: "GREEN_CONCRETE"
-shop-gui-next-button-text: "&aNext &7&l»"
-shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
-shop-gui-close-button-material: "BARRIER"
-shop-gui-close-button-text: "&fClose Search"
-shop-gui-goto-first-page-button-material: ""
-shop-gui-goto-first-page-button-text: "&7&l« &cGo to First Page"
-shop-gui-goto-last-page-button-material: ""
-shop-gui-goto-last-page-button-text: "&aGo to Last Page &7&l»"
-
-# Enter Item Custom Model Data below, if available, within quotes
-# or leave as "" if not available
-shop-gui-back-button-custom-model-data: ""
-shop-gui-next-button-custom-model-data: ""
-shop-gui-close-button-custom-model-data: ""
-shop-gui-goto-first-page-button-custom-model-data: ""
-shop-gui-goto-last-page-button-custom-model-data: ""
-
-# Alert shown when player is already on first/last page and clicks back/next button
-shop-navigation-first-page-alert-message: "&cYou are already on first page!"
-shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+  # Enabling this will convert currency values to a shorter format
+  # For example: $10,210,100 will be shown as $10.21M
+  use-shorter-currency-format: true
 
 # Specify (in minutes) how long the plugin will wait before incrementing the player shop visit count
 # when teleporting to it from Search GUI

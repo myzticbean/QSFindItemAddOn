@@ -21,6 +21,7 @@ import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -33,12 +34,9 @@ import java.util.concurrent.ConcurrentMap;
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
-
     private final QuickShop quickShop;
-
     private final ConcurrentMap<Location, CachedShop> shopCache;
-
-    private final int SHOP_CACHE_TIMEOUT_SECONDS = 1;
+    private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
     private final String QS_REREMAKE_PLUGIN_NAME = "QuickShop";
 
     public QSReremakeAPIHandler() {
@@ -50,7 +48,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -64,7 +62,6 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
                     && shop_i.getItem().getType().equals(item.getType())
-//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) != 0 : getRemainingStockOrSpaceFromShopCache(shop_i, false) != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i)) {
                     continue;
@@ -89,7 +86,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -108,8 +105,6 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                                 && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                             if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i))
                                 continue;
-//                            if(checkIfShopToBeIgnoredIfAdminShop(shop_i))
-//                                continue;
                             // check for shop if hidden
                             if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                                 shopsFoundList.add(new FoundShopItemModel(
@@ -133,7 +128,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
