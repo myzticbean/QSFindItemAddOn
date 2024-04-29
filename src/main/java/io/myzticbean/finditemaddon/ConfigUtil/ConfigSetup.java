@@ -258,6 +258,8 @@ public class ConfigSetup {
                 configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "close-button-custom-model-data", shopGuiCloseButtonCMD);
                 configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "goto-first-page-button-custom-model-data", shopGuiGotoFirstPageButtonCMD);
                 configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "goto-last-page-button-custom-model-data", shopGuiGotoLastPageButtonCMD);
+
+                configFileConfiguration.set(SHOP_GUI_OPTION + "use-shorter-currency-format", false);
             }
 
             // AT LAST

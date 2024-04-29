@@ -38,7 +38,8 @@ public class PlayerWarpsUtil {
                 // now keep looping until we find a warp that is not locked
                 while(iterator.hasNext()) {
                     Warp warp = iterator.next().getValue();
-                    if(!iterator.next().getValue().isWarpLocked()) {
+                    LoggerUtils.logDebugInfo("warp: " + warp.getWarpName() + " " + warp.isWarpLocked());
+                    if(!warp.isWarpLocked()) {
                         return warp;
                     }
                 }
