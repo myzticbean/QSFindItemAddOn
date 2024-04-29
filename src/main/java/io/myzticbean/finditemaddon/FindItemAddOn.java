@@ -13,7 +13,7 @@ import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
 import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import io.myzticbean.finditemaddon.ScheduledTasks.Task15MinInterval;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import io.myzticbean.finditemaddon.Utils.UpdateChecker;
@@ -26,19 +26,29 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public final class FindItemAddOn extends JavaPlugin {
 
+    // ONLY FOR SNAPSHOT BUILDS
+    // Change it to whenever you want your snapshot trial build to expire
+    private static final boolean ENABLE_TRIAL_PERIOD = false;
+    private static final int TRIAL_END_YEAR = 2024, TRIAL_END_MONTH = 5, TRIAL_END_DAY = 5;
+
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
     public static Plugin getInstance() { return plugin; }
     public static String serverVersion;
-    private final static int BS_PLUGIN_METRIC_ID = 12382;
-    private final static int SPIGOT_PLUGIN_ID = 95104;
-    private final static int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
+    private static final int BS_PLUGIN_METRIC_ID = 12382;
+    private static final int SPIGOT_PLUGIN_ID = 95104;
+    private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
     private static ConfigProvider configProvider;
     private static boolean isPluginOutdated = false;
     private static boolean qSReremakeInstalled = false;
@@ -56,11 +66,24 @@ public final class FindItemAddOn extends JavaPlugin {
             LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
             LoggerUtils.logWarning("If you find any bugs, please report them here: https://github.com/myzticbean/QSFindItemAddOn/issues");
         }
-
-
     }
     @Override
     public void onEnable() {
+
+        if(ENABLE_TRIAL_PERIOD) {
+            LoggerUtils.logWarning("THIS IS A TRIAL BUILD!!!");
+            LocalDateTime trialEndDate = LocalDate.of(TRIAL_END_YEAR, TRIAL_END_MONTH, TRIAL_END_DAY).atTime(LocalTime.MIDNIGHT);
+            LocalDateTime today = LocalDateTime.now();
+            Duration duration = Duration.between(trialEndDate, today);
+            boolean hasPassed = Duration.ofDays(ChronoUnit.DAYS.between(today, trialEndDate)).isNegative();
+            if(hasPassed) {
+                LoggerUtils.logError("Your trial has expired! Please contact the developer.");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            } else {
+                LoggerUtils.logWarning("You have " + Math.abs(duration.toDays()) + " days remaining in your trial.");
+            }
+        }
 
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
                 && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
@@ -98,8 +121,8 @@ public final class FindItemAddOn extends JavaPlugin {
         if(qsApi != null) {
             ShopSearchActivityStorageUtil.saveShopsToFile();
         }
-        else {
-            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop or QuickShop-Hikari installed.");
+        else if(!ENABLE_TRIAL_PERIOD) {
+            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
         }
         LoggerUtils.logInfo("Bye!");
     }
@@ -111,10 +134,10 @@ public final class FindItemAddOn extends JavaPlugin {
 
         if(!isQSReremakeInstalled() && !isQSHikariInstalled()) {
             LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
-            LoggerUtils.logError("Both QuickShop-Reremake and QuickShop-Hikari are supported by this addon.");
+            LoggerUtils.logError("Both QuickShop-Hikari and QuickShop-Reremake are supported by this addon.");
             LoggerUtils.logError("Download links:");
-            LoggerUtils.logError("» QuickShop-Reremake: https://www.spigotmc.org/resources/62575");
             LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
+            LoggerUtils.logError("» QuickShop-Reremake (Support ending soon): https://www.spigotmc.org/resources/62575");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
@@ -273,8 +296,8 @@ public final class FindItemAddOn extends JavaPlugin {
                     (commandSender, subCommandList) -> {
                         if (
                                 (commandSender.isOp())
-                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPerms.FINDITEM_ADMIN.value())
-                                        || commandSender.hasPermission(PlayerPerms.FINDITEM_RELOAD.value())))
+                                        || (!commandSender.isOp() && (commandSender.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value())
+                                        || commandSender.hasPermission(PlayerPermsEnum.FINDITEM_RELOAD.value())))
                         ) {
                             commandSender.sendMessage(ColorTranslator.translateColorCodes(""));
                             commandSender.sendMessage(ColorTranslator.translateColorCodes("&7-----------------------------"));

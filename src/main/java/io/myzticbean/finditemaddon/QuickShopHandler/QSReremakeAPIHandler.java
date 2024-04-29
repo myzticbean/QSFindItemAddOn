@@ -1,12 +1,11 @@
 package io.myzticbean.finditemaddon.QuickShopHandler;
 
-import cc.carm.lib.easysql.api.SQLQuery;
 import io.myzticbean.finditemaddon.Commands.QSSubCommands.FindItemCmdReremakeImpl;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Bukkit;
@@ -21,8 +20,8 @@ import org.maxgamer.quickshop.QuickShop;
 import org.maxgamer.quickshop.api.QuickShopAPI;
 import org.maxgamer.quickshop.api.command.CommandContainer;
 import org.maxgamer.quickshop.api.shop.Shop;
-import org.maxgamer.quickshop.database.DatabaseTask;
 
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -31,15 +30,13 @@ import java.util.concurrent.ConcurrentMap;
  * Implementation of QSApi for Reremake
  * @author myzticbean
  */
+@Deprecated(since = "2.0.6.0")
 public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     private final QuickShopAPI api;
-
     private final QuickShop quickShop;
-
     private final ConcurrentMap<Location, CachedShop> shopCache;
-
-    private final int SHOP_CACHE_TIMEOUT_SECONDS = 1;
+    private final int SHOP_CACHE_TIMEOUT_SECONDS = 60;
     private final String QS_REREMAKE_PLUGIN_NAME = "QuickShop";
 
     public QSReremakeAPIHandler() {
@@ -51,7 +48,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -65,7 +62,6 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
             // check for blacklisted worlds
             if(!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shop_i.getLocation().getWorld())
                     && shop_i.getItem().getType().equals(item.getType())
-//                    && (toBuy ? getRemainingStockOrSpaceFromShopCache(shop_i, true) != 0 : getRemainingStockOrSpaceFromShopCache(shop_i, false) != 0)
                     && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                 if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i)) {
                     continue;
@@ -90,7 +86,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -109,8 +105,6 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
                                 && (toBuy ? shop_i.isSelling() : shop_i.isBuying())) {
                             if(checkIfShopToBeIgnoredForFullOrEmpty(toBuy, shop_i))
                                 continue;
-//                            if(checkIfShopToBeIgnoredIfAdminShop(shop_i))
-//                                continue;
                             // check for shop if hidden
                             if(!HiddenShopStorageUtil.isShopHidden(shop_i)) {
                                 shopsFoundList.add(new FoundShopItemModel(
@@ -134,7 +128,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops;
         if(FindItemAddOn.getConfigProvider().SEARCH_LOADED_SHOPS_ONLY) {
@@ -252,7 +246,7 @@ public class QSReremakeAPIHandler implements QSApi<QuickShop, Shop> {
         api.getCommandManager().registerCmd(
                 CommandContainer.builder()
                         .prefix("finditem")
-                        .permission(PlayerPerms.FINDITEM_USE.value())
+                        .permission(PlayerPermsEnum.FINDITEM_USE.value())
                         .hidden(false)
                         .description("Search for items from all shops using an interactive GUI")
                         .executor(new FindItemCmdReremakeImpl())
