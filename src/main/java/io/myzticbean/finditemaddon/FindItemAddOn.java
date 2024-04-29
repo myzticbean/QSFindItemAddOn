@@ -26,11 +26,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public final class FindItemAddOn extends JavaPlugin {
+
+    // ONLY FOR SNAPSHOT BUILDS
+    // Change it to whenever you want your snapshot trial build to expire
+    private static final boolean ENABLE_TRIAL_PERIOD = false;
+    private static final int TRIAL_END_YEAR = 2024, TRIAL_END_MONTH = 5, TRIAL_END_DAY = 5;
 
     private static Plugin plugin;
     public FindItemAddOn() { plugin = this; }
@@ -59,6 +69,21 @@ public final class FindItemAddOn extends JavaPlugin {
     }
     @Override
     public void onEnable() {
+
+        if(ENABLE_TRIAL_PERIOD) {
+            LoggerUtils.logWarning("THIS IS A TRIAL BUILD!!!");
+            LocalDateTime trialEndDate = LocalDate.of(TRIAL_END_YEAR, TRIAL_END_MONTH, TRIAL_END_DAY).atTime(LocalTime.MIDNIGHT);
+            LocalDateTime today = LocalDateTime.now();
+            Duration duration = Duration.between(trialEndDate, today);
+            boolean hasPassed = Duration.ofDays(ChronoUnit.DAYS.between(today, trialEndDate)).isNegative();
+            if(hasPassed) {
+                LoggerUtils.logError("Your trial has expired! Please contact the developer.");
+                getServer().getPluginManager().disablePlugin(this);
+                return;
+            } else {
+                LoggerUtils.logWarning("You have " + Math.abs(duration.toDays()) + " days remaining in your trial.");
+            }
+        }
 
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
                 && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
@@ -96,7 +121,7 @@ public final class FindItemAddOn extends JavaPlugin {
         if(qsApi != null) {
             ShopSearchActivityStorageUtil.saveShopsToFile();
         }
-        else {
+        else if(!ENABLE_TRIAL_PERIOD) {
             LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
         }
         LoggerUtils.logInfo("Bye!");
