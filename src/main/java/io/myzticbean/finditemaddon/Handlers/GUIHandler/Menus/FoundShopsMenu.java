@@ -7,8 +7,9 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PaginatedMenu;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
-import io.myzticbean.finditemaddon.Utils.Defaults.ShopLorePlaceholders;
+import io.myzticbean.finditemaddon.Utils.Defaults.NearestWarpModeEnum;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.Utils.Defaults.ShopLorePlaceholdersEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LocationUtils;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
@@ -36,8 +37,9 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
-    private final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
-    private final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
+    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
+    private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
+    private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
     public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
         super(playerMenuUtility, searchResult);
@@ -88,19 +90,19 @@ public class FoundShopsMenu extends PaginatedMenu {
             Player player = (Player) event.getWhoClicked();
             ItemStack item = event.getCurrentItem();
             ItemMeta meta = item.getItemMeta();
-            NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
+            NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
             if(!meta.getPersistentDataContainer().isEmpty() && meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                 List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
                 if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
-                    if(playerMenuUtility.getOwner().hasPermission(PlayerPerms.FINDITEM_SHOPTP.value())) {
+                    if(playerMenuUtility.getOwner().hasPermission(PlayerPermsEnum.FINDITEM_SHOPTP.value())) {
                         World world = Bukkit.getWorld(locDataList.get(0));
                         int locX = Integer.parseInt(locDataList.get(1));
                         int locY = Integer.parseInt(locDataList.get(2));
                         int locZ = Integer.parseInt(locDataList.get(3));
                         Location shopLocation = new Location(world, locX, locY, locZ);
                         UUID shopOwner = ShopSearchActivityStorageUtil.getShopOwnerUUID(shopLocation);
-                        if(player.getUniqueId().equals(shopOwner) && !PlayerPerms.canPlayerTpToOwnShop(player)) {
+                        if(player.getUniqueId().equals(shopOwner) && !PlayerPermsEnum.canPlayerTpToOwnShop(player)) {
                             player.sendMessage(ColorTranslator.translateColorCodes(
                                     FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
                         }
@@ -119,7 +121,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                             // Check for TP delay
                             if(StringUtils.isNumeric(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)
                                 && !"0".equals(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS)
-                                && !PlayerPerms.hasShopTpDelayBypassPermOrAdmin(player)) {
+                                && !PlayerPermsEnum.hasShopTpDelayBypassPermOrAdmin(player)) {
                                 long delay = Long.parseLong(FindItemAddOn.getConfigProvider().TP_DELAY_IN_SECONDS);
                                 LoggerUtils.logDebugInfo("Teleporting delay is set to: " + delay);
                                 String tpDelayMsg = FindItemAddOn.getConfigProvider().TP_DELAY_MESSAGE;
@@ -254,68 +256,70 @@ public class FoundShopsMenu extends PaginatedMenu {
     public void setMenuItems(List<FoundShopItemModel> foundShops) {
         addMenuBottomBar();
         if(foundShops != null && !foundShops.isEmpty()) {
-            int guiSlotCounter = 0;
-            while(guiSlotCounter < super.maxItemsPerPage) {
-                index = super.maxItemsPerPage * page + guiSlotCounter;
-
-                if(index >= foundShops.size())  break;
-
+            int maxItemsPerPage = super.maxItemsPerPage;
+            for(int guiSlotCounter = 0; guiSlotCounter < maxItemsPerPage; guiSlotCounter++) {
+                index = maxItemsPerPage * page + guiSlotCounter;
+                if(index >= foundShops.size()) {
+                    break;
+                }
                 if(foundShops.get(index) != null) {
                     // Place Search Results here
-                    FoundShopItemModel foundShop_i = foundShops.get(index);
-                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
-                    ItemStack item = new ItemStack(foundShop_i.getItem().getType());
+                    FoundShopItemModel foundShopIter = foundShops.get(index);
+                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
+                    ItemStack item = new ItemStack(foundShopIter.getItem().getType());
                     ItemMeta meta = item.getItemMeta();
-                    List<String> lore;
-                    lore = new ArrayList<>();
+                    List<String> lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
                     String nearestEWarp = null;
 
-                    if(foundShop_i.getItem().hasItemMeta()) {
-                        meta = foundShop_i.getItem().getItemMeta();
-                        if(foundShop_i.getItem().getItemMeta().hasLore()) {
-                            for(String s : foundShop_i.getItem().getItemMeta().getLore()) {
+                    // set shop item's lore first
+                    if(foundShopIter.getItem().hasItemMeta()) {
+                        meta = foundShopIter.getItem().getItemMeta();
+                        if(meta.hasLore()) {
+                            for(String s : meta.getLore()) {
                                 lore.add(ColorTranslator.translateColorCodes(s));
                             }
                         }
                     }
                     List<String> shopItemLore = FindItemAddOn.getConfigProvider().SHOP_GUI_ITEM_LORE;
-                    for(String shopItemLore_i : shopItemLore) {
-                        if(shopItemLore_i.contains(ShopLorePlaceholders.NEAREST_WARP.value())) {
-                            switch(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE) {
+                    // now set the search related lore
+                    int nearestWarpMode = FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE;
+                    for(String shopItemLoreIter : shopItemLore) {
+                        if(shopItemLoreIter.contains(ShopLorePlaceholdersEnum.NEAREST_WARP.value())) {
+                            switch(nearestWarpMode) {
                                 case 1:
                                     // EssentialWarp: Check nearest warp
                                     if(EssentialsXPlugin.isEnabled()) {
-                                        nearestEWarp = new EssentialWarpsUtil().findNearestWarp(foundShop_i.getShopLocation());
+                                        nearestEWarp = new EssentialWarpsUtil().findNearestWarp(foundShopIter.getShopLocation());
                                         if(nearestEWarp != null && !StringUtils.isEmpty(nearestEWarp)) {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), nearestEWarp)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestEWarp)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
                                 case 2:
                                     // PlayerWarp: Check nearest warp
                                     if(PlayerWarpsPlugin.getIsEnabled()) {
-                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(foundShop_i.getShopLocation());
+                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(foundShopIter.getShopLocation());
                                         if(nearestPlayerWarp != null) {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), nearestPlayerWarp.getWarpName())));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestPlayerWarp.getWarpName())));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
                                 case 3:
                                     // WG Region: Check nearest WG Region
                                     if(WGPlugin.isEnabled()) {
-                                        String nearestWGRegion = new WGRegionUtils().findNearestWGRegion((foundShop_i.getShopLocation()));
+                                        String nearestWGRegion = new WGRegionUtils().findNearestWGRegion((foundShopIter.getShopLocation()));
                                         if(nearestWGRegion != null && !StringUtils.isEmpty(nearestWGRegion)) {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), nearestWGRegion)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestWGRegion)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLore_i.replace(ShopLorePlaceholders.NEAREST_WARP.value(), NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -324,12 +328,12 @@ public class FoundShopsMenu extends PaginatedMenu {
                             }
                         }
                         else {
-                            lore.add(ColorTranslator.translateColorCodes(replaceLorePlaceholders(shopItemLore_i, foundShop_i)));
+                            lore.add(ColorTranslator.translateColorCodes(replaceLorePlaceholders(shopItemLoreIter, foundShopIter)));
                         }
                     }
 
                     if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
-                        if(playerMenuUtility.getOwner().hasPermission(PlayerPerms.FINDITEM_SHOPTP.value())) {
+                        if(playerMenuUtility.getOwner().hasPermission(PlayerPermsEnum.FINDITEM_SHOPTP.value())) {
                             lore.add(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().CLICK_TO_TELEPORT_MSG));
                         }
                     }
@@ -340,35 +344,32 @@ public class FoundShopsMenu extends PaginatedMenu {
                     String locData = StringUtils.EMPTY;
                     // store the coordinates
                     if(FindItemAddOn.getConfigProvider().TP_PLAYER_DIRECTLY_TO_SHOP) {
-                        locData = Objects.requireNonNull(foundShop_i.getShopLocation().getWorld()).getName() + ","
-                                + foundShop_i.getShopLocation().getBlockX() + ","
-                                + foundShop_i.getShopLocation().getBlockY() + ","
-                                + foundShop_i.getShopLocation().getBlockZ();
+                        locData = Objects.requireNonNull(foundShopIter.getShopLocation().getWorld()).getName() + ","
+                                + foundShopIter.getShopLocation().getBlockX() + ","
+                                + foundShopIter.getShopLocation().getBlockY() + ","
+                                + foundShopIter.getShopLocation().getBlockZ();
                     }
                     else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP) {
                         // if Nearest Warp is set to EssentialsX Warps, store the warp name
-                        if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
+                        if(nearestWarpMode == NearestWarpModeEnum.ESSENTIAL_WARPS.value()) {
                             if(nearestEWarp != null) {
                                 locData = nearestEWarp;
                             }
                         }
                         // if Nearest Warp is set to PlayerWarps, store the warp name
-                        else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
-                            if(nearestPlayerWarp != null) {
-                                locData = nearestPlayerWarp.getWarpName();
-                            }
+                        else if(nearestWarpMode == NearestWarpModeEnum.PLAYER_WARPS.value() && nearestPlayerWarp != null) {
+                            locData = nearestPlayerWarp.getWarpName();
                         }
                     }
                     meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
 
                     // handling custom model data
-                    if(Objects.requireNonNull(foundShop_i.getItem().getItemMeta()).hasCustomModelData()) {
-                        meta.setCustomModelData(foundShop_i.getItem().getItemMeta().getCustomModelData());
+                    if(Objects.requireNonNull(foundShopIter.getItem().getItemMeta()).hasCustomModelData()) {
+                        meta.setCustomModelData(foundShopIter.getItem().getItemMeta().getCustomModelData());
                     }
                     item.setItemMeta(meta);
                     inventory.addItem(item);
                 }
-                guiSlotCounter++;
             }
         }
     }
@@ -381,48 +382,48 @@ public class FoundShopsMenu extends PaginatedMenu {
      */
     private String replaceLorePlaceholders(String text, FoundShopItemModel shop) {
 
-        if(text.contains(ShopLorePlaceholders.ITEM_PRICE.value())) {
-            text = text.replace(ShopLorePlaceholders.ITEM_PRICE.value(), String.valueOf(shop.getShopPrice()));
+        if(text.contains(ShopLorePlaceholdersEnum.ITEM_PRICE.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.ITEM_PRICE.value(), formatNumber(shop.getShopPrice()));
         }
-        if(text.contains(ShopLorePlaceholders.SHOP_STOCK.value())) {
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_STOCK.value())) {
             if(shop.getRemainingStockOrSpace() == -2) {
                 // if -2 (cache doesn't have value) -> try to fetch from MAIN thread
                 int stockOrSpace = processUnknownStockSpace(shop);
                 if(stockOrSpace == -2) {
-                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), SHOP_STOCK_UNKNOWN);
+                    text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(), SHOP_STOCK_UNKNOWN);
                 }
                 else {
-                    text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(),
+                    text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(),
                             (stockOrSpace == -1 ? SHOP_STOCK_UNLIMITED : String.valueOf(stockOrSpace)));
                 }
             } else if(shop.getRemainingStockOrSpace() == Integer.MAX_VALUE) {
-                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), SHOP_STOCK_UNLIMITED);
+                text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(), SHOP_STOCK_UNLIMITED);
             } else {
-                text = text.replace(ShopLorePlaceholders.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
+                text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
             }
         }
-        if(text.contains(ShopLorePlaceholders.SHOP_OWNER.value())) {
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_OWNER.value())) {
             OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shop.getShopOwner());
             if(shopOwner.getName() != null) {
-                text = text.replace(ShopLorePlaceholders.SHOP_OWNER.value(), shopOwner.getName());
+                text = text.replace(ShopLorePlaceholdersEnum.SHOP_OWNER.value(), shopOwner.getName());
             }
             else {
                 // set a generic name for shops with no owner name
-                text = text.replace(ShopLorePlaceholders.SHOP_OWNER.value(), "Admin");
+                text = text.replace(ShopLorePlaceholdersEnum.SHOP_OWNER.value(), "Admin");
             }
         }
-        if(text.contains(ShopLorePlaceholders.SHOP_LOCATION.value())) {
-            text = text.replace(ShopLorePlaceholders.SHOP_LOCATION.value(),
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_LOCATION.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.SHOP_LOCATION.value(),
                     shop.getShopLocation().getBlockX() + ", "
                     + shop.getShopLocation().getBlockY() + ", "
                     + shop.getShopLocation().getBlockZ());
         }
-        if(text.contains(ShopLorePlaceholders.SHOP_WORLD.value())) {
-            text = text.replace(ShopLorePlaceholders.SHOP_WORLD.value(), Objects.requireNonNull(shop.getShopLocation().getWorld()).getName());
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_WORLD.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.SHOP_WORLD.value(), Objects.requireNonNull(shop.getShopLocation().getWorld()).getName());
         }
         // Added in v2.0
-        if(text.contains(ShopLorePlaceholders.SHOP_VISITS.value())) {
-            text = text.replace(ShopLorePlaceholders.SHOP_VISITS.value(), String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getShopLocation())));
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_VISITS.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.SHOP_VISITS.value(), String.valueOf(ShopSearchActivityStorageUtil.getPlayerVisitCount(shop.getShopLocation())));
         }
         return text;
     }
@@ -433,5 +434,23 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     private String replaceDelayPlaceholder(String tpDelayMsg, long delay) {
         return tpDelayMsg.replace("{DELAY}", String.valueOf(delay));
+    }
+
+    public static String formatNumber(double number) {
+        if(FindItemAddOn.getConfigProvider().SHOP_GUI_USE_SHORTER_CURRENCY_FORMAT) {
+            if (number < 100_000) {
+                return String.format("%,.2f", number);
+            } else if (number < 1_000_000) {
+                return String.format("%.2fK", number / 1_000.0);
+            } else if (number < 1_000_000_000) {
+                return String.format("%.2fM", number / 1_000_000.0);
+            } else if (number < 1_000_000_000_000L) {
+                return String.format("%.2fB", number / 1_000_000_000.0);
+            } else {
+                return String.format("%.2fT", number / 1_000_000_000_000.0);
+            }
+        } else {
+            return String.format("%,.2f", number);
+        }
     }
 }

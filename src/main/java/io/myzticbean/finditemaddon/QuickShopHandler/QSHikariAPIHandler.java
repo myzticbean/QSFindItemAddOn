@@ -14,7 +14,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.CachedShop;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPerms;
+import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.HiddenShopStorageUtil;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import net.kyori.adventure.text.Component;
@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -61,7 +62,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -114,7 +115,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -151,7 +152,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -217,6 +218,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     @Override
     public List<ShopSearchActivityModel> syncShopsListForStorage(List<ShopSearchActivityModel> globalShopsList) {
+        long start = System.currentTimeMillis();
         // copy all shops from shops list in API to a temp globalShopsList
         // now check shops from temp globalShopsList in current globalShopsList and pull playerVisit data
         List<ShopSearchActivityModel> tempGlobalShopsList = new ArrayList<>();
@@ -253,6 +255,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             if (tempShopToRemove != null)
                 globalShopsList.remove(tempShopToRemove);
         }
+        LoggerUtils.logInfo("Shops List sync complete. Time took: " + (System.currentTimeMillis() - start) + "ms.");
         return tempGlobalShopsList;
     }
 
@@ -273,7 +276,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         api.getCommandManager().registerCmd(
                 CommandContainer.builder()
                         .prefix("finditem")
-                        .permission(PlayerPerms.FINDITEM_USE.value())
+                        .permission(PlayerPermsEnum.FINDITEM_USE.value())
                         .hidden(false)
                         .description(locale -> Component.text("Search for items from all shops using an interactive GUI"))
                         .executor(new FindItemCmdHikariImpl())
@@ -297,8 +300,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
      * If IGNORE_EMPTY_CHESTS is true -> do not add empty stock or space
      * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
      * If to sell -> If shop has no space -> based on ignore flag, decide to include it or not
-     * @param toBuy
-     * @param shop
+     * @param stockOrSpace
      * @return If shop needs to be ignored from list
      */
     private boolean checkIfShopToBeIgnoredForFullOrEmpty(int stockOrSpace) {
