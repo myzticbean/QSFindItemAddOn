@@ -53,24 +53,28 @@ player-shop-teleportation:
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
     do-not-tp-if-warp-locked: true
-shop-gui-back-button-material: ""
-shop-gui-back-button-text: "&7&l« &cBack"
-shop-gui-next-button-material: ""
-shop-gui-next-button-text: "&aNext &7&l»"
-shop-gui-filler-item: "GRAY_STAINED_GLASS_PANE"
-shop-gui-close-button-material: "BARRIER"
-shop-gui-close-button-text: "&fClose Search"
-shop-gui-goto-first-page-button-material: ""
-shop-gui-goto-first-page-button-text: "&7&l« &cGo to First Page"
-shop-gui-goto-last-page-button-material: ""
-shop-gui-goto-last-page-button-text: "&aGo to Last Page &7&l»"
-shop-gui-back-button-custom-model-data: ""
-shop-gui-next-button-custom-model-data: ""
-shop-gui-goto-first-page-button-custom-model-data: ""
-shop-gui-goto-last-page-button-custom-model-data: ""
-shop-gui-close-button-custom-model-data: ""
-shop-navigation-first-page-alert-message: "&cYou are already on first page!"
-shop-navigation-last-page-alert-message: "&cYou are already on last page!"
+shop-gui:
+  back-button-material: "RED_CONCRETE"
+  back-button-text: "&7&l« &cBack"
+  next-button-material: "GREEN_CONCRETE"
+  next-button-text: "&aNext &7&l»"
+  filler-item: "GRAY_STAINED_GLASS_PANE"
+  close-button-material: "BARRIER"
+  close-button-text: "&fClose Search"
+  goto-first-page-button-material: ""
+  goto-first-page-button-text: "&7&l« &cGo to First Page"
+  goto-last-page-button-material: ""
+  goto-last-page-button-text: "&aGo to Last Page &7&l»"
+  shop-navigation:
+    first-page-alert-message: "&cYou are already on first page!"
+    last-page-alert-message: "&cYou are already on last page!"
+  custom-model-data:
+    back-button-custom-model-data: ""
+    next-button-custom-model-data: ""
+    close-button-custom-model-data: ""
+    goto-first-page-button-custom-model-data: ""
+    goto-last-page-button-custom-model-data: ""
+  use-shorter-currency-format: true
 shop-player-visit-cooldown-in-minutes: 5
 ignore-empty-chests: true
 blacklisted-worlds:
