@@ -39,6 +39,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
     private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
     private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
+    private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
     public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
         super(playerMenuUtility, searchResult);
@@ -89,7 +90,7 @@ public class FoundShopsMenu extends PaginatedMenu {
             Player player = (Player) event.getWhoClicked();
             ItemStack item = event.getCurrentItem();
             ItemMeta meta = item.getItemMeta();
-            NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
+            NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
             if(!meta.getPersistentDataContainer().isEmpty() && meta.getPersistentDataContainer().has(key, PersistentDataType.STRING)) {
                 String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
                 List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
@@ -255,28 +256,27 @@ public class FoundShopsMenu extends PaginatedMenu {
     public void setMenuItems(List<FoundShopItemModel> foundShops) {
         addMenuBottomBar();
         if(foundShops != null && !foundShops.isEmpty()) {
-            int guiSlotCounter = 0;
-            while(guiSlotCounter < super.maxItemsPerPage) {
-                index = super.maxItemsPerPage * page + guiSlotCounter;
-
-                if(index >= foundShops.size())  break;
-
+            int maxItemsPerPage = super.maxItemsPerPage;
+            for(int guiSlotCounter = 0; guiSlotCounter < maxItemsPerPage; guiSlotCounter++) {
+                index = maxItemsPerPage * page + guiSlotCounter;
+                if(index >= foundShops.size()) {
+                    break;
+                }
                 if(foundShops.get(index) != null) {
                     // Place Search Results here
                     FoundShopItemModel foundShopIter = foundShops.get(index);
-                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), "locationData");
+                    NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
                     ItemStack item = new ItemStack(foundShopIter.getItem().getType());
                     ItemMeta meta = item.getItemMeta();
-                    List<String> lore;
-                    lore = new ArrayList<>();
+                    List<String> lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
                     String nearestEWarp = null;
 
                     // set shop item's lore first
                     if(foundShopIter.getItem().hasItemMeta()) {
                         meta = foundShopIter.getItem().getItemMeta();
-                        if(foundShopIter.getItem().getItemMeta().hasLore()) {
-                            for(String s : foundShopIter.getItem().getItemMeta().getLore()) {
+                        if(meta.hasLore()) {
+                            for(String s : meta.getLore()) {
                                 lore.add(ColorTranslator.translateColorCodes(s));
                             }
                         }
@@ -370,7 +370,6 @@ public class FoundShopsMenu extends PaginatedMenu {
                     item.setItemMeta(meta);
                     inventory.addItem(item);
                 }
-                guiSlotCounter++;
             }
         }
     }
@@ -384,7 +383,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     private String replaceLorePlaceholders(String text, FoundShopItemModel shop) {
 
         if(text.contains(ShopLorePlaceholdersEnum.ITEM_PRICE.value())) {
-            text = text.replace(ShopLorePlaceholdersEnum.ITEM_PRICE.value(), String.valueOf(shop.getShopPrice()));
+            text = text.replace(ShopLorePlaceholdersEnum.ITEM_PRICE.value(), formatNumber(shop.getShopPrice()));
         }
         if(text.contains(ShopLorePlaceholdersEnum.SHOP_STOCK.value())) {
             if(shop.getRemainingStockOrSpace() == -2) {
@@ -435,5 +434,23 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     private String replaceDelayPlaceholder(String tpDelayMsg, long delay) {
         return tpDelayMsg.replace("{DELAY}", String.valueOf(delay));
+    }
+
+    public static String formatNumber(double number) {
+        if(FindItemAddOn.getConfigProvider().SHOP_GUI_USE_SHORTER_CURRENCY_FORMAT) {
+            if (number < 100_000) {
+                return String.format("%,.2f", number);
+            } else if (number < 1_000_000) {
+                return String.format("%.2fK", number / 1_000.0);
+            } else if (number < 1_000_000_000) {
+                return String.format("%.2fM", number / 1_000_000.0);
+            } else if (number < 1_000_000_000_000L) {
+                return String.format("%.2fB", number / 1_000_000_000.0);
+            } else {
+                return String.format("%.2fT", number / 1_000_000_000_000.0);
+            }
+        } else {
+            return String.format("%,.2f", number);
+        }
     }
 }

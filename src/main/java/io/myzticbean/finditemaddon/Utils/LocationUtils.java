@@ -1,9 +1,6 @@
 package io.myzticbean.finditemaddon.Utils;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;

@@ -86,6 +86,7 @@ public class ConfigProvider {
     public final String SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_CMD + "goto-last-page-button-custom-model-data");
     public final String SHOP_NAV_FIRST_PAGE_ALERT_MSG = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_NAVIGATION + "first-page-alert-message");
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_NAVIGATION + "last-page-alert-message");
+    public final boolean SHOP_GUI_USE_SHORTER_CURRENCY_FORMAT = ConfigSetup.get().getBoolean(SHOP_GUI + "use-shorter-currency-format");
     public final int SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES = ConfigSetup.get().getInt("shop-player-visit-cooldown-in-minutes");
     public final boolean IGNORE_EMPTY_CHESTS = ConfigSetup.get().getBoolean("ignore-empty-chests");
     public final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");

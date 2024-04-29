@@ -6,7 +6,6 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.HiddenShopModel;
 import io.myzticbean.finditemaddon.Models.PlayerShopVisitModel;
 import io.myzticbean.finditemaddon.Models.ShopSearchActivityModel;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import lombok.Getter;
 import me.kodysimpson.simpapi.colors.ColorTranslator;

@@ -29,6 +29,7 @@ import org.jetbrains.annotations.NotNull;
 import java.nio.charset.StandardCharsets;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -61,7 +62,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -114,7 +115,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -151,7 +152,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public List<FoundShopItemModel> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
         LoggerUtils.logDebugInfo(IS_MAIN_THREAD + Bukkit.isPrimaryThread());
-        long begin = System.currentTimeMillis();
+        var begin = Instant.now();
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
@@ -299,8 +300,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
      * If IGNORE_EMPTY_CHESTS is true -> do not add empty stock or space
      * If to buy -> If shop has no stock -> based on ignore flag, decide to include it or not
      * If to sell -> If shop has no space -> based on ignore flag, decide to include it or not
-     * @param toBuy
-     * @param shop
+     * @param stockOrSpace
      * @return If shop needs to be ignored from list
      */
     private boolean checkIfShopToBeIgnoredForFullOrEmpty(int stockOrSpace) {
