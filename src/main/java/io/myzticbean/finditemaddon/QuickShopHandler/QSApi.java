@@ -117,8 +117,7 @@ public interface QSApi<QSType, Shop> {
         return secondsDifference >= seconds;
     }
 
-    static void logTimeTookMsg(long timeStart) {
-        long timeEnd = System.currentTimeMillis();
-        LoggerUtils.logInfo("Shop search took: " + (timeEnd-timeStart) + " milliseconds");
+    static void logTimeTookMsg(Instant timeStart) {
+        LoggerUtils.logInfo("Shop search took " + Duration.between(timeStart, Instant.now()).toMillis() + "ms");
     }
 }
