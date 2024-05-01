@@ -255,7 +255,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
             if (tempShopToRemove != null)
                 globalShopsList.remove(tempShopToRemove);
         }
-        LoggerUtils.logInfo("Shops List sync complete. Time took: " + (System.currentTimeMillis() - start) + "ms.");
+        LoggerUtils.logDebugInfo("Shops List sync complete. Time took: " + (System.currentTimeMillis() - start) + "ms.");
         return tempGlobalShopsList;
     }
 

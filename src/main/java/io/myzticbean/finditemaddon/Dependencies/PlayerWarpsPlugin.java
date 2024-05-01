@@ -51,11 +51,10 @@ public class PlayerWarpsPlugin {
     public static void updateAllWarpsFromAPI() {
         if(isEnabled) {
             long start = System.currentTimeMillis();
-//            LoggerUtils.logInfo("Updating Player warps list...");
             // Issue #24 Fix: Changing api instance to callback
             PlayerWarpsAPI.getInstance(api -> {
                 allWarpsList = api.getPlayerWarps(false);
-                LoggerUtils.logInfo("Update complete for PlayerWarps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
+                LoggerUtils.logDebugInfo("Update complete for PlayerWarps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
             });
         }
     }

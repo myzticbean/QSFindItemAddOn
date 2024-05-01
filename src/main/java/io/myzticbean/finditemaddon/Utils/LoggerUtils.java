@@ -10,7 +10,7 @@ import org.bukkit.Bukkit;
 public class LoggerUtils {
 
     public static final String QS_FIND_ITEM_ADD_ON = "[QSFindItemAddOn] ";
-    public static final String QS_FIND_ITEM_ADD_ON_DEBUG_LOG = "[QSFindItemAddOn-DebugLog] ";
+    public static final String QS_FIND_ITEM_ADD_ON_DEBUG_LOG = "[QSFindItemAddOn-DEBUG] ";
 
     public static void logDebugInfo(String text) {
         if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
