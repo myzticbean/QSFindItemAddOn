@@ -1,3 +1,21 @@
+/**
+ * QSFindItemAddOn: An Minecraft add-on plugin for the QuickShop Hikari
+ * and Reremake Shop plugins for Spigot server platform.
+ * Copyright (C) 2021  myzticbean
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus;
 
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
@@ -147,7 +165,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                     }
                     else {
                         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
-                            playerMenuUtility.getOwner()
+                            playerMenuUtility
+                                    .getOwner()
                                     .sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                             + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
                             event.getWhoClicked().closeInventory();
@@ -169,7 +188,6 @@ public class FoundShopsMenu extends PaginatedMenu {
             }
             else {
                 LoggerUtils.logError("PersistentDataContainer doesn't have the right kind of data!");
-                return;
             }
         }
     }

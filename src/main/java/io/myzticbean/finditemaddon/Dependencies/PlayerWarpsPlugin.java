@@ -1,3 +1,21 @@
+/**
+ * QSFindItemAddOn: An Minecraft add-on plugin for the QuickShop Hikari
+ * and Reremake Shop plugins for Spigot server platform.
+ * Copyright (C) 2021  myzticbean
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package io.myzticbean.finditemaddon.Dependencies;
 
 import com.olziedev.playerwarps.api.PlayerWarpsAPI;
@@ -11,6 +29,9 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 
+/**
+ * @author myzticbean
+ */
 public class PlayerWarpsPlugin {
 
     private static boolean isEnabled = false;
@@ -51,11 +72,10 @@ public class PlayerWarpsPlugin {
     public static void updateAllWarpsFromAPI() {
         if(isEnabled) {
             long start = System.currentTimeMillis();
-//            LoggerUtils.logInfo("Updating Player warps list...");
             // Issue #24 Fix: Changing api instance to callback
             PlayerWarpsAPI.getInstance(api -> {
                 allWarpsList = api.getPlayerWarps(false);
-                LoggerUtils.logInfo("Update complete for PlayerWarps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
+                LoggerUtils.logDebugInfo("Update complete for PlayerWarps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
             });
         }
     }

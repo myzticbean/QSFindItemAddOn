@@ -1,3 +1,21 @@
+/**
+ * QSFindItemAddOn: An Minecraft add-on plugin for the QuickShop Hikari
+ * and Reremake Shop plugins for Spigot server platform.
+ * Copyright (C) 2021  myzticbean
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package io.myzticbean.finditemaddon.Dependencies;
 
 import com.earth2me.essentials.Essentials;
@@ -39,7 +57,6 @@ public class EssentialsXPlugin {
 
     public static void updateAllWarps() {
         long start = System.currentTimeMillis();
-//        LoggerUtils.logInfo("Updating Essentials warps list...");
         if(essAPI.isEnabled()) {
             Collection<String> allWarps = EssentialsXPlugin.getAPI().getWarps().getList();
             allWarpsList = new ArrayList<>();
@@ -52,7 +69,7 @@ public class EssentialsXPlugin {
                 } catch (Exception ignored) { }
             });
         }
-        LoggerUtils.logInfo("Update complete for Essentials warps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
+        LoggerUtils.logDebugInfo("Update complete for Essentials warps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
     }
 
 }
