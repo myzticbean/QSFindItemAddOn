@@ -1,3 +1,21 @@
+/**
+ * QSFindItemAddOn: An Minecraft add-on plugin for the QuickShop Hikari
+ * and Reremake Shop plugins for Spigot server platform.
+ * Copyright (C) 2021  myzticbean
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package io.myzticbean.finditemaddon.ConfigUtil;
 
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
@@ -8,6 +26,9 @@ import org.bukkit.World;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author myzticbean
+ */
 public class ConfigProvider {
 
     private static final String FIND_ITEM_COMMAND = "find-item-command.";
@@ -41,7 +62,7 @@ public class ConfigProvider {
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");
     public final int NEAREST_WARP_MODE = ConfigSetup.get().getInt("nearest-warp-mode");
     public final List<String> SHOP_GUI_ITEM_LORE = (List<String>) ConfigSetup.get().getList("shop-gui-item-lore");
-    public final boolean TP_PLAYER_DIRECTLY_TO_SHOP = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + " tp-player-directly-to-shop");
+    public final boolean TP_PLAYER_DIRECTLY_TO_SHOP = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + "tp-player-directly-to-shop");
     public final String CLICK_TO_TELEPORT_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + "click-to-teleport-message");
     public final String SHOP_TP_NO_PERMISSION_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + "shop-tp-no-permission-message");
     public final String UNSAFE_SHOP_AREA_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + "unsafe-shop-area-message");

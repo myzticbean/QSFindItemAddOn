@@ -1,3 +1,21 @@
+/**
+ * QSFindItemAddOn: An Minecraft add-on plugin for the QuickShop Hikari
+ * and Reremake Shop plugins for Spigot server platform.
+ * Copyright (C) 2021  myzticbean
+ * <p>
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * <p>
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * <p>
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ */
 package io.myzticbean.finditemaddon;
 
 import io.myzticbean.finditemaddon.Commands.SAPICommands.*;
@@ -35,6 +53,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * @author myzticbean
+ */
 public final class FindItemAddOn extends JavaPlugin {
 
     // ONLY FOR SNAPSHOT BUILDS
@@ -71,7 +92,7 @@ public final class FindItemAddOn extends JavaPlugin {
     public void onEnable() {
 
         if(ENABLE_TRIAL_PERIOD) {
-            LoggerUtils.logWarning("THIS IS A TRIAL BUILD!!!");
+            LoggerUtils.logWarning("THIS IS A TRIAL BUILD!");
             LocalDateTime trialEndDate = LocalDate.of(TRIAL_END_YEAR, TRIAL_END_MONTH, TRIAL_END_DAY).atTime(LocalTime.MIDNIGHT);
             LocalDateTime today = LocalDateTime.now();
             Duration duration = Duration.between(trialEndDate, today);
