@@ -1,6 +1,7 @@
 ## Release 2.0.6.1
 ### Bug fixes
 - Changed scheduled task loggers to debug-mode only ([#29](https://github.com/myzticbean/QSFindItemAddOn/issues/29))
+- Fix for players not getting teleported ([#30](https://github.com/myzticbean/QSFindItemAddOn/issues/30))
 
 ## Release 2.0.6.0
 ### Changes (Feature request [#23](https://github.com/myzticbean/QSFindItemAddOn/issues/23))
