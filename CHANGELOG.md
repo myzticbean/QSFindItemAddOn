@@ -1,3 +1,7 @@
+## Release 2.0.6.1
+### Bug fixes
+- Changed scheduled task loggers to debug-mode only ([#29](https://github.com/myzticbean/QSFindItemAddOn/issues/29))
+
 ## Release 2.0.6.0
 ### Changes (Feature request [#23](https://github.com/myzticbean/QSFindItemAddOn/issues/23))
 - Plugin updated for Minecraft version 1.20.5.
@@ -68,3 +72,35 @@ player-shop-teleportation:
 - Fix for Issue [#24](https://gitlab.com/ronsane/QSFindItemAddOn/-/issues/24)
 - Fixed a bug related to nearest warp teleportation algorithm
 - Other minor bug fixes
+
+## Snapshot 2.0
+### Changes
+- **QuickShop-Hikari Support:** It now supports both QuickShop-Reremake and QuickShop-Hikari.
+- **Hexcode color support:** All messages in the config.yml now support hexcodes so you can get a lot more creative with colors.
+- **Different commands for players and admins**
+  - The /finditem command is now split into two:
+    - `/finditem` - This will support the usual shop searches and hiding
+    - `/finditemadmin` or `/fiadmin` - This will support plugin reloads. For example: `/fiadmin reload`.
+- **View all shops on server:** Now you can do `/finditem TO_BUY *` or `/finditem TO_SELL *` to view all shops on the server. As of this version, the sequence is always randomized. Sorting options are a work in progress.
+- **New shop visit count:** Now you can choose to display shop visits count in the shop lore in Search GUI. Just add the placeholder {SHOP_VISITS} in the "shop-gui-item-lore" in config.yml. To prevent visit spamming, a new config property "shop-player-visit-cooldown-in-minutes" has been added. Please don't use decimals here LOL.
+- **New storage format:** The "hiddenShops.json" will automatically be converted to a new file called "shops.json" which will store data of all shops along with their player visit count and whether they are hidden from searches.
+- **New Next/Back buttons:** The default next/back buttons are now fancy playerheads to make more sense. If you don't wish to use them, just specify the material in the config.yml.
+- **Customizable command aliases:** Added a new property in config.yml called "command-alias" where you can specify your own list of command aliases for /finditem command. If you don't wish to add any, just make it as:
+```yaml
+command-alias: []
+```
+- **Compatibility with QuickShop-Hikari v2.0.0.0:** Added support for Per Shop permission management for "quickshop-hikari.search". If for a shop, the shop owner Steve configures Alex to be in a group that does not have "quickshop-hikari.search" permission, then Alex won't be able to see that shop in GUI when searching.
+- **Added finditem sub-command for /qs:** Now you can try the below commands, same functionality. This feature removes the original /qs find sub-command to avoid confusion among players.
+- Added a new sample-config.yml file which will be copied over to the plugin folder. This file is just for your reference when editing the fields in the actual config.yml file.
+
+### Bug fixes
+- Removed an erroneous config field "warp-player-to-nearest-warp".
+- Fixed an issue where it will load up the plugin before QuickShop is done loading causing it to disable itself. Thanks Baran for reporting :)
+- Added support for EssentialsX /back.
+- Fixed a bug that broke autocompletes for all commands in-game.
+- Made minor bug fixes when enabling plugin.
+- Made some fixes in the search system for shops that are buying items.
+- Some other minor stability fixes.
+- Fixed bug in which the new `/qs finditem` sub-command was not showing up in `/qs help`.
+- Fixed a NullPointerException bug for PlayerWarps plugin integration.
+- Updated PlayerWarps API to latest version and fixed a NPE console error
