@@ -165,7 +165,8 @@ public class FoundShopsMenu extends PaginatedMenu {
                     }
                     else {
                         if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG)) {
-                            playerMenuUtility.getOwner()
+                            playerMenuUtility
+                                    .getOwner()
                                     .sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                             + FindItemAddOn.getConfigProvider().SHOP_TP_NO_PERMISSION_MSG));
                             event.getWhoClicked().closeInventory();
@@ -187,7 +188,6 @@ public class FoundShopsMenu extends PaginatedMenu {
             }
             else {
                 LoggerUtils.logError("PersistentDataContainer doesn't have the right kind of data!");
-                return;
             }
         }
     }
