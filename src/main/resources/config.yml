@@ -53,6 +53,7 @@ player-shop-teleportation:
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
     do-not-tp-if-warp-locked: true
+    only-show-player-owned-warps: true
 shop-gui:
   back-button-material: "RED_CONCRETE"
   back-button-text: "&7&l« &cBack"
@@ -81,4 +82,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 15
+config-version: 16

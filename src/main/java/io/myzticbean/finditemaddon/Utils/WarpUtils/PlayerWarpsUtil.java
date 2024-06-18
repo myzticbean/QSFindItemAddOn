@@ -40,9 +40,12 @@ public class PlayerWarpsUtil {
         List<Warp> playersWarps = PlayerWarpsPlugin.getAllWarps().stream()
                 .filter(warp -> warp.getWarpLocation().getWorld() != null)
                 .filter(warp -> warp.getWarpLocation().getWorld().equals(shopLocation.getWorld().getName()))
-                .filter(warp -> warp.getWarpPlayer().getUUID().equals(shopOwner))
                 .toList();
-
+        if(FindItemAddOn.getConfigProvider().ONLY_SHOW_PLAYER_OWNDED_WARPS) {
+            playersWarps = playersWarps.stream()
+                    .filter(warp -> warp.getWarpPlayer().getUUID().equals(shopOwner))
+                    .toList();
+        }
         if (!playersWarps.isEmpty()) {
             Map<Double, Warp> warpDistanceMap = new TreeMap<>();
             playersWarps.forEach(warp ->
