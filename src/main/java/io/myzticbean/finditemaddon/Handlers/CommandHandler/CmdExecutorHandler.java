@@ -44,6 +44,8 @@ import java.util.List;
  */
 public class CmdExecutorHandler {
 
+    private static final String THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME = "This command can only be run from in game";
+
     /**
      * Handles the main shop search process
      * @param buySellSubCommand Whether player is buying or selling
@@ -52,7 +54,7 @@ public class CmdExecutorHandler {
      */
     public void handleShopSearch(String buySellSubCommand, CommandSender commandSender, String itemArg) {
         if (!(commandSender instanceof Player)) {
-            LoggerUtils.logInfo("This command can only be run from in game");
+            LoggerUtils.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
         }
         else {
             Player player = (Player) commandSender;
@@ -193,7 +195,7 @@ public class CmdExecutorHandler {
      */
     public void handleHideShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
-            LoggerUtils.logInfo("This command can only be run from in game");
+            LoggerUtils.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
         }
         else {
             Player player = (Player) commandSender;
@@ -219,7 +221,7 @@ public class CmdExecutorHandler {
      */
     public void handleRevealShop(CommandSender commandSender) {
         if (!(commandSender instanceof Player)) {
-            LoggerUtils.logInfo("This command can only be run from in game");
+            LoggerUtils.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
         }
         else {
             Player player = (Player) commandSender;
