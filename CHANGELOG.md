@@ -1,3 +1,7 @@
+## Release 2.0.6.2
+### Changes
+- Added option to show only player owned warps in GUI ([#38](https://github.com/myzticbean/QSFindItemAddOn/issues/38))
+
 ## Release 2.0.6.1
 ### Bug fixes
 - Changed scheduled task loggers to debug-mode only ([#29](https://github.com/myzticbean/QSFindItemAddOn/issues/29))

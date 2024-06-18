@@ -134,6 +134,8 @@ player-shop-teleportation:
     # Below option is applicable to PlayerWarps only. If set to true, player will not be teleported if the warp is locked
     # So it will try to find a PlayerWarp that is not locked, if unable to find, an error will be shown
     do-not-tp-if-warp-locked: true
+    # Below option is applicable to PlayerWarps only. If set to true, player will only be shown the warps in GUI which the player owns
+    only-show-player-owned-warps: true
 
 shop-gui:
   back-button-material: "RED_CONCRETE"
@@ -181,4 +183,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 15
+config-version: 16
