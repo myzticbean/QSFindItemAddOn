@@ -51,6 +51,11 @@ public class PlayerWarpsUtil {
                         warp.getWarpLocation().getZ()
                 ), warp);
             });
+            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
+                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
+                    LoggerUtils.logDebugInfo("Warp Distance: " + entry.getKey() + " Warp Name: " + entry.getValue().getWarpName());
+                }
+            }
             if(!FindItemAddOn.getConfigProvider().DO_NOT_TP_IF_PLAYER_WARP_LOCKED)
                 return warpDistanceMap.entrySet().iterator().next().getValue(); // don't care if warp is locked or not
             else {
@@ -58,13 +63,16 @@ public class PlayerWarpsUtil {
                 Iterator<Map.Entry<Double, Warp>> iterator = warpDistanceMap.entrySet().iterator();
                 // now keep looping until we find a warp that is not locked
                 while(iterator.hasNext()) {
-                    Warp warp = iterator.next().getValue();
-                    LoggerUtils.logDebugInfo("warp: " + warp.getWarpName() + " " + warp.isWarpLocked());
-                    if(!warp.isWarpLocked()) {
+                    Map.Entry<Double, Warp> entry = iterator.next();
+                    Double distance3D = entry.getKey();
+                    Warp warp = entry.getValue();
+                    LoggerUtils.logDebugInfo("Warp: " + warp.getWarpName() + " " + warp.isWarpLocked() + " Distance in 3D: " + distance3D);
+                    // Check distance from shop (should not be too long)
+                    if(distance3D < 500 && !warp.isWarpLocked()) {
                         return warp;
                     }
                 }
-                LoggerUtils.logError("No PlayerWarp found that is in 'unlocked' state");
+                LoggerUtils.logDebugInfo("No PlayerWarp found that is in 'unlocked' state OR nearby within 500 block distance");
                 return null;
             }
         }

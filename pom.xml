@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.6.1-RELEASE</version>
+    <version>2.0.6.3-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -14,7 +14,7 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.version>1.20.5-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
     </properties>
 
     <build>
@@ -52,7 +52,7 @@
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
                     <!--<outputDirectory>D:\${user.name}\MCServers\MCServer_1.20.1\plugins</outputDirectory>-->
                     <!-- Comment out if on a PC -->
-                    <!--<outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.20.1/plugins</outputDirectory>-->
+                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.20.1/plugins</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
