@@ -25,7 +25,11 @@ import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * @author myzticbean
