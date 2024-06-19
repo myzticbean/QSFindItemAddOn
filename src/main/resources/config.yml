@@ -24,6 +24,7 @@ find-item-command:
   shop-already-hidden-message: "&cThis shop is already hidden!"
   shop-already-public-message: "&cThis shop is already public!"
   invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
+  shop-tp-banned-message: "&cYou are banned from this shop!"
   hiding-shop-owner-invalid-message: "&cThat shop is not yours!"
   remove-hideshop-revealshop-subcommands: false
   disable-search-all-shops: false

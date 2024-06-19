@@ -18,17 +18,22 @@
  */
 package io.myzticbean.finditemaddon.Utils.WarpUtils;
 
+import com.olziedev.playerwarps.api.PlayerWarpsAPI;
+import com.olziedev.playerwarps.api.player.WBanned;
 import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Utils.CommonUtils;
+import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @author myzticbean & lukemango
@@ -66,5 +71,25 @@ public class PlayerWarpsUtil {
             }
         }
         return null;
+    }
+
+    public static boolean isPlayerBanned(String warp, Player player) {
+        AtomicBoolean isBanned = new AtomicBoolean(false);
+
+        PlayerWarpsAPI.getInstance(api -> {
+            if (!(warp == null)) {
+                Warp playerWarp = api.getPlayerWarp(warp, player);
+                for (WBanned bannedPlayer : playerWarp.getBanned()) {
+                    if (bannedPlayer.getUUID().equals(player.getUniqueId())) {
+                        player.sendMessage(ColorTranslator.translateColorCodes(
+                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_TP_BANNED_MSG));
+                        isBanned.set(true);
+                        return;
+                    }
+                }
+            }
+        });
+
+        return isBanned.get();
     }
 }

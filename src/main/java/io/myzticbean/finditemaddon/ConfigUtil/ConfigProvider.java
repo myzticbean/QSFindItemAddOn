@@ -54,6 +54,7 @@ public class ConfigProvider {
     public final String FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "shop-already-hidden-message");
     public final String FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "shop-already-public-message");
     public final String FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "invalid-shop-block-message");
+    public final String SHOP_TP_BANNED_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "shop-tp-banned-message");
     public final String FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "hiding-shop-owner-invalid-message");
     public final boolean FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS = ConfigSetup.get().getBoolean(FIND_ITEM_COMMAND + "remove-hideshop-revealshop-subcommands");
     public final boolean FIND_ITEM_CMD_DISABLE_SEARCH_ALL_SHOPS = ConfigSetup.get().getBoolean(FIND_ITEM_COMMAND + "disable-search-all-shops");
