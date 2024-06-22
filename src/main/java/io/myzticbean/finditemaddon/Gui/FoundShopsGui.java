@@ -47,7 +47,7 @@ public class FoundShopsGui {
         gui.setItem(6, 9,
                 ItemBuilder.from(this.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_MATERIAL))
                         .name(Colourify.colour(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT))
-                        .asGuiItem(event -> gui.previous()));
+                        .asGuiItem(event -> gui.next()));
         gui.setItem(6, 5,
                 ItemBuilder.from(this.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_MATERIAL))
                         .name(Colourify.colour(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT))
