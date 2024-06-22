@@ -18,7 +18,7 @@ bukkitPluginYaml {
     main = "io.myzticbean.finditemaddon.FindItemAddOn"
     apiVersion = "1.20"
     authors = listOf("myzticbean","lukemango")
-    depend = listOf("QuickShop-Hikari", "PlayerWarps", "HeadDatabase")
+    depend = listOf("QuickShop-Hikari", "PlayerWarps", "HeadDatabase", "Vault")
 }
 
 repositories {
@@ -54,6 +54,9 @@ dependencies {
 
     // Head Database
     compileOnly("com.arcaniax:HeadDatabase-API:1.3.2")
+
+    // Vault
+    compileOnly("com.github.MilkBowl:VaultAPI:1.7")
 }
 
 indra {

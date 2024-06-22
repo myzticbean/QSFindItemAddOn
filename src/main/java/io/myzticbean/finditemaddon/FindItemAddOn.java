@@ -29,21 +29,23 @@ import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.Listeners.HeadDatabaseApiListener;
 import io.myzticbean.finditemaddon.Listeners.PWPlayerWarpCreateEventListener;
 import io.myzticbean.finditemaddon.Listeners.PWPlayerWarpRemoveEventListener;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
+import io.myzticbean.finditemaddon.Dependencies.QuickShopApi;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class FindItemAddOn extends JavaPlugin {
 
-    private static Plugin plugin;
+    private static FindItemAddOn plugin;
 
     private static ConfigProvider configProvider;
-    private static QSApi qsApi;
+    private static QuickShopApi quickShopApi;
 
     private CmdExecutorHandler cmdExecutorHandler;
     private CommandManager commandManager;
+
+    private Economy econ;
 
     @Override
     public void onEnable() {
@@ -58,13 +60,14 @@ public final class FindItemAddOn extends JavaPlugin {
         initConfigProvider();
 
         this.initCommands();
+        this.initVaultEconomy();
 
         // Run plugin startup logic after server is done loading
         Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), this::runPluginStartupTasks);
     }
 
     private void runPluginStartupTasks() {
-        qsApi = new QSHikariAPIHandler();
+        quickShopApi = new QuickShopApi();
         PlayerWarpsPlugin.setup();
 
         this.registerListeners();
@@ -89,6 +92,11 @@ public final class FindItemAddOn extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new HeadDatabaseApiListener(), this);
     }
 
+    private void initVaultEconomy() {
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        econ = rsp.getProvider();
+    }
+
     public static ConfigProvider getConfigProvider() {
         return configProvider;
     }
@@ -97,12 +105,16 @@ public final class FindItemAddOn extends JavaPlugin {
         configProvider = new ConfigProvider();
     }
 
-    public static QSApi getQsApiInstance() {
-        return qsApi;
+    public static QuickShopApi getQsApiInstance() {
+        return quickShopApi;
     }
 
-    public static Plugin getInstance() {
+    public static FindItemAddOn getInstance() {
         return plugin;
+    }
+
+    public Economy getEconomy() {
+        return econ;
     }
 
 }

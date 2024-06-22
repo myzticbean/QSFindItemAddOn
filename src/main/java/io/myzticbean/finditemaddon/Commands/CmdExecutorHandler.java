@@ -22,7 +22,7 @@ import io.myzticbean.finditemaddon.ConfigUtil.ConfigSetup;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Gui.FoundShopsGui;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
+import io.myzticbean.finditemaddon.Dependencies.QuickShopApi;
 import io.myzticbean.finditemaddon.Utils.Colourify;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
@@ -44,17 +44,17 @@ public class CmdExecutorHandler {
     public void handleShopSearch(boolean isBuying, Player player, String matcher) {
         player.sendMessage(Colourify.colour(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + FindItemAddOn.getConfigProvider().SHOP_SEARCH_LOADING_MSG));
 
-        QSApi qsApi = FindItemAddOn.getQsApiInstance();
+        QuickShopApi quickShopApi = FindItemAddOn.getQsApiInstance();
         Material mat = Material.getMaterial(matcher.toUpperCase());
         if (mat != null) {
-            List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
+            List<FoundShopItemModel> searchResultList = quickShopApi.findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
             if (!searchResultList.isEmpty()) {
                 FoundShopsGui.open(player, matcher, searchResultList);
                 return;
             }
         }
 
-        List<FoundShopItemModel> searchResultList = qsApi.findItemBasedOnDisplayNameFromAllShops(matcher, isBuying, player);
+        List<FoundShopItemModel> searchResultList = quickShopApi.findItemBasedOnDisplayNameFromAllShops(matcher, isBuying, player);
         if (!searchResultList.isEmpty()) {
             FoundShopsGui.open(player, matcher, searchResultList);
             return;
