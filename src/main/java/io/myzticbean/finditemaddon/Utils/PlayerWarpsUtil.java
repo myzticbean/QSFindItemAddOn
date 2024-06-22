@@ -71,6 +71,8 @@ public class PlayerWarpsUtil {
     public static boolean isPlayerBanned(Warp warp, Player player) {
         AtomicBoolean isBanned = new AtomicBoolean(false);
 
+        if (warp == null) return false;
+
         PlayerWarpsAPI.getInstance(api -> {
             for (WBanned bannedPlayer : warp.getBanned()) {
                 if (bannedPlayer.getUUID().equals(player.getUniqueId())) {
