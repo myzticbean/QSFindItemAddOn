@@ -61,9 +61,9 @@ public class QuickShopApi {
                     continue;
                 }
 
-                // ensure shop owner has enough balance to sell the item (if toBuy)
-                OfflinePlayer shopOwner = Bukkit.getOfflinePlayerIfCached(shopIterator.getOwner().getDisplay());
-                if (toBuy && !FindItemAddOn.getInstance().getEconomy().has(shopOwner, shopIterator.getPrice())) {
+                // ensure shop owner has enough balance to sell the item (if selling)
+                OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shopIterator.getOwner().getUniqueId());
+                if (!toBuy && !FindItemAddOn.getInstance().getEconomy().has(shopOwner, shopIterator.getPrice())) {
                     continue;
                 }
 
@@ -107,9 +107,9 @@ public class QuickShopApi {
                     continue;
                 }
 
-                // ensure shop owner has enough balance to sell the item (if toBuy)
-                OfflinePlayer shopOwner = Bukkit.getOfflinePlayerIfCached(shopIterator.getOwner().getDisplay());
-                if (toBuy && !FindItemAddOn.getInstance().getEconomy().has(shopOwner, shopIterator.getPrice())) {
+                // ensure shop owner has enough balance to sell the item (if selling)
+                OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shopIterator.getOwner().getUniqueId());
+                if (!toBuy && !FindItemAddOn.getInstance().getEconomy().has(shopOwner, shopIterator.getPrice())) {
                     continue;
                 }
 
