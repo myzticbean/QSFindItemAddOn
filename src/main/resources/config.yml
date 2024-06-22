@@ -1,85 +1,31 @@
-# QuickShop Shop Search AddOn
-# Works with both Hikari and Reremake forks of QuickShop
-
-# PLEASE refer the below link to understand the meaning of all the fields and sample data:
-# https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml
-
-plugin-prefix: "&8[&a&lShop Search&8] &r"
+plugin-prefix: <#96eeff><b>Shop Search</b> <dark_gray>| <reset>
 find-item-command:
-  command-alias:
-    - "searchshop"
-    - "shopsearch"
-    - "searchitem"
-  incorrect-usage-message: "&cIncorrect usage! Try &e/finditem &a{TO-BUY | TO-SELL} &6{item type | item name}"
-  invalid-material-message: "&cEither no shops were found or you provided an invalid item! &fTry selecting from autofill."
-  shop-search-loading-message: "&7Searching..."
-  no-shop-found-message: "&7No shops found!"
-  find-item-command-no-permission-message: "&cNo permission!"
-  to-buy-autocomplete: "TO_BUY"
-  to-sell-autocomplete: "TO_SELL"
-  hideshop-autocomplete: "hideshop"
-  revealshop-autocomplete: "revealshop"
-  shop-hide-success-message: "&aShop is now hidden from search list!"
-  shop-reveal-success-message: "&aShop is no longer hidden from search list!"
-  shop-already-hidden-message: "&cThis shop is already hidden!"
-  shop-already-public-message: "&cThis shop is already public!"
-  invalid-shop-block-message: "&cThe block you are looking at is not a shop!"
-  shop-tp-banned-message: "&cYou are banned from this shop!"
-  hiding-shop-owner-invalid-message: "&cThat shop is not yours!"
-  remove-hideshop-revealshop-subcommands: false
-  disable-search-all-shops: false
+  shop-search-loading-message: <white>Searching for shops...
+  no-shop-found-message: <red>No shops found!
+  invalid-shop-block-message: <red>Invalid shop block!
+  shop-tp-banned-message: <red>You are banned from this shop!
 shop-sorting-method: 2
 search-loaded-shops-only: false
-shop-search-gui-title: "&l» &rShops"
-nearest-warp-mode: 1
+shop-search-gui-title: 'Shop Search: <matcher>'
 shop-gui-item-lore:
-  - ""
-  - "&fPrice: &a${ITEM_PRICE}"
-  - "&fStock/Space: &7{SHOP_STOCK}"
-  - "&fOwner: &7{SHOP_OWNER}"
-  - "&fLocation: &7{SHOP_LOC}"
-  - "&fWorld: &7{SHOP_WORLD}"
-  - "&fWarp: &7{NEAREST_WARP}"
-  - "&fShop Visits: &7{SHOP_VISITS}"
-  - ""
-player-shop-teleportation:
-  direct-shop-tp-mode:
-    tp-player-directly-to-shop: true
-    click-to-teleport-message: "&6&lClick to teleport to the shop!"
-    shop-tp-no-permission-message: "&cYou don't have permission to teleport to shop!"
-    unsafe-shop-area-message: "&cThe area around the shop is unsafe!"
-    tp-delay-in-seconds: 0
-    tp-delay-message: "&6You will be teleported in &c{DELAY} &6seconds..."
-    tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
-  nearest-warp-tp-mode:
-    tp-player-to-nearest-warp: false
-    do-not-tp-if-warp-locked: true
+  - ''
+  - '<#96eeff>▎ <white>Price: <#fbf679>$<price>'
+  - ''
+  - '<#96eeff>▎ <white>Stock/Space: <gray><stock>'
+  - '<#96eeff>▎ <white>Owner: <gray><owner>'
+  - '<#96eeff>▎ <white>Location: <gray><location>'
+  - '<#96eeff>▎ <white>World: <gray><world>'
+  - '<#96eeff>▎ <white>Warp: <gray><warp>'
+  - ''
+  - '<white>⏩ <#96eeff>Left click<white> to teleport'
 shop-gui:
-  back-button-material: "RED_CONCRETE"
-  back-button-text: "&7&l« &cBack"
-  next-button-material: "GREEN_CONCRETE"
-  next-button-text: "&aNext &7&l»"
-  filler-item: "GRAY_STAINED_GLASS_PANE"
-  close-button-material: "BARRIER"
-  close-button-text: "&fClose Search"
-  goto-first-page-button-material: ""
-  goto-first-page-button-text: "&7&l« &cGo to First Page"
-  goto-last-page-button-material: ""
-  goto-last-page-button-text: "&aGo to Last Page &7&l»"
-  shop-navigation:
-    first-page-alert-message: "&cYou are already on first page!"
-    last-page-alert-message: "&cYou are already on last page!"
-  custom-model-data:
-    back-button-custom-model-data: ""
-    next-button-custom-model-data: ""
-    close-button-custom-model-data: ""
-    goto-first-page-button-custom-model-data: ""
-    goto-last-page-button-custom-model-data: ""
-  use-shorter-currency-format: true
-shop-player-visit-cooldown-in-minutes: 5
+  back-button-material: hdb-7827
+  back-button-text: <#96eeff>Back
+  next-button-material: hdb-7826
+  next-button-text: <#96eeff>Next
+  close-button-material: BARRIER
+  close-button-text: <red>Close
 ignore-empty-chests: true
 blacklisted-worlds:
-  - "world_number_1"
-  - "world_number_2"
-debug-mode: false
-config-version: 15
+  - world_number_1
+  - world_number_2

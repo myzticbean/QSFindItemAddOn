@@ -14,26 +14,12 @@
  * GNU General Public License for more details.
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 package io.myzticbean.finditemaddon.Models;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-/**
- * @author myzticbean
- */
-@AllArgsConstructor
-@Getter
-public class HiddenShopModel {
-
-    private String worldName;
-    private double x;
-    private double y;
-    private double z;
-    private float pitch;
-    private float yaw;
-    private String shopOwnerUUID;
+public record HiddenShopModel(String worldName, double x, double y, double z, float pitch, float yaw,
+                              String shopOwnerUUID) {
 
 }

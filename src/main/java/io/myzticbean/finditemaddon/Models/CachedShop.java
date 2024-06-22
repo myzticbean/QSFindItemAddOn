@@ -14,24 +14,47 @@
  * GNU General Public License for more details.
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 package io.myzticbean.finditemaddon.Models;
 
-import lombok.Builder;
-import lombok.Getter;
 import org.bukkit.Location;
 
 import java.util.Date;
 
-/**
- * @author myzticbean
- */
-@Getter @Builder
 public class CachedShop {
     private long shopId;
     private Location shopLocation;
     private int remainingStock;
     private int remainingSpace;
     private Date lastFetched;
+
+    public CachedShop(long shopId, Location shopLocation, int remainingStock, int remainingSpace, Date lastFetched) {
+        this.shopId = shopId;
+        this.shopLocation = shopLocation;
+        this.remainingStock = remainingStock;
+        this.remainingSpace = remainingSpace;
+        this.lastFetched = lastFetched;
+    }
+
+    public long getShopId() {
+        return shopId;
+    }
+
+    public Location getShopLocation() {
+        return shopLocation;
+    }
+
+    public int getRemainingStock() {
+        return remainingStock;
+    }
+
+    public int getRemainingSpace() {
+        return remainingSpace;
+    }
+
+    public Date getLastFetched() {
+        return lastFetched;
+    }
+
 }

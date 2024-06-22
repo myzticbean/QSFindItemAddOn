@@ -14,21 +14,13 @@
  * GNU General Public License for more details.
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 package io.myzticbean.finditemaddon.Models;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 import java.time.Instant;
 import java.util.UUID;
 
-/**
- * @author myzticbean
- */
-@AllArgsConstructor
-@NoArgsConstructor
 public class PlayerShopVisitModel {
 
     private String playerUUID;
@@ -48,5 +40,13 @@ public class PlayerShopVisitModel {
 
     public Instant getVisitDateTime() {
         return Instant.parse(visitDateTime);
+    }
+
+    public PlayerShopVisitModel(UUID playerUUID, Instant visitDateTime) {
+        this.playerUUID = playerUUID.toString();
+        this.visitDateTime = visitDateTime.toString();
+    }
+
+    public PlayerShopVisitModel() {
     }
 }

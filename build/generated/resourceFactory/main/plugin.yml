@@ -1,0 +1,12 @@
+api-version: '1.20'
+name: QSFindItemAddOn
+version: 1.0.3
+main: io.myzticbean.finditemaddon.FindItemAddOn
+description: FindItemAddOn for QuickShop
+authors:
+- myzticbean
+- lukemango
+depend:
+- QuickShop-Hikari
+- PlayerWarps
+- HeadDatabase

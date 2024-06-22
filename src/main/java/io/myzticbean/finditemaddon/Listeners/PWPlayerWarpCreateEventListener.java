@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 package io.myzticbean.finditemaddon.Listeners;
 
@@ -25,9 +25,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
-/**
- * @author myzticbean
- */
 public class PWPlayerWarpCreateEventListener implements Listener {
     @EventHandler
     public void onPlayerWarpCreate(PlayerWarpCreateEvent event) {

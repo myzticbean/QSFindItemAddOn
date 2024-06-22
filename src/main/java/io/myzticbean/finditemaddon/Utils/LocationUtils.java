@@ -14,7 +14,7 @@
  * GNU General Public License for more details.
  * <p>
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program.  If not, see https://www.gnu.org/licenses/.
  */
 package io.myzticbean.finditemaddon.Utils;
 
@@ -29,9 +29,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * @author myzticbean
- */
 public class LocationUtils {
 
     private static final List<Material> damagingBlocks = new ArrayList<>();
@@ -56,11 +53,11 @@ public class LocationUtils {
         // Glass
         nonSuffocatingBlocks.add(Material.GLASS);
         nonSuffocatingBlocks.addAll(
-                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_glass")).toList())
+                new ArrayList<>(Arrays.stream(Material.values()).filter(p -> p.toString().toLowerCase().contains("_glass")).toList())
         );
         // Glass Panes
         nonSuffocatingBlocks.addAll(
-                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("glass_pane")).toList())
+                new ArrayList<>(Arrays.stream(Material.values()).filter(p -> p.toString().toLowerCase().contains("glass_pane")).toList())
         );
         // Leaves
         nonSuffocatingBlocks.add(Material.ACACIA_LEAVES);
@@ -69,21 +66,21 @@ public class LocationUtils {
         nonSuffocatingBlocks.add(Material.JUNGLE_LEAVES);
         nonSuffocatingBlocks.add(Material.OAK_LEAVES);
         nonSuffocatingBlocks.add(Material.SPRUCE_LEAVES);
-        if(Bukkit.getServer().getVersion().contains("1.17")) {
+        if (Bukkit.getServer().getVersion().contains("1.17")) {
             nonSuffocatingBlocks.add(Material.AZALEA_LEAVES);
             nonSuffocatingBlocks.add(Material.FLOWERING_AZALEA_LEAVES);
         }
         // Slabs
         nonSuffocatingBlocks.addAll(
-                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_slab")).toList())
+                new ArrayList<>(Arrays.stream(Material.values()).filter(p -> p.toString().toLowerCase().contains("_slab")).toList())
         );
         // Walled Signs
         nonSuffocatingBlocks.addAll(
-                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_sign")).toList())
+                new ArrayList<>(Arrays.stream(Material.values()).filter(p -> p.toString().toLowerCase().contains("_sign")).toList())
         );
         // Stairs
         nonSuffocatingBlocks.addAll(
-                new ArrayList<>(Arrays.asList(Material.values()).stream().filter(p -> p.toString().toLowerCase().contains("_stairs")).toList())
+                new ArrayList<>(Arrays.stream(Material.values()).filter(p -> p.toString().toLowerCase().contains("_stairs")).toList())
         );
         // MISC
         nonSuffocatingBlocks.add(Material.HONEY_BLOCK);
@@ -103,7 +100,6 @@ public class LocationUtils {
     @Nullable
     public static Location findSafeLocationAroundShop(Location shopLocation) {
         Location roundedShopLoc = getRoundedDestination(shopLocation);
-        LoggerUtils.logDebugInfo("Rounded location: " + roundedShopLoc.getX() + ", " + roundedShopLoc.getY() + ", " + roundedShopLoc.getZ());
         // Creating a list of four block locations in 4 sides of the shop
         List<Location> possibleSafeLocList = new ArrayList<>();
         possibleSafeLocList.add(new Location(
@@ -130,47 +126,37 @@ public class LocationUtils {
                 roundedShopLoc.getY(),
                 roundedShopLoc.getZ() - 1
         ));
-        for(Location loc_i : possibleSafeLocList) {
-            LoggerUtils.logDebugInfo("Possible safe location: " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
-            if(loc_i.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
-                LoggerUtils.logDebugInfo("Shop sign block found at " + loc_i.getX() + ", " + loc_i.getY() + ", " + loc_i.getZ());
+        for (Location loc_i : possibleSafeLocList) {
+            if (loc_i.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
                 // check if the block above is suffocating
                 Location blockAbove = new Location(
                         loc_i.getWorld(),
                         loc_i.getBlockX(),
                         loc_i.getBlockY() + 1,
                         loc_i.getBlockZ());
-                LoggerUtils.logDebugInfo("Block above shop sign: "
-                        + blockAbove.getX() + ", " + blockAbove.getY() + ", " + blockAbove.getZ());
-                if(!isBlockSuffocating(blockAbove)) {
+                if (!isBlockSuffocating(blockAbove)) {
                     Location blockBelow = null;
                     boolean safeLocFound = false;
-                    for(int i = 1; i <= BELOW_SAFE_BLOCK_CHECK_LIMIT; i++) {
+                    for (int i = 1; i <= BELOW_SAFE_BLOCK_CHECK_LIMIT; i++) {
                         blockBelow = new Location(
                                 loc_i.getWorld(),
                                 loc_i.getBlockX(),
                                 loc_i.getBlockY() - i,
                                 loc_i.getBlockZ()
                         );
-                        LoggerUtils.logDebugInfo("Block below shop sign: "
-                                + blockBelow.getBlock().getType() + " " + blockBelow.getX() + ", " + blockBelow.getY() + ", " + blockBelow.getZ());
-                        if(blockBelow.getBlock().getType().equals(Material.AIR)
-                            || blockBelow.getBlock().getType().equals(Material.CAVE_AIR)
-                            || blockBelow.getBlock().getType().equals(Material.VOID_AIR)
-                            || blockBelow.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
-                            // do nothing and let the loop run
-                            LoggerUtils.logDebugInfo("Shop or Air found below");
-                        }
-                        else if(!isBlockDamaging(blockBelow)) {
-                            LoggerUtils.logDebugInfo("Safe block found!");
+                        if (blockBelow.getBlock().getType().equals(Material.AIR)
+                                || blockBelow.getBlock().getType().equals(Material.CAVE_AIR)
+                                || blockBelow.getBlock().getType().equals(Material.VOID_AIR)
+                                || blockBelow.getBlock().getType().equals(FindItemAddOn.getQsApiInstance().getShopSignMaterial())) {
+                            continue;
+                        } else if (!isBlockDamaging(blockBelow)) {
                             safeLocFound = true;
                             break;
-                        }
-                        else {
+                        } else {
                             break;
                         }
                     }
-                    if(safeLocFound) {
+                    if (safeLocFound) {
                         loc_i = lookAt(getRoundedDestination(new Location(
                                 blockBelow.getWorld(),
                                 blockBelow.getX(),
@@ -178,21 +164,14 @@ public class LocationUtils {
                                 blockBelow.getZ()
                         )), roundedShopLoc);
                         return loc_i;
-                    }
-                    else {
+                    } else {
                         return null;
                     }
-                }
-                else {
-                    LoggerUtils.logDebugInfo("Block above shop sign found not air. Block type: " + blockAbove.getBlock().getType());
+                } else {
                     return null;
                 }
             }
-            else {
-                LoggerUtils.logDebugInfo("Block not shop sign. Block type: " + loc_i.getBlock().getType());
-            }
         }
-        LoggerUtils.logDebugInfo("No safe block found near shop");
         return null;
     }
 
@@ -243,8 +222,8 @@ public class LocationUtils {
     private static Location getRoundedDestination(final Location loc) {
         World world = loc.getWorld();
         int x = loc.getBlockX();
-        int y = (int)Math.round(loc.getY());
+        int y = (int) Math.round(loc.getY());
         int z = loc.getBlockZ();
-        return new Location(world, (double)x + 0.5D, (double)y, (double)z + 0.5D, loc.getYaw(), loc.getPitch());
+        return new Location(world, (double) x + 0.5D, (double) y, (double) z + 0.5D, loc.getYaw(), loc.getPitch());
     }
 }
