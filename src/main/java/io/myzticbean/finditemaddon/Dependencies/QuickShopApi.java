@@ -45,10 +45,16 @@ import java.util.concurrent.TimeUnit;
 public class QuickShopApi {
 
     private final QuickShopAPI api;
-    private final Cache<ItemStack, List<FoundShopItemModel>> searchedItemStacks = CacheBuilder.newBuilder()
+    private final Cache<ItemStack, List<FoundShopItemModel>> searchedItemStacksToBuy = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build();
-    private final Cache<String, List<FoundShopItemModel>> searchedStrings = CacheBuilder.newBuilder()
+    private final Cache<String, List<FoundShopItemModel>> searchedStringsToBuy = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
+    private final Cache<ItemStack, List<FoundShopItemModel>> searchedItemStacksToSell = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
+    private final Cache<String, List<FoundShopItemModel>> searchedStringsToSell = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.HOURS)
             .build();
 
@@ -57,8 +63,14 @@ public class QuickShopApi {
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
-        if (searchedItemStacks.getIfPresent(item) != null) {
-            return searchedItemStacks.getIfPresent(item);
+        if (toBuy) {
+            if (searchedItemStacksToBuy.getIfPresent(item) != null) {
+                return searchedItemStacksToBuy.getIfPresent(item);
+            }
+        } else {
+            if (searchedItemStacksToSell.getIfPresent(item) != null) {
+                return searchedItemStacksToSell.getIfPresent(item);
+            }
         }
 
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
@@ -91,13 +103,23 @@ public class QuickShopApi {
             }
         }
 
-        this.searchedStrings.put(item.getType().name(), shopsFoundList);
+        if (toBuy) {
+            this.searchedItemStacksToBuy.put(item, shopsFoundList);
+        } else {
+            this.searchedItemStacksToSell.put(item, shopsFoundList);
+        }
         return handleShopSorting(toBuy, shopsFoundList);
     }
 
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String matcher, boolean toBuy, Player searchingPlayer) {
-        if (searchedStrings.getIfPresent(matcher) != null) {
-            return searchedStrings.getIfPresent(matcher);
+        if (toBuy) {
+            if (searchedStringsToBuy.getIfPresent(matcher) != null) {
+                return searchedStringsToBuy.getIfPresent(matcher);
+            }
+        } else {
+            if (searchedStringsToSell.getIfPresent(matcher) != null) {
+                return searchedStringsToSell.getIfPresent(matcher);
+            }
         }
 
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
@@ -130,7 +152,11 @@ public class QuickShopApi {
             }
         }
 
-        this.searchedStrings.put(matcher, shopsFoundList);
+        if (toBuy) {
+            this.searchedStringsToBuy.put(matcher, shopsFoundList);
+        } else {
+            this.searchedStringsToSell.put(matcher, shopsFoundList);
+        }
         return handleShopSorting(toBuy, shopsFoundList);
     }
 
