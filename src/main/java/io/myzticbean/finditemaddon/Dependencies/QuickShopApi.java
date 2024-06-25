@@ -21,6 +21,8 @@ package io.myzticbean.finditemaddon.Dependencies;
 import com.ghostchu.quickshop.api.QuickShopAPI;
 import com.ghostchu.quickshop.api.shop.permission.BuiltInShopPermission;
 import com.ghostchu.quickshop.util.Util;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
@@ -38,16 +40,27 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class QuickShopApi {
 
     private final QuickShopAPI api;
+    private final Cache<ItemStack, List<FoundShopItemModel>> searchedItemStacks = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
+    private final Cache<String, List<FoundShopItemModel>> searchedStrings = CacheBuilder.newBuilder()
+            .expireAfterWrite(1, TimeUnit.HOURS)
+            .build();
 
     public QuickShopApi() {
         api = QuickShopAPI.getInstance();
     }
 
     public List<FoundShopItemModel> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
+        if (searchedItemStacks.getIfPresent(item) != null) {
+            return searchedItemStacks.getIfPresent(item);
+        }
+
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<com.ghostchu.quickshop.api.shop.Shop> allShops = fetchAllShopsFromQS();
         for (com.ghostchu.quickshop.api.shop.Shop shopIterator : allShops) {
@@ -77,23 +90,16 @@ public class QuickShopApi {
                 ));
             }
         }
+
+        this.searchedStrings.put(item.getType().name(), shopsFoundList);
         return handleShopSorting(toBuy, shopsFoundList);
     }
 
-    @NotNull
-    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, List<FoundShopItemModel> shopsFoundList) {
-        if (!shopsFoundList.isEmpty()) {
-            int sortingMethod = 2;
-            try {
-                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
-            } catch (Exception ignored) {
-            }
-            return QuickShopApi.sortShops(sortingMethod, shopsFoundList, toBuy);
-        }
-        return shopsFoundList;
-    }
-
     public List<FoundShopItemModel> findItemBasedOnDisplayNameFromAllShops(String matcher, boolean toBuy, Player searchingPlayer) {
+        if (searchedStrings.getIfPresent(matcher) != null) {
+            return searchedStrings.getIfPresent(matcher);
+        }
+
         List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
         List<com.ghostchu.quickshop.api.shop.Shop> allShops = fetchAllShopsFromQS();
         for (com.ghostchu.quickshop.api.shop.Shop shopIterator : allShops) {
@@ -123,7 +129,22 @@ public class QuickShopApi {
                 ));
             }
         }
+
+        this.searchedStrings.put(matcher, shopsFoundList);
         return handleShopSorting(toBuy, shopsFoundList);
+    }
+
+    @NotNull
+    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, List<FoundShopItemModel> shopsFoundList) {
+        if (!shopsFoundList.isEmpty()) {
+            int sortingMethod = 2;
+            try {
+                sortingMethod = FindItemAddOn.getConfigProvider().SHOP_SORTING_METHOD;
+            } catch (Exception ignored) {
+            }
+            return QuickShopApi.sortShops(sortingMethod, shopsFoundList, toBuy);
+        }
+        return shopsFoundList;
     }
 
     private List<com.ghostchu.quickshop.api.shop.Shop> fetchAllShopsFromQS() {
