@@ -32,6 +32,7 @@ public class ConfigProvider {
     public final String SHOP_SEARCH_LOADING_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "shop-search-loading-message");
     public final String NO_SHOP_FOUND_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "no-shop-found-message");
     public final String SHOP_TP_BANNED_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "shop-tp-banned-message");
+    public final String QUERY_TOO_SHORT_MSG = ConfigSetup.get().getString(FIND_ITEM_COMMAND + "query-too-short-message");
     public final int SHOP_SORTING_METHOD = ConfigSetup.get().getInt("shop-sorting-method");
     public final boolean SEARCH_LOADED_SHOPS_ONLY = ConfigSetup.get().getBoolean("search-loaded-shops-only");
     public final String SHOP_SEARCH_GUI_TITLE = ConfigSetup.get().getString("shop-search-gui-title");

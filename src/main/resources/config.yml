@@ -4,6 +4,7 @@ find-item-command:
   no-shop-found-message: <red>No shops found!
   invalid-shop-block-message: <red>Invalid shop block!
   shop-tp-banned-message: <red>You are banned from this shop!
+  query-too-short-message: <red>Your search query must be at least 3 characters long!
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: 'Shop Search: <matcher>'
