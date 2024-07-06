@@ -22,6 +22,7 @@ import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Utils.CommonUtils;
+import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,14 +58,22 @@ public class PlayerWarpsUtil {
                             warp.getWarpLocation().getY(),
                             warp.getWarpLocation().getZ()
                     ), warp));
-
+            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
+                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
+                    LoggerUtils.logDebugInfo("Warp Distance: " + entry.getKey() + " Warp Name: " + entry.getValue().getWarpName());
+                }
+            }
             for (Map.Entry<Double, Warp> doubleWarpEntry : warpDistanceMap.entrySet()) {
+                Double distance3D = doubleWarpEntry.getKey();
+                Warp warp = doubleWarpEntry.getValue();
+                LoggerUtils.logDebugInfo("Warp: " + warp.getWarpName() + " " + warp.isWarpLocked() + " Distance in 3D: " + distance3D);
                 // Is the config set to not tp if player warp is locked, and if so, is the warp locked?
+                // also check distance from shop (should not be too long)
                 if (FindItemAddOn.getConfigProvider().DO_NOT_TP_IF_PLAYER_WARP_LOCKED
-                        && doubleWarpEntry.getValue().isWarpLocked()) {
+                        && doubleWarpEntry.getValue().isWarpLocked()
+                        && distance3D > 500) {
                     continue;
                 }
-
                 return doubleWarpEntry.getValue();
             }
         }
