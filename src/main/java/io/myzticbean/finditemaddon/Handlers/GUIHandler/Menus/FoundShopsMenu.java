@@ -64,7 +64,7 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
-    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
+    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No warp near this shop";
     private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
     private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
@@ -294,6 +294,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                     FoundShopItemModel foundShopIter = foundShops.get(index);
                     NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
                     ItemStack item = new ItemStack(foundShopIter.getItem().getType());
+
+                    // Issue #37: Added item stack size
+                    item.setAmount(foundShopIter.getItem().getAmount());
+
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
@@ -428,6 +432,9 @@ public class FoundShopsMenu extends PaginatedMenu {
             } else {
                 text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
             }
+        }
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_PER_ITEM_QTY.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.SHOP_PER_ITEM_QTY.value(), String.valueOf(shop.getItem().getAmount()));
         }
         if(text.contains(ShopLorePlaceholdersEnum.SHOP_OWNER.value())) {
             OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shop.getShopOwner());
