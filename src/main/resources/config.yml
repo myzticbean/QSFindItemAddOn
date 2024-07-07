@@ -1,10 +1,14 @@
-plugin-prefix: <#96eeff><b>Shop Search</b> <dark_gray>| <reset>
+plugin-prefix: '<#96eeff><b>Shop Search</b> <dark_gray>| <reset>'
 find-item-command:
   shop-search-loading-message: <white>Searching for shops...
   no-shop-found-message: <red>No shops found!
   invalid-shop-block-message: <red>Invalid shop block!
   shop-tp-banned-message: <red>You are banned from this shop!
   query-too-short-message: <red>Your search query must be at least 3 characters long!
+  not-looking-at-shop-message: <red>You are not looking at a shop!
+  hidden-shop-message: <red>This shop is now hidden! Un-hide it from /finditem manage
+  not-your-shop-message: <red>This is not your shop!
+  unhidden-shop-message: <green>This shop is now unhidden!
 shop-sorting-method: 2
 search-loaded-shops-only: false
 shop-search-gui-title: 'Shop Search: <matcher>'
@@ -19,6 +23,27 @@ shop-gui-item-lore:
   - '<#96eeff>▎ <white>Warp: <gray><warp>'
   - ''
   - '<white>⏩ <#96eeff>Left click<white> to teleport'
+
+manage-shop-gui-hidden-item-lore:
+  - ''
+  - '<#ff4757>▎ <white>Selling: <gray><item>'
+  - ''
+  - '<#ff4757>▎ <white>Distance: <gray><distance> blocks'
+  - '<#ff4757>▎ <white>Location: <gray><location>'
+  - '<#ff4757>▎ <white>World: <gray><world>'
+  - ''
+  - '<white>⏩ <#ff4757>Left click<white> to show on search'
+manage-shop-gui-shown-item-lore:
+  - ''
+  - '<#88fd75>▎ <white>Selling: <gray><item>'
+  - ''
+  - '<#88fd75>▎ <white>Distance: <gray><distance> blocks'
+  - '<#88fd75>▎ <white>Location: <gray><location>'
+  - '<#88fd75>▎ <white>World: <gray><world>'
+  - ''
+  - '<white>⏩ <#88fd75>Left click<white> to hide on search'
+
+
 shop-gui:
   back-button-material: hdb-7827
   back-button-text: <#96eeff>Back

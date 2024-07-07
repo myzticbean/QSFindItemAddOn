@@ -10,12 +10,12 @@ plugins {
     id("xyz.jpenilla.resource-factory-bukkit-convention") version "1.1.1"
 }
 
-group = "io.myzticbean"
+group = "uk.mangostudios"
 version = "1.0.3"
 description = "FindItemAddOn for QuickShop"
 
 bukkitPluginYaml {
-    main = "io.myzticbean.finditemaddon.FindItemAddOn"
+    main = "uk.mangostudios.finditemaddon.FindItemAddOn"
     apiVersion = "1.20"
     authors = listOf("myzticbean","lukemango")
     depend = listOf("QuickShop-Hikari", "PlayerWarps", "HeadDatabase", "Vault")
