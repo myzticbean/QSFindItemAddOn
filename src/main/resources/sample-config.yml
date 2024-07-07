@@ -84,6 +84,7 @@ nearest-warp-mode: 1
 # Placeholders for shop-item-lore:
 # {ITEM_PRICE}          -> Item price in shop
 # {SHOP_STOCK}          -> Remaining stock or space in shop depending on type of shop
+# {ITEM_STACK_SIZE}     -> Stack size of the item being sold or bought for the above price
 # {SHOP_OWNER}          -> Owner of shop
 # {SHOP_LOC}            -> Shop coordinates
 # {SHOP_WORLD}          -> Name of the world the shop is in
@@ -96,7 +97,7 @@ nearest-warp-mode: 1
 #    set the below field as shop-gui-item-lore: []
 shop-gui-item-lore:
   - ""
-  - "&fPrice: &a${ITEM_PRICE}"
+  - "&fPrice: &a${ITEM_PRICE} per {ITEM_STACK_SIZE} item(s)"
   - "&fStock/Space: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
@@ -134,6 +135,8 @@ player-shop-teleportation:
     # Below option is applicable to PlayerWarps only. If set to true, player will not be teleported if the warp is locked
     # So it will try to find a PlayerWarp that is not locked, if unable to find, an error will be shown
     do-not-tp-if-warp-locked: true
+    # Below option is applicable to PlayerWarps only. If set to true, player will only be shown the warps in GUI which the player owns
+    only-show-player-owned-warps: true
 
 shop-gui:
   back-button-material: "RED_CONCRETE"
@@ -181,4 +184,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 15
+config-version: 16

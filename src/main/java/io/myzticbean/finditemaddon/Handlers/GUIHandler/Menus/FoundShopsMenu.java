@@ -37,7 +37,12 @@ import io.myzticbean.finditemaddon.Utils.WarpUtils.WGRegionUtils;
 import io.papermc.lib.PaperLib;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.apache.commons.lang3.StringUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
@@ -45,7 +50,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * Handler class for FoundShops GUI
@@ -55,7 +64,7 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
-    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No Warp near this shop";
+    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No warp near this shop";
     private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
     private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
@@ -285,6 +294,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                     FoundShopItemModel foundShopIter = foundShops.get(index);
                     NamespacedKey key = new NamespacedKey(FindItemAddOn.getInstance(), NAMEDSPACE_KEY_LOCATION_DATA);
                     ItemStack item = new ItemStack(foundShopIter.getItem().getType());
+
+                    // Issue #37: Added item stack size
+                    item.setAmount(foundShopIter.getItem().getAmount());
+
                     ItemMeta meta = item.getItemMeta();
                     List<String> lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
@@ -320,7 +333,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                 case 2:
                                     // PlayerWarp: Check nearest warp
                                     if(PlayerWarpsPlugin.getIsEnabled()) {
-                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(foundShopIter.getShopLocation());
+                                        nearestPlayerWarp = new PlayerWarpsUtil().findNearestWarp(foundShopIter.getShopLocation(), foundShopIter.getShopOwner());
                                         if(nearestPlayerWarp != null) {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestPlayerWarp.getWarpName())));
                                         }
@@ -419,6 +432,9 @@ public class FoundShopsMenu extends PaginatedMenu {
             } else {
                 text = text.replace(ShopLorePlaceholdersEnum.SHOP_STOCK.value(), String.valueOf(shop.getRemainingStockOrSpace()));
             }
+        }
+        if(text.contains(ShopLorePlaceholdersEnum.SHOP_PER_ITEM_QTY.value())) {
+            text = text.replace(ShopLorePlaceholdersEnum.SHOP_PER_ITEM_QTY.value(), String.valueOf(shop.getItem().getAmount()));
         }
         if(text.contains(ShopLorePlaceholdersEnum.SHOP_OWNER.value())) {
             OfflinePlayer shopOwner = Bukkit.getOfflinePlayer(shop.getShopOwner());

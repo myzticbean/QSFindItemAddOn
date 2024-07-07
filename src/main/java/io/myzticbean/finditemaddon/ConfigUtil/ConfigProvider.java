@@ -71,6 +71,7 @@ public class ConfigProvider {
     public final String TP_TO_OWN_SHOP_NO_PERMISSION_MESSAGE = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + DIRECT_SHOP_TP_MODE + "tp-to-own-shop-no-permission-message");
     public final boolean TP_PLAYER_TO_NEAREST_WARP = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "tp-player-to-nearest-warp");
     public final boolean DO_NOT_TP_IF_PLAYER_WARP_LOCKED = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "do-not-tp-if-warp-locked");
+    public final boolean ONLY_SHOW_PLAYER_OWNDED_WARPS = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "only-show-player-owned-warps");
     /*public final String SHOP_GUI_BACK_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-back-button-material");
     public final String SHOP_GUI_BACK_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-back-button-text");
     public final String SHOP_GUI_NEXT_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-next-button-material");

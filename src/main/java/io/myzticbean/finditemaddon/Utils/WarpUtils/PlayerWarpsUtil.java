@@ -26,50 +26,57 @@ import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import org.bukkit.Location;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.UUID;
 
 /**
- * @author myzticbean
+ * @author myzticbean & lukemango
  */
 public class PlayerWarpsUtil {
 
     @Nullable
-    public Warp findNearestWarp(Location shopLocation) {
-        List<Warp> allWarps = PlayerWarpsPlugin.getAllWarps();
-        if(!allWarps.isEmpty()) {
+    public Warp findNearestWarp(Location shopLocation, UUID shopOwner) {
+        List<Warp> playersWarps = PlayerWarpsPlugin.getAllWarps().stream()
+                .filter(warp -> warp.getWarpLocation().getWorld() != null)
+                .filter(warp -> warp.getWarpLocation().getWorld().equals(shopLocation.getWorld().getName()))
+                .toList();
+        if(FindItemAddOn.getConfigProvider().ONLY_SHOW_PLAYER_OWNDED_WARPS) {
+            playersWarps = playersWarps.stream()
+                    .filter(warp -> warp.getWarpPlayer().getUUID().equals(shopOwner))
+                    .toList();
+        }
+        if (!playersWarps.isEmpty()) {
             Map<Double, Warp> warpDistanceMap = new TreeMap<>();
-            allWarps.forEach(warp -> {
-                warpDistanceMap.put(CommonUtils.calculateDistance3D(
-                        shopLocation.getX(),
-                        shopLocation.getY(),
-                        shopLocation.getZ(),
-                        warp.getWarpLocation().getX(),
-                        warp.getWarpLocation().getY(),
-                        warp.getWarpLocation().getZ()
-                ), warp);
-            });
-            if(!FindItemAddOn.getConfigProvider().DO_NOT_TP_IF_PLAYER_WARP_LOCKED)
-                return warpDistanceMap.entrySet().iterator().next().getValue(); // don't care if warp is locked or not
-            else {
-                // need to return a warp that is not locked
-                Iterator<Map.Entry<Double, Warp>> iterator = warpDistanceMap.entrySet().iterator();
-                // now keep looping until we find a warp that is not locked
-                while(iterator.hasNext()) {
-                    Warp warp = iterator.next().getValue();
-                    LoggerUtils.logDebugInfo("warp: " + warp.getWarpName() + " " + warp.isWarpLocked());
-                    if(!warp.isWarpLocked()) {
-                        return warp;
-                    }
+            playersWarps.forEach(warp ->
+                    warpDistanceMap.put(CommonUtils.calculateDistance3D(
+                            shopLocation.getX(),
+                            shopLocation.getY(),
+                            shopLocation.getZ(),
+                            warp.getWarpLocation().getX(),
+                            warp.getWarpLocation().getY(),
+                            warp.getWarpLocation().getZ()
+                    ), warp));
+            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
+                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
+                    LoggerUtils.logDebugInfo("Warp Distance: " + entry.getKey() + " Warp Name: " + entry.getValue().getWarpName());
                 }
-                LoggerUtils.logError("No PlayerWarp found that is in 'unlocked' state");
-                return null;
+            }
+            for (Map.Entry<Double, Warp> doubleWarpEntry : warpDistanceMap.entrySet()) {
+                Double distance3D = doubleWarpEntry.getKey();
+                Warp warp = doubleWarpEntry.getValue();
+                LoggerUtils.logDebugInfo("Warp: " + warp.getWarpName() + " " + warp.isWarpLocked() + " Distance in 3D: " + distance3D);
+                // Is the config set to not tp if player warp is locked, and if so, is the warp locked?
+                // also check distance from shop (should not be too long)
+                if (FindItemAddOn.getConfigProvider().DO_NOT_TP_IF_PLAYER_WARP_LOCKED
+                        && doubleWarpEntry.getValue().isWarpLocked()
+                        && distance3D > 500) {
+                    continue;
+                }
+                return doubleWarpEntry.getValue();
             }
         }
-        else {
-            return null;
-        }
+        return null;
     }
 }

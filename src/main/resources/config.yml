@@ -33,7 +33,7 @@ shop-search-gui-title: "&l» &rShops"
 nearest-warp-mode: 1
 shop-gui-item-lore:
   - ""
-  - "&fPrice: &a${ITEM_PRICE}"
+  - "&fPrice: &a${ITEM_PRICE} per {ITEM_STACK_SIZE} item(s)"
   - "&fStock/Space: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"
@@ -53,6 +53,7 @@ player-shop-teleportation:
   nearest-warp-tp-mode:
     tp-player-to-nearest-warp: false
     do-not-tp-if-warp-locked: true
+    only-show-player-owned-warps: true
 shop-gui:
   back-button-material: "RED_CONCRETE"
   back-button-text: "&7&l« &cBack"
@@ -81,4 +82,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 15
+config-version: 16
