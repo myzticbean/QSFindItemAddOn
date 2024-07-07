@@ -89,8 +89,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         List<Shop> allShops = fetchAllShopsFromQS();
         LoggerUtils.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
         for(Shop shopIterator : allShops) {
-//            LoggerUtils.logDebugInfo("1: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + getRemainingStockOrSpaceFromShopCache(shopIterator, true) + " | Space: " + getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-//            LoggerUtils.logDebugInfo("2: ToBuy: " + toBuy + " Location: " + shopIterator.getLocation() + " | Stock: " + shopIterator.getRemainingStock() + " | Space: " + shopIterator.getRemainingSpace());
             // check for quickshop hikari internal per-shop based search permission
             if(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
                     // check for blacklisted worlds
@@ -100,7 +98,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
                 LoggerUtils.logDebugInfo("Shop match found: " + shopIterator.getLocation());
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
+                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
                 if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }
@@ -153,7 +152,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
+                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
                 if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }
@@ -186,7 +186,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true) : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
+                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
                 if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
                     continue;
                 }

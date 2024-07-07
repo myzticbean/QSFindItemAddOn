@@ -33,7 +33,7 @@ shop-search-gui-title: "&l» &rShops"
 nearest-warp-mode: 1
 shop-gui-item-lore:
   - ""
-  - "&fPrice: &a${ITEM_PRICE}"
+  - "&fPrice: &a${ITEM_PRICE} per {ITEM_STACK_SIZE} item(s)"
   - "&fStock/Space: &7{SHOP_STOCK}"
   - "&fOwner: &7{SHOP_OWNER}"
   - "&fLocation: &7{SHOP_LOC}"

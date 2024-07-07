@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.6.2-RELEASE</version>
+    <version>2.0.6.3-RELEASE</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -14,7 +14,7 @@
     <properties>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.version>1.20.5-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.20.6-R0.1-SNAPSHOT</spigot.version>
     </properties>
 
     <build>
@@ -162,7 +162,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-api</artifactId>
-            <version>6.1.0.1</version>
+            <version>6.2.0.5</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -198,7 +198,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-bukkit</artifactId>
-            <version>6.1.0.1</version>
+            <version>6.2.0.5</version>
             <scope>provided</scope>
             <classifier>shaded</classifier>
             <exclusions>
@@ -235,7 +235,7 @@
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.19.4</version>
+            <version>2.20.1</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -335,7 +335,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.32</version>
+            <version>1.18.34</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
