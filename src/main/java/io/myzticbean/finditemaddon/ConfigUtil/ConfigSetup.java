@@ -36,7 +36,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 15;
+    private static final int CURRENT_CONFIG_VERSION = 16;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -281,6 +281,10 @@ public class ConfigSetup {
                 configFileConfiguration.set(SHOP_GUI_OPTION + SHOP_GUI_CMD_OPTION + "goto-last-page-button-custom-model-data", shopGuiGotoLastPageButtonCMD);
 
                 configFileConfiguration.set(SHOP_GUI_OPTION + "use-shorter-currency-format", false);
+            }
+            // Config 16
+            if(configFileConfiguration.getInt("config-version") < 16) {
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.only-show-player-owned-warps", true);
             }
 
             // AT LAST

@@ -1,3 +1,12 @@
+## Release 2.0.6.3
+### Changes
+- Added stack size placeholder to shop lore ([#37](https://github.com/myzticbean/QSFindItemAddOn/issues/37))
+- Added a 500 block limit for searching nearby PlayerWarp (@TODO: to be made configurable in a future version)
+
+## Release 2.0.6.2
+### Changes
+- Added option to show only player owned warps in GUI ([#38](https://github.com/myzticbean/QSFindItemAddOn/issues/38))
+
 ## Release 2.0.6.1
 ### Bug fixes
 - Changed scheduled task loggers to debug-mode only ([#29](https://github.com/myzticbean/QSFindItemAddOn/issues/29))

@@ -19,13 +19,14 @@
 package io.myzticbean.finditemaddon.Utils.Defaults;
 
 /**
- * List of all the placeholds used in the Shop lore in GUI
+ * List of all the placeholders used in the Shop lore in GUI
  * @author myzticbean
  */
 public enum ShopLorePlaceholdersEnum {
     ITEM_PRICE("{ITEM_PRICE}"),
     SHOP_STOCK("{SHOP_STOCK}"),
     SHOP_OWNER("{SHOP_OWNER}"),
+    SHOP_PER_ITEM_QTY("{ITEM_STACK_SIZE}"),
     SHOP_LOCATION("{SHOP_LOC}"),
     SHOP_WORLD("{SHOP_WORLD}"),
     NEAREST_WARP("{NEAREST_WARP}"),
