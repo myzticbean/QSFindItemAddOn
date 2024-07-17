@@ -289,6 +289,9 @@ public class ConfigSetup {
             // Config 17
             if(configFileConfiguration.getInt("config-version") < 17) {
                 configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.use-residence-subzones", false);
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-warp-near-shop-error-message", "&cNo warp near this shop");
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-wg-region-near-shop-error-message", "&cNo WG Region near this shop");
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-residence-near-shop-error-message", "&cNo residence Region near this shop");
             }
 
             // AT LAST

@@ -141,6 +141,9 @@ player-shop-teleportation:
     # Below option is applicable to Residence only. If set to true and the shop is in a residence subzone
     # It will use the subzone instead of the parent residence
     use-residence-subzones: false
+    no-warp-near-shop-error-message: "&cNo warp near this shop"
+    no-wg-region-near-shop-error-message: "&cNo WG Region near this shop"
+    no-residence-near-shop-error-message: "&cNo residence Region near this shop"
 
 shop-gui:
   back-button-material: "RED_CONCRETE"

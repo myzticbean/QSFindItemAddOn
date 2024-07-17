@@ -67,9 +67,6 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
-    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No warp near this shop";
-    private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
-    private static final String NO_RESIDENCE_NEAR_SHOP_ERROR_MSG = "No residence near this shop";
     private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
     public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
@@ -334,7 +331,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestEWarp)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -346,7 +343,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestPlayerWarp.getWarpName())));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -358,7 +355,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestWGRegion)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -371,7 +368,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                         lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), ResidenceUtils.getResidenceName(nearestResidence))));
                                     }
                                     else {
-                                        lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_RESIDENCE_NEAR_SHOP_ERROR_MSG)));
+                                        lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_RESIDENCE_NEAR_SHOP_ERROR_MSG)));
                                     }
                                     break;
                                 default:
