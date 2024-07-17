@@ -73,6 +73,9 @@ public class ConfigProvider {
     public final boolean DO_NOT_TP_IF_PLAYER_WARP_LOCKED = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "do-not-tp-if-warp-locked");
     public final boolean ONLY_SHOW_PLAYER_OWNDED_WARPS = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "only-show-player-owned-warps");
     public final boolean USE_RESIDENCE_SUBZONES = ConfigSetup.get().getBoolean(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "use-residence-subzones");
+    public final String NO_WARP_NEAR_SHOP_ERROR_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "no-warp-near-shop-error-message");
+    public final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "no-wg-region-near-shop-error-message");
+    public final String NO_RESIDENCE_NEAR_SHOP_ERROR_MSG = ConfigSetup.get().getString(PLAYER_SHOP_TELEPORTATION + NEAREST_WARP_TP_MODE + "no-residence-near-shop-error-message");
     /*public final String SHOP_GUI_BACK_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-back-button-material");
     public final String SHOP_GUI_BACK_BUTTON_TEXT = ConfigSetup.get().getString("shop-gui-back-button-text");
     public final String SHOP_GUI_NEXT_BUTTON_MATERIAL = ConfigSetup.get().getString("shop-gui-next-button-material");
