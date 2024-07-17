@@ -49,6 +49,7 @@ command-alias: []
   - If you added a new warp and want it to get updated immediately, run **/finditemadmin reload**
   - Remember, this applies only to Essential Warps.
 - WorldGuard region support for fetching the WorldGuard region the shop is in (if overlapping regions, highest priority will be chosen)
+- Residence support for fetching the residence the shop is in (including subzones)
 
 >Check out the sample config.yml [here](https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml).
 
