@@ -9,6 +9,7 @@ softdepend:
   - PlayerWarps
   - WorldGuard
   - Essentials
+  - Residence
 
 permissions:
   finditem.use:

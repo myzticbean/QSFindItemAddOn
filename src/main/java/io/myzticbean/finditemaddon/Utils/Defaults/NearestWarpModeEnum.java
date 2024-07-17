@@ -25,7 +25,8 @@ public enum NearestWarpModeEnum {
 
     ESSENTIAL_WARPS(1),
     PLAYER_WARPS(2),
-    WORLDGUARD_REGION(3);
+    WORLDGUARD_REGION(3),
+    RESIDENCE(4);
 
     private final int mode;
 
