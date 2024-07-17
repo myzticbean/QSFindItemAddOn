@@ -71,13 +71,14 @@ search-loaded-shops-only: false
 
 shop-search-gui-title: "&l» &rShops"
 
-# -> Choose which plugin to use to fetch nearest warp/region
+# -> Choose which plugin to use to fetch nearest warp/region/residence
 # -> Based on your choice, '{NEAREST_WARP}' in the shop lore will be replaced accordingly
 # -> Ignore this setting if you don't use that placeholder in lore
 # Possible values:
 # 1 - Essential Warp (EssentialsX 2.18.0 and above: https://www.spigotmc.org/resources/9089/)
 # 2 - PlayerWarps (PlayerWarps v6.8.2 and above: https://www.spigotmc.org/resources/66692/)
 # 3 - WorldGuard Region (WorldGuard 7.0.5 and above: https://dev.bukkit.org/projects/worldguard/)
+# 4 - Residence (Residence 5.1.5.1 and above: https://www.spigotmc.org/resources/11480/)
 nearest-warp-mode: 1
 
 # Shop Search GUI Item Lore
@@ -88,7 +89,7 @@ nearest-warp-mode: 1
 # {SHOP_OWNER}          -> Owner of shop
 # {SHOP_LOC}            -> Shop coordinates
 # {SHOP_WORLD}          -> Name of the world the shop is in
-# {NEAREST_WARP}        -> Warp/Region nearest to shop
+# {NEAREST_WARP}        -> Warp/Region/Residence nearest to shop
 # {SHOP_VISITS}         -> Total Player visits to shop
 # -> To show nearest warp/region, configure 'nearest-warp-mode' first.
 #    If plugin selected is not installed/enabled, it ignores the line containing {NEAREST_WARP}
@@ -129,14 +130,17 @@ player-shop-teleportation:
     # If no permission, below message will be shown.
     tp-to-own-shop-no-permission-message: "&cYou cannot teleport to your own shop!"
   nearest-warp-tp-mode:
-    # The player will be teleported to the nearest warp as if they ran the warp command
-    # Only works with EssentialsX Warps or PlayerWarps (configurable using 'nearest-warp-mode' in this config)
+    # The player will be teleported to the nearest warp as if they ran the warp (or residence tp) command
+    # Only works with EssentialsX Warps, PlayerWarps or Residence (configurable using 'nearest-warp-mode' in this config)
     tp-player-to-nearest-warp: false
     # Below option is applicable to PlayerWarps only. If set to true, player will not be teleported if the warp is locked
     # So it will try to find a PlayerWarp that is not locked, if unable to find, an error will be shown
     do-not-tp-if-warp-locked: true
     # Below option is applicable to PlayerWarps only. If set to true, player will only be shown the warps in GUI which the player owns
     only-show-player-owned-warps: true
+    # Below option is applicable to Residence only. If set to true and the shop is in a residence subzone
+    # It will use the subzone instead of the parent residence
+    use-residence-subzones: false
 
 shop-gui:
   back-button-material: "RED_CONCRETE"
@@ -184,4 +188,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 16
+config-version: 17

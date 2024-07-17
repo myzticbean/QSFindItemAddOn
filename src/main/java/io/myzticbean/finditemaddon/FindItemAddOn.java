@@ -27,6 +27,7 @@ import io.myzticbean.finditemaddon.ConfigUtil.ConfigProvider;
 import io.myzticbean.finditemaddon.ConfigUtil.ConfigSetup;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
+import io.myzticbean.finditemaddon.Dependencies.ResidencePlugin;
 import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.Listeners.MenuListener;
@@ -190,6 +191,7 @@ public final class FindItemAddOn extends JavaPlugin {
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
+        ResidencePlugin.setup();
 
         initExternalPluginEventListeners();
 
