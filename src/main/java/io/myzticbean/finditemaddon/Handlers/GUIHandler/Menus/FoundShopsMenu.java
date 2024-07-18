@@ -18,8 +18,10 @@
  */
 package io.myzticbean.finditemaddon.Handlers.GUIHandler.Menus;
 
+import com.bekvon.bukkit.residence.protection.ClaimedResidence;
 import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
+import io.myzticbean.finditemaddon.Dependencies.ResidencePlugin;
 import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Handlers.GUIHandler.PaginatedMenu;
@@ -33,6 +35,7 @@ import io.myzticbean.finditemaddon.Utils.LocationUtils;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.EssentialWarpsUtil;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.PlayerWarpsUtil;
+import io.myzticbean.finditemaddon.Utils.WarpUtils.ResidenceUtils;
 import io.myzticbean.finditemaddon.Utils.WarpUtils.WGRegionUtils;
 import io.papermc.lib.PaperLib;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
@@ -64,8 +67,6 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     public static final String SHOP_STOCK_UNLIMITED = "Unlimited";
     public static final String SHOP_STOCK_UNKNOWN = "Unknown";
-    private static final String NO_WARP_NEAR_SHOP_ERROR_MSG = "No warp near this shop";
-    private static final String NO_WG_REGION_NEAR_SHOP_ERROR_MSG = "No WG Region near this shop";
     private static final String NAMEDSPACE_KEY_LOCATION_DATA = "locationData";
 
     public FoundShopsMenu(PlayerMenuUtility playerMenuUtility, List<FoundShopItemModel> searchResult) {
@@ -185,13 +186,16 @@ public class FoundShopsMenu extends PaginatedMenu {
                 }
                 else if(FindItemAddOn.getConfigProvider().TP_PLAYER_TO_NEAREST_WARP
                     // if list size = 1, it contains Warp name
-                    && locDataList.size() == 1) {
+                    && locDataList.size() == 1 && !locDataList.get(0).isEmpty()) {
                     String warpName = locDataList.get(0);
                     if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 1) {
                         Bukkit.dispatchCommand(player, "essentials:warp " + warpName);
                     }
                     else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 2) {
                         PlayerWarpsPlugin.executeWarpPlayer(player, warpName);
+                    }
+                    else if(FindItemAddOn.getConfigProvider().NEAREST_WARP_MODE == 4) {
+                        Bukkit.dispatchCommand(player, "residence tp " + warpName);
                     }
                 }
             }
@@ -302,6 +306,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                     List<String> lore = new ArrayList<>();
                     com.olziedev.playerwarps.api.warp.Warp nearestPlayerWarp = null;
                     String nearestEWarp = null;
+                    ClaimedResidence nearestResidence = null;
 
                     // set shop item's lore first
                     if(foundShopIter.getItem().hasItemMeta()) {
@@ -326,7 +331,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestEWarp)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -338,7 +343,7 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestPlayerWarp.getWarpName())));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WARP_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WARP_NEAR_SHOP_ERROR_MSG)));
                                         }
                                     }
                                     break;
@@ -350,8 +355,20 @@ public class FoundShopsMenu extends PaginatedMenu {
                                             lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), nearestWGRegion)));
                                         }
                                         else {
-                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
+                                            lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_WG_REGION_NEAR_SHOP_ERROR_MSG)));
                                         }
+                                    }
+                                    break;
+                                case 4:
+                                    // Residence: Check nearest residence
+                                    if(ResidencePlugin.isEnabled()){
+                                        nearestResidence = ResidenceUtils.findNearestResidence(foundShopIter.getShopLocation());
+                                    }
+                                    if(nearestResidence != null){
+                                        lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), ResidenceUtils.getResidenceName(nearestResidence))));
+                                    }
+                                    else {
+                                        lore.add(ColorTranslator.translateColorCodes(shopItemLoreIter.replace(ShopLorePlaceholdersEnum.NEAREST_WARP.value(), FindItemAddOn.getConfigProvider().NO_RESIDENCE_NEAR_SHOP_ERROR_MSG)));
                                     }
                                     break;
                                 default:
@@ -390,6 +407,10 @@ public class FoundShopsMenu extends PaginatedMenu {
                         // if Nearest Warp is set to PlayerWarps, store the warp name
                         else if(nearestWarpMode == NearestWarpModeEnum.PLAYER_WARPS.value() && nearestPlayerWarp != null) {
                             locData = nearestPlayerWarp.getWarpName();
+                        }
+                        // if Nearest Warp is set to Residence, store the residence or subzone name
+                        else if(nearestWarpMode == NearestWarpModeEnum.RESIDENCE.value() && nearestResidence != null) {
+                            locData = ResidenceUtils.getResidenceName(nearestResidence);
                         }
                     }
                     meta.getPersistentDataContainer().set(key, PersistentDataType.STRING, locData);
