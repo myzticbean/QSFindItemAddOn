@@ -54,6 +54,10 @@ player-shop-teleportation:
     tp-player-to-nearest-warp: false
     do-not-tp-if-warp-locked: true
     only-show-player-owned-warps: true
+    use-residence-subzones: false
+    no-warp-near-shop-error-message: "&cNo warp near this shop"
+    no-wg-region-near-shop-error-message: "&cNo WG Region near this shop"
+    no-residence-near-shop-error-message: "&cNo residence near this shop"
 shop-gui:
   back-button-material: "RED_CONCRETE"
   back-button-text: "&7&l« &cBack"
@@ -82,4 +86,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 16
+config-version: 17

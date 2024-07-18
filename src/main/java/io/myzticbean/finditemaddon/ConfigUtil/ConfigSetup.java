@@ -36,7 +36,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 16;
+    private static final int CURRENT_CONFIG_VERSION = 17;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -75,7 +75,7 @@ public class ConfigSetup {
         else {
             try {
                 int nearestWarpMode = configFileConfiguration.getInt("nearest-warp-mode");
-                if(nearestWarpMode != 1 && nearestWarpMode != 2 && nearestWarpMode != 3) {
+                if(nearestWarpMode != 1 && nearestWarpMode != 2 && nearestWarpMode != 3 && nearestWarpMode != 4) {
                     LoggerUtils.logError("Invalid value for 'nearest-warp-mode' in config.yml!");
                     LoggerUtils.logError("Resetting by default to &e1");
                     configFileConfiguration.set("nearest-warp-mode", 1);
@@ -285,6 +285,13 @@ public class ConfigSetup {
             // Config 16
             if(configFileConfiguration.getInt("config-version") < 16) {
                 configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.only-show-player-owned-warps", true);
+            }
+            // Config 17
+            if(configFileConfiguration.getInt("config-version") < 17) {
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.use-residence-subzones", false);
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-warp-near-shop-error-message", "&cNo warp near this shop");
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-wg-region-near-shop-error-message", "&cNo WG Region near this shop");
+                configFileConfiguration.set("player-shop-teleportation.nearest-warp-tp-mode.no-residence-near-shop-error-message", "&cNo residence Region near this shop");
             }
 
             // AT LAST
