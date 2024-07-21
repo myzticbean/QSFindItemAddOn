@@ -52,11 +52,13 @@ public abstract class Menu implements InventoryHolder {
         if(fillerMaterial == null) {
             fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
         }
-        GUI_FILLER_ITEM = new ItemStack(fillerMaterial);
-        ItemMeta FILLER_GLASS_meta = this.GUI_FILLER_ITEM.getItemMeta();
-        assert FILLER_GLASS_meta != null;
-        FILLER_GLASS_meta.setDisplayName(" ");
-        this.GUI_FILLER_ITEM.setItemMeta(FILLER_GLASS_meta);
+        if(!fillerMaterial.isAir()){
+            GUI_FILLER_ITEM = new ItemStack(fillerMaterial);
+            ItemMeta FILLER_GLASS_meta = this.GUI_FILLER_ITEM.getItemMeta();
+            assert FILLER_GLASS_meta != null;
+            FILLER_GLASS_meta.setDisplayName(" ");
+            this.GUI_FILLER_ITEM.setItemMeta(FILLER_GLASS_meta);
+        }
     }
 
     public abstract String getMenuName();
