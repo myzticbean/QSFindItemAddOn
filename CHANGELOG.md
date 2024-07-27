@@ -2,9 +2,11 @@
 ### Changes
 - Residence support for fetching the residence the shop is in (including subzones) ([#45](https://github.com/myzticbean/QSFindItemAddOn/pull/45)) [Contribution by SengyEU]
 - Configurable "No ... near shop" messages ([#45](https://github.com/myzticbean/QSFindItemAddOn/pull/45)) [Contribution by SengyEU]
+- Spigot API updated to 1.21.
 
 ### Bug fixes
 - Fixed NPE when putting AIR as a filler item ([#46](https://github.com/myzticbean/QSFindItemAddOn/pull/46)) [Contribution by SengyEU]
+- Fixed bug where exception was thrown when trying to render player heads in GUI buttons (Broke in 1.21 update)
 
 ## Release 2.0.6.3
 ### Changes

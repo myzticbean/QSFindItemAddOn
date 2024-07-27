@@ -18,6 +18,8 @@
  */
 package io.myzticbean.finditemaddon.Handlers.GUIHandler;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.Models.FoundShopItemModel;
 import io.myzticbean.finditemaddon.Utils.LoggerUtils;
@@ -27,7 +29,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.profile.PlayerProfile;
+import org.bukkit.profile.PlayerTextures;
 
+import java.net.URL;
+import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,8 +42,10 @@ import java.util.UUID;
  * @author myzticbean
  */
 public abstract class PaginatedMenu extends Menu {
+
+    private static final Gson gson = new Gson();
+
     protected int page = 0;
-    protected final int maxItemsPerPage = 45;
     protected int index = 0;
 
     protected ItemStack backButton;
@@ -45,6 +54,7 @@ public abstract class PaginatedMenu extends Menu {
     protected ItemStack lastPageButton;
     protected ItemStack closeInvButton;
 
+    protected static final int MAX_ITEMS_PER_PAGE = 45;
     private final String BACK_BUTTON_SKIN_ID = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvZjZkYWI3MjcxZjRmZjA0ZDU0NDAyMTkwNjdhMTA5YjVjMGMxZDFlMDFlYzYwMmMwMDIwNDc2ZjdlYjYxMjE4MCJ9fX0=";
     private final String FIRST_PAGE_BUTTON_SKIN_ID = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOTI5M2E2MDcwNTAzMTcyMDcxZjM1ZjU4YzgyMjA0ZTgxOGNkMDY1MTg2OTAxY2ExOWY3ZGFkYmRhYzE2NWU0NCJ9fX0=";
     private final String NEXT_BUTTON_SKIN_ID = "eyJ0ZXh0dXJlcyI6eyJTS0lOIjp7InVybCI6Imh0dHA6Ly90ZXh0dXJlcy5taW5lY3JhZnQubmV0L3RleHR1cmUvOGFhMTg3ZmVkZTg4ZGUwMDJjYmQ5MzA1NzVlYjdiYTQ4ZDNiMWEwNmQ5NjFiZGM1MzU4MDA3NTBhZjc2NDkyNiJ9fX0=";
@@ -202,11 +212,34 @@ public abstract class PaginatedMenu extends Menu {
         closeInvButton.setItemMeta(closeInvMeta);
     }
 
-    private ItemStack createPlayerHead(String value) {
-        ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-        UUID hashAsId = new UUID(value.hashCode(), value.hashCode());
-        return Bukkit.getUnsafe().modifyItemStack(skull,
-                "{SkullOwner:{Id:\"" + hashAsId + "\",Properties:{textures:[{Value:\"" + value + "\"}]}}}"
-        );
+    private ItemStack createPlayerHead(String textureValue) {
+        ItemStack head = new ItemStack(Material.PLAYER_HEAD, 1);
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
+        if (meta != null) {
+            PlayerProfile profile = Bukkit.createPlayerProfile(UUID.randomUUID(), null);
+            PlayerTextures textures = profile.getTextures();
+            try {
+                String decodedValue = new String(Base64.getDecoder().decode(textureValue));
+                LoggerUtils.logDebugInfo("Decoded Value: " + decodedValue);
+                String textureUrl = extractTextureUrl(decodedValue);
+                URL url = new URL(textureUrl);
+                textures.setSkin(url);
+            } catch (Exception e) {
+                LoggerUtils.logError(e);
+            }
+            profile.setTextures(textures);
+            meta.setOwnerProfile(profile);
+            head.setItemMeta(meta);
+        }
+        return head;
+    }
+
+    private String extractTextureUrl(String decodedValue) {
+        JsonObject jsonObject = gson.fromJson(decodedValue, JsonObject.class);
+        return jsonObject
+                .getAsJsonObject("textures")
+                .getAsJsonObject("SKIN")
+                .get("url")
+                .getAsString();
     }
 }
