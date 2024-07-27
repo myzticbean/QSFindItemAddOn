@@ -249,7 +249,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     private void handleLastPageClick(InventoryClickEvent event) {
         int listSize = super.playerMenuUtility.getPlayerShopSearchResult().size();
         if(!((index + 1) >= listSize)) {
-            double totalPages = listSize / maxItemsPerPage;
+            double totalPages = listSize / MAX_ITEMS_PER_PAGE;
             if(totalPages % 10 == 0) {
                 page = (int) Math.floor(totalPages);
                 LoggerUtils.logDebugInfo("Floor page value: " + page);
@@ -287,7 +287,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     public void setMenuItems(List<FoundShopItemModel> foundShops) {
         addMenuBottomBar();
         if(foundShops != null && !foundShops.isEmpty()) {
-            int maxItemsPerPage = super.maxItemsPerPage;
+            int maxItemsPerPage = super.MAX_ITEMS_PER_PAGE;
             for(int guiSlotCounter = 0; guiSlotCounter < maxItemsPerPage; guiSlotCounter++) {
                 index = maxItemsPerPage * page + guiSlotCounter;
                 if(index >= foundShops.size()) {
