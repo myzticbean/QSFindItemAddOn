@@ -18,33 +18,34 @@
  */
 package io.myzticbean.finditemaddon;
 
-import io.myzticbean.finditemaddon.Commands.SAPICommands.BuySubCmd;
-import io.myzticbean.finditemaddon.Commands.SAPICommands.HideShopSubCmd;
-import io.myzticbean.finditemaddon.Commands.SAPICommands.ReloadSubCmd;
-import io.myzticbean.finditemaddon.Commands.SAPICommands.RevealShopSubCmd;
-import io.myzticbean.finditemaddon.Commands.SAPICommands.SellSubCmd;
-import io.myzticbean.finditemaddon.ConfigUtil.ConfigProvider;
-import io.myzticbean.finditemaddon.ConfigUtil.ConfigSetup;
-import io.myzticbean.finditemaddon.Dependencies.EssentialsXPlugin;
-import io.myzticbean.finditemaddon.Dependencies.PlayerWarpsPlugin;
-import io.myzticbean.finditemaddon.Dependencies.ResidencePlugin;
-import io.myzticbean.finditemaddon.Dependencies.WGPlugin;
-import io.myzticbean.finditemaddon.Handlers.GUIHandler.PlayerMenuUtility;
-import io.myzticbean.finditemaddon.Listeners.MenuListener;
-import io.myzticbean.finditemaddon.Listeners.PWPlayerWarpCreateEventListener;
-import io.myzticbean.finditemaddon.Listeners.PWPlayerWarpRemoveEventListener;
-import io.myzticbean.finditemaddon.Listeners.PlayerCommandSendEventListener;
-import io.myzticbean.finditemaddon.Listeners.PlayerJoinEventListener;
-import io.myzticbean.finditemaddon.Listeners.PluginEnableEventListener;
-import io.myzticbean.finditemaddon.Metrics.Metrics;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSApi;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSHikariAPIHandler;
-import io.myzticbean.finditemaddon.QuickShopHandler.QSReremakeAPIHandler;
-import io.myzticbean.finditemaddon.ScheduledTasks.Task15MinInterval;
-import io.myzticbean.finditemaddon.Utils.Defaults.PlayerPermsEnum;
-import io.myzticbean.finditemaddon.Utils.JsonStorageUtils.ShopSearchActivityStorageUtil;
-import io.myzticbean.finditemaddon.Utils.LoggerUtils;
-import io.myzticbean.finditemaddon.Utils.UpdateChecker;
+import io.myzticbean.finditemaddon.commands.simpapi.BuySubCmd;
+import io.myzticbean.finditemaddon.commands.simpapi.HideShopSubCmd;
+import io.myzticbean.finditemaddon.commands.simpapi.ReloadSubCmd;
+import io.myzticbean.finditemaddon.commands.simpapi.RevealShopSubCmd;
+import io.myzticbean.finditemaddon.commands.simpapi.SellSubCmd;
+import io.myzticbean.finditemaddon.config.ConfigProvider;
+import io.myzticbean.finditemaddon.config.ConfigSetup;
+import io.myzticbean.finditemaddon.dependencies.EssentialsXPlugin;
+import io.myzticbean.finditemaddon.dependencies.PlayerWarpsPlugin;
+import io.myzticbean.finditemaddon.dependencies.ResidencePlugin;
+import io.myzticbean.finditemaddon.dependencies.WGPlugin;
+import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
+import io.myzticbean.finditemaddon.listeners.MenuListener;
+import io.myzticbean.finditemaddon.listeners.PWPlayerWarpCreateEventListener;
+import io.myzticbean.finditemaddon.listeners.PWPlayerWarpRemoveEventListener;
+import io.myzticbean.finditemaddon.listeners.PlayerCommandSendEventListener;
+import io.myzticbean.finditemaddon.listeners.PlayerJoinEventListener;
+import io.myzticbean.finditemaddon.listeners.PluginEnableEventListener;
+import io.myzticbean.finditemaddon.metrics.Metrics;
+import io.myzticbean.finditemaddon.quickshop.QSApi;
+import io.myzticbean.finditemaddon.quickshop.impl.QSHikariAPIHandler;
+import io.myzticbean.finditemaddon.quickshop.impl.QSReremakeAPIHandler;
+import io.myzticbean.finditemaddon.scheduledtasks.Task15MinInterval;
+import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
+import io.myzticbean.finditemaddon.utils.log.Logger;
+import io.myzticbean.finditemaddon.utils.UpdateChecker;
+import lombok.extern.slf4j.Slf4j;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.CommandManager;
 import me.kodysimpson.simpapi.command.SubCommand;
@@ -66,6 +67,7 @@ import java.util.List;
 /**
  * @author myzticbean
  */
+@Slf4j
 public final class FindItemAddOn extends JavaPlugin {
 
     // ONLY FOR SNAPSHOT BUILDS
@@ -90,35 +92,35 @@ public final class FindItemAddOn extends JavaPlugin {
 
     @Override
     public void onLoad() {
-        LoggerUtils.logInfo("A Shop Search AddOn for QuickShop developed by myzticbean");
+        Logger.logInfo("A Shop Search AddOn for QuickShop developed by myzticbean");
 
         // Show warning if it's a snapshot build
         if(this.getDescription().getVersion().toLowerCase().contains("snapshot")) {
-            LoggerUtils.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
-            LoggerUtils.logWarning("If you find any bugs, please report them here: https://github.com/myzticbean/QSFindItemAddOn/issues");
+            Logger.logWarning("This is a SNAPSHOT build! NOT recommended for production servers.");
+            Logger.logWarning("If you find any bugs, please report them here: https://github.com/myzticbean/QSFindItemAddOn/issues");
         }
     }
     @Override
     public void onEnable() {
 
         if(ENABLE_TRIAL_PERIOD) {
-            LoggerUtils.logWarning("THIS IS A TRIAL BUILD!");
+            Logger.logWarning("THIS IS A TRIAL BUILD!");
             LocalDateTime trialEndDate = LocalDate.of(TRIAL_END_YEAR, TRIAL_END_MONTH, TRIAL_END_DAY).atTime(LocalTime.MIDNIGHT);
             LocalDateTime today = LocalDateTime.now();
             Duration duration = Duration.between(trialEndDate, today);
             boolean hasPassed = Duration.ofDays(ChronoUnit.DAYS.between(today, trialEndDate)).isNegative();
             if(hasPassed) {
-                LoggerUtils.logError("Your trial has expired! Please contact the developer.");
+                Logger.logError("Your trial has expired! Please contact the developer.");
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             } else {
-                LoggerUtils.logWarning("You have " + Math.abs(duration.toDays()) + " days remaining in your trial.");
+                Logger.logWarning("You have " + Math.abs(duration.toDays()) + " days remaining in your trial.");
             }
         }
 
         if(!Bukkit.getPluginManager().isPluginEnabled("QuickShop")
                 && !Bukkit.getPluginManager().isPluginEnabled("QuickShop-Hikari")) {
-            LoggerUtils.logInfo("Delaying QuickShop hook as they are not enabled yet");
+            Logger.logInfo("Delaying QuickShop hook as they are not enabled yet");
         }
         else if(Bukkit.getPluginManager().isPluginEnabled("QuickShop")) {
             qSReremakeInstalled = true;
@@ -143,7 +145,7 @@ public final class FindItemAddOn extends JavaPlugin {
         initCommands();
 
         // Run plugin startup logic after server is done loading
-        Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), () -> runPluginStartupTasks());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(FindItemAddOn.getInstance(), this::runPluginStartupTasks);
     }
 
     @Override
@@ -153,31 +155,31 @@ public final class FindItemAddOn extends JavaPlugin {
             ShopSearchActivityStorageUtil.saveShopsToFile();
         }
         else if(!ENABLE_TRIAL_PERIOD) {
-            LoggerUtils.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
+            Logger.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
         }
-        LoggerUtils.logInfo("Bye!");
+        Logger.logInfo("Bye!");
     }
 
     private void runPluginStartupTasks() {
 
         serverVersion = Bukkit.getServer().getVersion();
-        LoggerUtils.logInfo("Server version found: " + serverVersion);
+        Logger.logInfo("Server version found: " + serverVersion);
 
         if(!isQSReremakeInstalled() && !isQSHikariInstalled()) {
-            LoggerUtils.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
-            LoggerUtils.logError("Both QuickShop-Hikari and QuickShop-Reremake are supported by this addon.");
-            LoggerUtils.logError("Download links:");
-            LoggerUtils.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
-            LoggerUtils.logError("» QuickShop-Reremake (Support ending soon): https://www.spigotmc.org/resources/62575");
+            Logger.logError("QuickShop is required to use this addon. Please install QuickShop and try again!");
+            Logger.logError("Both QuickShop-Hikari and QuickShop-Reremake are supported by this addon.");
+            Logger.logError("Download links:");
+            Logger.logError("» QuickShop-Hikari: https://www.spigotmc.org/resources/100125");
+            Logger.logError("» QuickShop-Reremake (Support ending soon): https://www.spigotmc.org/resources/62575");
             getServer().getPluginManager().disablePlugin(this);
             return;
         }
         else if(isQSReremakeInstalled()) {
-            LoggerUtils.logInfo("Found QuickShop-Reremake");
+            Logger.logInfo("Found QuickShop-Reremake");
             qsApi = new QSReremakeAPIHandler();
             qsApi.registerSubCommand();
         } else {
-            LoggerUtils.logInfo("Found QuickShop-Hikari");
+            Logger.logInfo("Found QuickShop-Hikari");
             qsApi = new QSHikariAPIHandler();
             qsApi.registerSubCommand();
         }
@@ -188,6 +190,7 @@ public final class FindItemAddOn extends JavaPlugin {
         // v2.0.0.0 - Migrating hiddenShops.json to shops.json
         ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();
 
+        // Setup optional dependencies
         PlayerWarpsPlugin.setup();
         EssentialsXPlugin.setup();
         WGPlugin.setup();
@@ -196,45 +199,45 @@ public final class FindItemAddOn extends JavaPlugin {
         initExternalPluginEventListeners();
 
         // Initiate batch tasks
-        LoggerUtils.logInfo("Registering tasks");
+        Logger.logInfo("Registering tasks");
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(this, new Task15MinInterval(), 0, REPEATING_TASK_SCHEDULE_MINS);
 
         // init metrics
-        LoggerUtils.logInfo("Registering anonymous bStats metrics");
+        Logger.logInfo("Registering anonymous bStats metrics");
         Metrics metrics = new Metrics(this, BS_PLUGIN_METRIC_ID);
 
         // Check for plugin updates
         new UpdateChecker(SPIGOT_PLUGIN_ID).getLatestVersion(version -> {
             if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                LoggerUtils.logInfo("Oh awesome! Plugin is up to date");
+                Logger.logInfo("Plugin is up to date!");
             } else {
                 isPluginOutdated = true;
                 if(version.toLowerCase().contains("snapshot")) {
-                    LoggerUtils.logWarning("Plugin has a new snapshot version available! (Version: " + version + ")");
+                    Logger.logWarning("Plugin has a new snapshot version available! (Version: " + version + ")");
                 }
                 else {
-                    LoggerUtils.logWarning("Plugin has a new update available! (Version: " + version + ")");
+                    Logger.logWarning("Plugin has a new update available! (Version: " + version + ")");
                 }
-                LoggerUtils.logWarning("Download here: https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
+                Logger.logWarning("Download here: https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
             }
         });
     }
 
     private void initCommands() {
-        LoggerUtils.logInfo("Registering commands");
+        Logger.logInfo("Registering commands");
         initFindItemCmd();
         initFindItemAdminCmd();
     }
 
     private void initBukkitEventListeners() {
-        LoggerUtils.logInfo("Registering Bukkit event listeners");
+        Logger.logInfo("Registering Bukkit event listeners");
         this.getServer().getPluginManager().registerEvents(new PluginEnableEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
     }
     private void initExternalPluginEventListeners() {
-        LoggerUtils.logInfo("Registering external plugin event listeners");
+        Logger.logInfo("Registering external plugin event listeners");
         if(PlayerWarpsPlugin.getIsEnabled()) {
             this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveEventListener(), this);
             this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateEventListener(), this);
@@ -311,9 +314,9 @@ public final class FindItemAddOn extends JavaPlugin {
                     },
                     alias,
                     subCommands);
-            LoggerUtils.logInfo("Registered /finditem command");
+            Logger.logInfo("Registered /finditem command");
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerUtils.logError(e);
+            Logger.logError(e);
         }
     }
 
@@ -347,9 +350,9 @@ public final class FindItemAddOn extends JavaPlugin {
                     },
                     alias,
                     ReloadSubCmd.class);
-            LoggerUtils.logInfo("Registered /finditemadmin command");
+            Logger.logInfo("Registered /finditemadmin command");
         } catch (NoSuchFieldException | IllegalAccessException e) {
-            LoggerUtils.logError(e);
+            Logger.logError(e);
         }
     }
 

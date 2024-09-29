@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.FindItemAddOn</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.6.4-RELEASE</version>
+    <version>2.0.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -52,7 +52,7 @@
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
                     <!--<outputDirectory>D:\${user.name}\MCServers\MCServer_1.20.1\plugins</outputDirectory>-->
                     <!-- Comment out if on a PC -->
-                    <!--<outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory>-->
+                    <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -257,6 +257,12 @@
             </exclusions>
         </dependency>
         <dependency>
+            <groupId>com.olziedev</groupId>
+            <artifactId>playerwarps-api</artifactId>
+            <version>7.6.1</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.sk89q.worldguard</groupId>
             <artifactId>worldguard-bukkit</artifactId>
             <version>7.0.7</version>
@@ -378,6 +384,19 @@
             <version>5.1.5.1</version>
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/Residence5.1.5.1.jar</systemPath>
+        </dependency>
+        <dependency>
+            <groupId>com.github.GriefPrevention</groupId>
+            <artifactId>GriefPrevention</artifactId>
+            <version>16.18.4</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.ryanhamshire</groupId>
+            <artifactId>GPFlags</artifactId>
+            <version>5.13.4</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/GPFlags-5.13.4.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
