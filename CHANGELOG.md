@@ -1,3 +1,8 @@
+## Release 2.0.7.0
+### Changes
+- Added runnable custom commands on GUI item click. New related config options added.
+- Added a new permission to bypass safety check for shop tp.
+
 ## Release 2.0.6.4
 ### Changes
 - Residence support for fetching the residence the shop is in (including subzones) ([#45](https://github.com/myzticbean/QSFindItemAddOn/pull/45)) [Contribution by SengyEU]
@@ -15,7 +20,7 @@
 
 ## Release 2.0.6.2
 ### Changes
-- Added option to show only player owned warps in GUI ([#38](https://github.com/myzticbean/QSFindItemAddOn/issues/38))
+- Added option to show only player owned warps in GUI ([#38](https://github.com/myzticbean/QSFindItemAddOn/issues/38)) [Contribution by lukemango]
 
 ## Release 2.0.6.1
 ### Bug fixes

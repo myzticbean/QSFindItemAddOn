@@ -1,7 +1,8 @@
 name: QSFindItemAddOn
 version: ${project.version}
 main: io.myzticbean.finditemaddon.FindItemAddOn
-api-version: 1.16
+website: https://modrinth.com/plugin/shop-search
+api-version: 1.20
 authors: [ myzticbean ]
 softdepend:
   - QuickShop
@@ -33,3 +34,6 @@ permissions:
   finditem.shoptp-delay.bypass:
     description: Bypass the TP delay for teleporting to shop
     default: op
+  finditem.shoptp.bypass-safetycheck:
+    description: Bypass safe location check when teleporting to the shop
+    default: false
