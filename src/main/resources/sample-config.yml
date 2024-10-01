@@ -144,6 +144,16 @@ player-shop-teleportation:
     no-warp-near-shop-error-message: "&cNo warp near this shop"
     no-wg-region-near-shop-error-message: "&cNo WG Region near this shop"
     no-residence-near-shop-error-message: "&cNo residence near this shop"
+  # This feature was added in v2.0.7.0
+  # You can run custom commands whenever a player clicks on a shop from the Search GUI
+  # Placeholders:
+  #     {PLAYER_NAME} -> Player name
+  #     {SHOP_LOC_X} {SHOP_LOC_Y} {SHOP_LOC_Z} -> Shop x,y,z coordinates
+  custom-commands:
+    run-custom-commands: false
+    commands-list:
+      - tp {PLAYER_NAME} {SHOP_LOC_X} {SHOP_LOC_Y} {SHOP_LOC_Z}
+      - eco give {PLAYER_NAME} 1000000
 
 shop-gui:
   back-button-material: "RED_CONCRETE"
@@ -191,4 +201,4 @@ blacklisted-worlds:
 debug-mode: false
 
 # Do not change the below value
-config-version: 17
+config-version: 18
