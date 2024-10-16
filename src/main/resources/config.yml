@@ -58,6 +58,11 @@ player-shop-teleportation:
     no-warp-near-shop-error-message: "&cNo warp near this shop"
     no-wg-region-near-shop-error-message: "&cNo WG Region near this shop"
     no-residence-near-shop-error-message: "&cNo residence near this shop"
+  custom-commands:
+    run-custom-commands: false
+    commands-list:
+      - tp {PLAYER} {SHOP_LOC_X} {SHOP_LOC_Y} {SHOP_LOC_Z}
+      - eco give {PLAYER_NAME} 1000000
 shop-gui:
   back-button-material: "RED_CONCRETE"
   back-button-text: "&7&l« &cBack"
@@ -86,4 +91,4 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 debug-mode: false
-config-version: 17
+config-version: 18
