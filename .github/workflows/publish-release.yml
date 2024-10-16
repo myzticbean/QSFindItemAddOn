@@ -37,12 +37,12 @@ jobs:
           path: target/QSFindItemAddOn-*.jar
       - name: Automatic Release
         uses: Fulminazzo/java-automatic-release@v2
+        id: create_release
         with:
           java-version: '17'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          # Message specified in the commit
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
       - name: Rename Release
         env:
@@ -63,12 +63,16 @@ jobs:
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases/$release_id" \
             -d "{\"name\":\"$full_version\"}"
+          
+          # Set output variables for use in later steps
+          echo "release_id=$release_id" >> $GITHUB_OUTPUT
+          echo "version=$full_version" >> $GITHUB_OUTPUT
       - name: Upload JAR to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/QSFindItemAddOn-${{ steps.create_release.outputs.version }}.jar
-          asset_name: QSFindItemAddOn-${{ steps.create_release.outputs.version }}.jar
+          asset_path: ./target/QSFindItemAddOn-${{ steps.rename_release.outputs.version }}.jar
+          asset_name: QSFindItemAddOn-${{ steps.rename_release.outputs.version }}.jar
           asset_content_type: application/java-archive
