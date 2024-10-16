@@ -58,6 +58,16 @@ jobs:
           # Extract full version from the release name (including RELEASE or SNAPSHOT)
           full_version=$(echo "$release_info" | jq -r .name | sed 's/.*[[:space:]]//')
           
+          # Determine if it's a RELEASE or SNAPSHOT
+          if [[ $full_version == *-SNAPSHOT ]]; then
+            jar_suffix="-SNAPSHOT"
+          else
+            jar_suffix="-RELEASE"
+          fi
+          
+          # Construct the full JAR name
+          jar_name="QSFindItemAddOn-${full_version}${jar_suffix}.jar"
+          
           # Update the release name to include RELEASE or SNAPSHOT
           curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
@@ -66,6 +76,7 @@ jobs:
           
           echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
           echo "version=$full_version" >> $GITHUB_OUTPUT
+          echo "jar_name=$jar_name" >> $GITHUB_OUTPUT
 
       - name: Upload JAR to Release
         uses: actions/upload-release-asset@v1
@@ -73,6 +84,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.get_release.outputs.upload_url }}
-          asset_path: ./target/QSFindItemAddOn-${{ steps.get_release.outputs.version }}.jar
-          asset_name: QSFindItemAddOn-${{ steps.get_release.outputs.version }}.jar
+          asset_path: ./target/${{ steps.get_release.outputs.jar_name }}
+          asset_name: ${{ steps.get_release.outputs.jar_name }}
           asset_content_type: application/java-archive
