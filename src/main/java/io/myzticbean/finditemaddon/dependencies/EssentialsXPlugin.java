@@ -31,6 +31,7 @@ import java.util.List;
 
 /**
  * Hook for EssentialsX Plugin
+ * 
  * @author myzticbean
  */
 @UtilityClass
@@ -40,9 +41,9 @@ public class EssentialsXPlugin {
     private static List<EssentialWarpModel> allWarpsList = null;
 
     public static void setup() {
-        if(Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
+        if (Bukkit.getPluginManager().isPluginEnabled("Essentials")) {
             essAPI = (Essentials) Bukkit.getServer().getPluginManager().getPlugin("Essentials");
-            if(essAPI != null) {
+            if (essAPI != null) {
                 Logger.logInfo("Found Essentials");
             }
         }
@@ -56,27 +57,45 @@ public class EssentialsXPlugin {
         return essAPI;
     }
 
-    public static List<EssentialWarpModel> getAllWarps() { return allWarpsList; }
+    public static List<EssentialWarpModel> getAllWarps() {
+        return allWarpsList;
+    }
 
     public static void updateAllWarps() {
-        long start = System.currentTimeMillis();
-        if(essAPI.isEnabled()) {
-            Collection<String> allWarps = EssentialsXPlugin.getAPI().getWarps().getList();
-            allWarpsList = new ArrayList<>();
-            allWarps.forEach(warp -> {
-                try {
-                    EssentialWarpModel essWarp = new EssentialWarpModel();
-                    essWarp.warpName = warp;
-                    essWarp.warpLoc = essAPI.getWarps().getWarp(warp);
-                    allWarpsList.add(essWarp);
-                } catch (Exception ignored) { }
-            });
+        if (!essAPI.isEnabled()) {
+            return;
         }
-        Logger.logDebugInfo("Update complete for Essentials warps list! Found " + getAllWarps().size() + " warps. Time took: " + (System.currentTimeMillis() - start) + "ms.");
+
+        long start = System.currentTimeMillis();
+        Collection<String> allWarps = EssentialsXPlugin.getAPI().getWarps().getList();
+        allWarpsList = new ArrayList<>();
+
+        for (String warp : allWarps) {
+            addWarpToList(warp);
+        }
+
+        logUpdateCompletion(start);
+    }
+
+    private static void addWarpToList(String warp) {
+        try {
+            EssentialWarpModel essWarp = new EssentialWarpModel();
+            essWarp.warpName = warp;
+            essWarp.warpLoc = essAPI.getWarps().getWarp(warp);
+            allWarpsList.add(essWarp);
+        } catch (Exception ignored) {
+            Logger.logError("Error adding warp to list: " + warp);
+        }
+    }
+
+    private static void logUpdateCompletion(long startTime) {
+        long duration = System.currentTimeMillis() - startTime;
+        Logger.logDebugInfo(String.format("Update complete for Essentials warps list! Found %d warps. Time took: %dms.",
+                getAllWarps().size(), duration));
     }
 
     public static void setLastLocation(Player player) {
-        if(essAPI.isEnabled()) {
+        if (essAPI.isEnabled()) {
             getAPI().getUser(player).setLastLocation();
         }
     }

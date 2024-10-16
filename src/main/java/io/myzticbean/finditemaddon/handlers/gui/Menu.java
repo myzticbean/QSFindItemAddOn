@@ -34,6 +34,7 @@ import java.util.List;
 /**
  * Based on an awesome tutorial from https://www.youtube.com/watch?v=xebH6M_7k18
  * Gui pagination: https://www.youtube.com/watch?v=e80NO9Pgz7s
+ * 
  * @author myzticbean
  */
 public abstract class Menu implements InventoryHolder {
@@ -49,10 +50,10 @@ public abstract class Menu implements InventoryHolder {
 
         assert FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM != null;
         Material fillerMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM);
-        if(fillerMaterial == null) {
+        if (fillerMaterial == null) {
             fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
         }
-        if(!fillerMaterial.isAir()){
+        if (!fillerMaterial.isAir()) {
             GUI_FILLER_ITEM = new ItemStack(fillerMaterial);
             ItemMeta FILLER_GLASS_meta = this.GUI_FILLER_ITEM.getItemMeta();
             assert FILLER_GLASS_meta != null;
@@ -67,15 +68,13 @@ public abstract class Menu implements InventoryHolder {
 
     public abstract void handleMenu(InventoryClickEvent e);
 
-    public abstract void setMenuItems();
-
     public abstract void setMenuItems(List<FoundShopItemModel> foundShops);
 
-    public void open() {
+    /*public void open() {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
         this.setMenuItems();
         playerMenuUtility.getOwner().openInventory(inventory);
-    }
+    }*/
 
     public void open(List<FoundShopItemModel> foundShops) {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());

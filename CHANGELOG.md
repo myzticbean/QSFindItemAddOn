@@ -1,7 +1,9 @@
-## Release 2.0.7.0
+## Snapshot 2.0.7.0
 ### Changes
 - Added runnable custom commands on GUI item click. New related config options added.
 - Added a new permission to bypass safety check for shop tp.
+- MAJOR code refactoring in FoundShopsMenu.java to make it human readable.. finally!
+- Added publish-release.yml github action
 
 ## Release 2.0.6.4
 ### Changes

@@ -45,6 +45,7 @@ import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import io.myzticbean.finditemaddon.utils.UpdateChecker;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import me.kodysimpson.simpapi.command.CommandManager;
@@ -74,14 +75,18 @@ public final class FindItemAddOn extends JavaPlugin {
     // Change it to whenever you want your snapshot trial build to expire
     private static final boolean ENABLE_TRIAL_PERIOD = false;
     private static final int TRIAL_END_YEAR = 2024, TRIAL_END_MONTH = 5, TRIAL_END_DAY = 5;
+    // ************************************************************************************
 
-    private static Plugin plugin;
-    public FindItemAddOn() { plugin = this; }
-    public static Plugin getInstance() { return plugin; }
+    private static Plugin pluginInstance;
+    public FindItemAddOn() { pluginInstance = this; }
+    public static Plugin getInstance() {
+        return pluginInstance;
+    }
     public static String serverVersion;
     private static final int BS_PLUGIN_METRIC_ID = 12382;
     private static final int SPIGOT_PLUGIN_ID = 95104;
     private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
+    @Getter
     private static ConfigProvider configProvider;
     private static boolean isPluginOutdated = false;
     private static boolean qSReremakeInstalled = false;
@@ -242,10 +247,6 @@ public final class FindItemAddOn extends JavaPlugin {
             this.getServer().getPluginManager().registerEvents(new PWPlayerWarpRemoveEventListener(), this);
             this.getServer().getPluginManager().registerEvents(new PWPlayerWarpCreateEventListener(), this);
         }
-    }
-    
-    public static ConfigProvider getConfigProvider() {
-        return configProvider;
     }
 
     public static void initConfigProvider() {
