@@ -44,43 +44,48 @@ public class FindItemCmdHikariImpl implements CommandHandler<Player> {
     private final List<String> buyOrSellList = new ArrayList<>();
 
     public FindItemCmdHikariImpl() {
-        if(FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
-
+        if (FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+            // I don't know what to do here ¯\_(ツ)_/¯
         }
-        if(StringUtils.isBlank(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE)) {
+        if (StringUtils.isBlank(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE)) {
             this.hideSubCommand = "hideshop";
-        }
-        else {
+        } else {
             this.hideSubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE;
         }
 
-        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE)
+        if (StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE)
                 || StringUtils.containsIgnoreCase(
-                FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE, " ")) {
+                        FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE, " ")) {
             this.revealShopSubCommand = "revealshop";
-        }
-        else {
+        } else {
             this.revealShopSubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE;
         }
         cmdExecutor = new CmdExecutorHandler();
     }
 
+    /**
+     * Handles player commands within a Bukkit plugin, including permission checks
+     * and subcommand execution.
+     */
     @Override
     public void onCommand(Player commandSender, @NotNull String label, @NotNull String[] args) {
-        if(args.length == 0) {
-            commandSender.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
-        }
-        else if(args.length == 1) {
-            if(commandSender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
-                if(args[0].equalsIgnoreCase(hideSubCommand)) {
+        if (args.length == 0) {
+            commandSender.sendMessage(ColorTranslator
+                    .translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
+        } else if (args.length == 1) {
+            if (commandSender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())
+                    && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+                if (args[0].equalsIgnoreCase(hideSubCommand)) {
                     cmdExecutor.handleHideShop(commandSender);
-                } else if(args[0].equalsIgnoreCase(revealShopSubCommand)) {
+                } else if (args[0].equalsIgnoreCase(revealShopSubCommand)) {
                     cmdExecutor.handleRevealShop(commandSender);
                 } else {
-                    commandSender.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
+                    commandSender.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cIncorrect usage!"));
                 }
             } else {
-                commandSender.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cYou don't have permission to use that!"));
+                commandSender.sendMessage(ColorTranslator.translateColorCodes(
+                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cYou don't have permission to use that!"));
             }
         } else {
             cmdExecutor.handleShopSearch(args[0], commandSender, args[1]);
@@ -88,53 +93,53 @@ public class FindItemCmdHikariImpl implements CommandHandler<Player> {
     }
 
     @Override
-    public @Nullable List<String> onTabComplete(@NotNull Player sender, @NotNull String commandLabel, @NotNull String[] args) {
-        if(itemsList.isEmpty()) {
-            for(Material mat : Material.values()) {
+    public @Nullable List<String> onTabComplete(@NotNull Player sender, @NotNull String commandLabel,
+            @NotNull String[] args) {
+        if (itemsList.isEmpty()) {
+            for (Material mat : Material.values()) {
                 itemsList.add(mat.name());
             }
         }
-        if(buyOrSellList.isEmpty()) {
+        if (buyOrSellList.isEmpty()) {
             // to-buy
-            if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
-                    || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE, " ")) {
+            if (StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE)
+                    || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE,
+                            " ")) {
                 buyOrSellList.add("TO_BUY");
-            }
-            else {
+            } else {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE);
             }
             // to-sell
-            if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
-                    || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
+            if (StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
+                    || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE,
+                            " ")) {
                 buyOrSellList.add("TO_SELL");
-            }
-            else {
+            } else {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE);
             }
             // hide
-            if(sender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
+            if (sender.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())
+                    && !FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_REMOVE_HIDE_REVEAL_SUBCMDS) {
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_HIDESHOP_AUTOCOMPLETE);
                 buyOrSellList.add(FindItemAddOn.getConfigProvider().FIND_ITEM_REVEALSHOP_AUTOCOMPLETE);
             }
         }
         List<String> result = new ArrayList<>();
-        if(args.length == 1) {
-            for(String a : buyOrSellList) {
-                if(a.toLowerCase().startsWith(args[0].toLowerCase())) {
+        if (args.length == 1) {
+            for (String a : buyOrSellList) {
+                if (a.toLowerCase().startsWith(args[0].toLowerCase())) {
                     result.add(a);
                 }
             }
             return result;
-        }
-        else if(args.length == 2) {
-            for(String a : itemsList) {
-                if(a.toLowerCase().startsWith(args[1].toLowerCase())) {
+        } else if (args.length == 2) {
+            for (String a : itemsList) {
+                if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
                     result.add(a);
                 }
             }
             return result;
-        }
-        else {
+        } else {
             return null;
         }
 
