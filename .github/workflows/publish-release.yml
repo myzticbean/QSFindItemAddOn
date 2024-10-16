@@ -37,26 +37,26 @@ jobs:
           path: target/QSFindItemAddOn-*.jar
       - name: Automatic Release
         uses: Fulminazzo/java-automatic-release@v2
-        id: create_release
         with:
           java-version: '17'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-      - name: Rename Release
+      - name: Get Release Info and Rename
+        id: get_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get the latest release
-          release_id=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
-            jq -r .id)
+          release_info=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+          
+          release_id=$(echo "$release_info" | jq -r .id)
+          upload_url=$(echo "$release_info" | jq -r .upload_url)
+          version=$(echo "$release_info" | jq -r .tag_name)
           
           # Extract full version from the release name (including RELEASE or SNAPSHOT)
-          full_version=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
-            jq -r .name | sed 's/.*[[:space:]]//')
+          full_version=$(echo "$release_info" | jq -r .name | sed 's/.*[[:space:]]//')
           
           # Update the release name to include RELEASE or SNAPSHOT
           curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
@@ -64,15 +64,15 @@ jobs:
             "https://api.github.com/repos/${{ github.repository }}/releases/$release_id" \
             -d "{\"name\":\"$full_version\"}"
           
-          # Set output variables for use in later steps
-          echo "release_id=$release_id" >> $GITHUB_OUTPUT
+          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
           echo "version=$full_version" >> $GITHUB_OUTPUT
+
       - name: Upload JAR to Release
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: ./target/QSFindItemAddOn-${{ steps.rename_release.outputs.version }}.jar
-          asset_name: QSFindItemAddOn-${{ steps.rename_release.outputs.version }}.jar
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./target/QSFindItemAddOn-${{ steps.get_release.outputs.version }}.jar
+          asset_name: QSFindItemAddOn-${{ steps.get_release.outputs.version }}.jar
           asset_content_type: application/java-archive
