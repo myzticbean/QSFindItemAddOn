@@ -21,6 +21,7 @@ package io.myzticbean.finditemaddon.config;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
 
 import java.util.ArrayList;
@@ -100,26 +101,27 @@ public class ConfigProvider {
     public final boolean SHOP_GUI_USE_SHORTER_CURRENCY_FORMAT = ConfigSetup.get().getBoolean(SHOP_GUI + "use-shorter-currency-format");
     public final int SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES = ConfigSetup.get().getInt("shop-player-visit-cooldown-in-minutes");
     public final boolean IGNORE_EMPTY_CHESTS = ConfigSetup.get().getBoolean("ignore-empty-chests");
-    public final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
+    private final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
+    private final List<String> BLACKLISTED_MATERIALS = (List<String>) ConfigSetup.get().getList("blacklisted-materials");
+    public final boolean SUPPRESS_UPDATE_NOTIFICATIONS = ConfigSetup.get().getBoolean("suppress-update-notifications");
     public final boolean DEBUG_MODE = ConfigSetup.get().getBoolean("debug-mode");
     public final int CONFIG_VERSION = ConfigSetup.get().getInt("config-version");
 
     private final List<World> blacklistedWorldsList = new ArrayList<>();
+    private final List<Material> blacklistedMaterialsList = new ArrayList<>();
 
     public ConfigProvider() {
-        if(BLACKLISTED_WORLDS != null) {
-            BLACKLISTED_WORLDS.forEach(world -> {
-                World worldObj = Bukkit.getWorld(world);
-                if(worldObj != null) {
-                    blacklistedWorldsList.add(worldObj);
-                }
-            });
-        }
+        loadBlacklistedWorlds();
+        loadBlacklistedMaterials();
         Logger.logInfo("Config loaded!");
     }
 
     public List<World> getBlacklistedWorlds() {
         return blacklistedWorldsList;
+    }
+
+    public List<Material> getBlacklistedMaterials() {
+        return blacklistedMaterialsList;
     }
 
     public boolean shopGUIItemLoreHasKey(String key) {
@@ -128,6 +130,28 @@ public class ConfigProvider {
         }
         else {
             return false;
+        }
+    }
+
+    private void loadBlacklistedWorlds() {
+        if(BLACKLISTED_WORLDS != null) {
+            BLACKLISTED_WORLDS.forEach(world -> {
+                World worldObj = Bukkit.getWorld(world);
+                if(worldObj != null) {
+                    blacklistedWorldsList.add(worldObj);
+                }
+            });
+        }
+    }
+
+    private void loadBlacklistedMaterials() {
+        if(BLACKLISTED_MATERIALS != null) {
+            BLACKLISTED_MATERIALS.forEach(material -> {
+                var materialObj = Material.getMaterial(material);
+                if(materialObj != null) {
+                    blacklistedMaterialsList.add(materialObj);
+                }
+            });
         }
     }
 }
