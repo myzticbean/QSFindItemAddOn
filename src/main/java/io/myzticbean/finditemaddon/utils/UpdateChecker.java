@@ -38,17 +38,19 @@ import java.util.function.Consumer;
 public class UpdateChecker {
 
     private final int resourceId;
+    private final boolean suppressUpdateNotifications;
 
     public UpdateChecker(int resourceId) {
         this.resourceId = resourceId;
+        this.suppressUpdateNotifications = FindItemAddOn.getConfigProvider().SUPPRESS_UPDATE_NOTIFICATIONS;
     }
 
     public void getLatestVersion(Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
             try (
-                InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream();
-                Scanner scanner = new Scanner(inputStream)
-            ) {
+                    InputStream inputStream = new URL(
+                            "https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream();
+                    Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
                     consumer.accept(scanner.next());
                 }
@@ -59,8 +61,11 @@ public class UpdateChecker {
     }
 
     public void notifyPlayerAboutUpdateOnJoin(PlayerJoinEvent event) {
+        if(suppressUpdateNotifications) {
+            return;
+        }
         Player player = event.getPlayer();
-        if((player.isOp() || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value()))
+        if ((player.isOp() || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value()))
                 && FindItemAddOn.getPluginOutdated()) {
             String prefix = "&8["
                     + "&#55a800Q"
@@ -81,7 +86,8 @@ public class UpdateChecker {
                     + "&8] ";
             player.sendMessage(ColorTranslator.translateColorCodes(
                     prefix
-                            + "&#59b300Hey &#73e600" + player.getName() + "&#59b300! Plugin has an update... You are still on v"
+                            + "&#59b300Hey &#73e600" + player.getName()
+                            + "&#59b300! Plugin has an update... You are still on v"
                             + FindItemAddOn.getInstance().getDescription().getVersion()));
             player.sendMessage(ColorTranslator.translateColorCodes(
                     prefix
