@@ -6,7 +6,7 @@
 # separate terms of service, privacy policy, and support
 # documentation.
 
-name: Validate PR with Maven Build
+name: Maven Build
 
 on:
   pull_request:
