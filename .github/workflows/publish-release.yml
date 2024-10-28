@@ -11,12 +11,14 @@ name: Publish Release
 on:
   push:
     branches: [ "master" ]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build:
+  release:
+    name: Setup Environment, Build JAR and Release Project
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,11 +30,11 @@ jobs:
           cache: maven
       - name: Build with Maven
         run: mvn -B package --file pom.xml
-  release:
-    name: Setup Environment, Build JAR and Release Project
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
+      - name: Upload JAR as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: QSFindItemAddOn
+          path: target/QSFindItemAddOn-*.jar
       - name: Automatic Release
         uses: Fulminazzo/java-automatic-release@v2
         with:
@@ -40,24 +42,48 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          # Message specified in the commit
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
-      - name: Rename Release
+      - name: Get Release Info and Rename
+        id: get_release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Get the latest release
-          release_id=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
-            jq -r .id)
+          release_info=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+            "https://api.github.com/repos/${{ github.repository }}/releases/latest")
           
-          # Extract version from the release name
-          version=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
-            "https://api.github.com/repos/${{ github.repository }}/releases/latest" | \
-            jq -r .name | sed 's/.*[[:space:]]//')
+          release_id=$(echo "$release_info" | jq -r .id)
+          upload_url=$(echo "$release_info" | jq -r .upload_url)
+          version=$(echo "$release_info" | jq -r .tag_name)
           
-          # Update the release name to just the version
+          # Extract full version from the release name (including RELEASE or SNAPSHOT)
+          full_version=$(echo "$release_info" | jq -r .name | sed 's/.*[[:space:]]//')
+          
+          # Determine if it's a RELEASE or SNAPSHOT
+          if [[ $full_version == *-SNAPSHOT ]]; then
+            jar_suffix="-SNAPSHOT"
+          else
+            jar_suffix="-RELEASE"
+          fi
+          
+          # Construct the full JAR name
+          jar_name="QSFindItemAddOn-${full_version}${jar_suffix}.jar"
+          
+          # Update the release name to include RELEASE or SNAPSHOT
           curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases/$release_id" \
-            -d "{\"name\":\"$version\"}"
+            -d "{\"name\":\"$full_version\"}"
+          
+          echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
+          echo "version=$full_version" >> $GITHUB_OUTPUT
+          echo "jar_name=$jar_name" >> $GITHUB_OUTPUT
+
+      - name: Upload JAR to Release
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.get_release.outputs.upload_url }}
+          asset_path: ./target/${{ steps.get_release.outputs.jar_name }}
+          asset_name: ${{ steps.get_release.outputs.jar_name }}
+          asset_content_type: application/java-archive
