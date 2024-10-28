@@ -28,7 +28,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Sub Command Handler for /finditem TO_BUY
@@ -50,9 +52,10 @@ public class BuySubCmd extends SubCommand {
             buySubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE;
         }
         if(itemsList.isEmpty()) {
-            for(Material mat : Material.values()) {
-                itemsList.add(mat.name());
-            }
+            itemsList.addAll(Arrays.stream(Material.values())
+                    .filter(mat -> !FindItemAddOn.getConfigProvider().getBlacklistedMaterials().contains(mat))
+                    .map(Material::name)
+                    .toList());
         }
         cmdExecutor = new CmdExecutorHandler();
     }

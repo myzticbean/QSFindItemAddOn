@@ -22,6 +22,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 18;
+    private static final int CURRENT_CONFIG_VERSION = 19;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -301,6 +302,12 @@ public class ConfigSetup {
                 configFileConfiguration.set("player-shop-teleportation.custom-commands.commands-list", commands);
             }
 
+            // Config 19
+            if(configFileConfiguration.getInt("config-version") < 19) {
+                configFileConfiguration.set("blacklisted-materials", populateSampleBlacklistedMaterials());
+                configFileConfiguration.set("suppress-update-notifications", false);
+            }
+
             // AT LAST
             // Moving debug-mode and config-version to the last
             final String DEBUG_MODE_OPTION = "debug-mode";
@@ -311,6 +318,21 @@ public class ConfigSetup {
             configFileConfiguration.set(CONFIG_VERSION_OPTION, null);
             configFileConfiguration.set(CONFIG_VERSION_OPTION, CURRENT_CONFIG_VERSION);
         }
+    }
+
+    private static @NotNull List<String> populateSampleBlacklistedMaterials() {
+        List<String> blacklistedMaterials = new ArrayList<>();
+        blacklistedMaterials.add("BARRIER");
+        blacklistedMaterials.add("STRUCTURE_BLOCK");
+        blacklistedMaterials.add("COMMAND_BLOCK");
+        blacklistedMaterials.add("CHAIN_COMMAND_BLOCK");
+        blacklistedMaterials.add("REPEATING_COMMAND_BLOCK");
+        blacklistedMaterials.add("COMMAND_BLOCK_MINECART");
+        blacklistedMaterials.add("JIGSAW");
+        blacklistedMaterials.add("DEBUG_STICK");
+        blacklistedMaterials.add("LIGHT");
+        blacklistedMaterials.add("STRUCTURE_VOID");
+        return blacklistedMaterials;
     }
 
     public static FileConfiguration get() {
