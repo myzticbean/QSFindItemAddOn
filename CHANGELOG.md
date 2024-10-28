@@ -1,4 +1,18 @@
-## Snapshot 2.0.7.0
+## Release 2.0.7.1
+### Changes
+- Added config option to suppress update notifications in chat
+  ```yaml
+  suppress-update-notifications: false
+  ```
+- Added config option to configure blacklisted materials
+  ```yaml
+  blacklisted-materials:
+  - "BARRIER"
+  - "STRUCTURE_BLOCK"
+  - "COMMAND_BLOCK"
+  ```
+
+## Release 2.0.7.0
 ### Changes
 - Added runnable custom commands on GUI item click. New related config options added.
 - Added a new permission to bypass safety check for shop tp.

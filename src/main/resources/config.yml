@@ -90,5 +90,17 @@ ignore-empty-chests: true
 blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
+blacklisted-materials:
+  - "BARRIER"
+  - "STRUCTURE_BLOCK"
+  - "COMMAND_BLOCK"
+  - "CHAIN_COMMAND_BLOCK"
+  - "REPEATING_COMMAND_BLOCK"
+  - "COMMAND_BLOCK_MINECART"
+  - "JIGSAW"
+  - "DEBUG_STICK"
+  - "LIGHT"
+  - "STRUCTURE_VOID"
+suppress-update-notifications: false
 debug-mode: false
-config-version: 18
+config-version: 19

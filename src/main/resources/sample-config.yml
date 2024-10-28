@@ -195,10 +195,29 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 
+# Below materials will not show up in auto-complete, nor will be allowed during shop search
+# Full materials list can be found here: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+blacklisted-materials:
+  - "BARRIER"
+  - "STRUCTURE_BLOCK"
+  - "COMMAND_BLOCK"
+  - "CHAIN_COMMAND_BLOCK"
+  - "REPEATING_COMMAND_BLOCK"
+  - "COMMAND_BLOCK_MINECART"
+  - "JIGSAW"
+  - "DEBUG_STICK"
+  - "LIGHT"
+  - "STRUCTURE_VOID"
+
+# Suppress update notification messages in chat
+# Set this to true if you don't want to see update notifications in chat
+# Console messages are always shown and cannot be suppressed
+suppress-update-notifications: false
+
 # Enabling this will spam your console with logs from the plugin
 # Set this to true only for debugging purposes
 # If set to false, some error messages can still get through if they require immediate attention
 debug-mode: false
 
 # Do not change the below value
-config-version: 18
+config-version: 19
