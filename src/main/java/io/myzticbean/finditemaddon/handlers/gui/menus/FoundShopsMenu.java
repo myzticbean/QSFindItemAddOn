@@ -467,7 +467,7 @@ public class FoundShopsMenu extends PaginatedMenu {
     private @NotNull ItemStack createShopItem(@NotNull FoundShopItemModel foundShop) {
         // Create a new ItemStack based on the shop's item
         ItemStack item = new ItemStack(foundShop.getItem().getType(), foundShop.getItem().getAmount());
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = foundShop.getItem().getItemMeta();
         if (meta == null) {
             meta = Bukkit.getItemFactory().getItemMeta(item.getType());
         }
