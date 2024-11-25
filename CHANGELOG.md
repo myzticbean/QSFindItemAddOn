@@ -1,3 +1,7 @@
+## Release 2.0.7.2
+### Bug fixes
+- Fixed item meta not showing correctly in Search GUI
+
 ## Release 2.0.7.1
 ### Changes
 - Added config option to suppress update notifications in chat
