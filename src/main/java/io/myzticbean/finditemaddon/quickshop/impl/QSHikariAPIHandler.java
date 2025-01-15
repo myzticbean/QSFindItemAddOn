@@ -20,6 +20,7 @@ package io.myzticbean.finditemaddon.quickshop.impl;
 
 import cc.carm.lib.easysql.api.SQLQuery;
 import com.ghostchu.quickshop.QuickShop;
+import com.ghostchu.quickshop.QuickShopBukkit;
 import com.ghostchu.quickshop.api.QuickShopAPI;
 import com.ghostchu.quickshop.api.command.CommandContainer;
 import com.ghostchu.quickshop.api.obj.QUser;
@@ -65,14 +66,11 @@ import java.util.concurrent.ConcurrentMap;
 public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
 
     public static final String IS_MAIN_THREAD = "Is MAIN Thread? ";
+
     private final QuickShopAPI api;
-
     private final String pluginVersion;
-
     private final ConcurrentMap<Long, CachedShop> shopCache;
-
     private final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
-
     private final boolean isQSHikariShopCacheImplemented;
 
     public QSHikariAPIHandler() {
@@ -98,20 +96,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                Logger.logDebugInfo("Shop match found: " + shopIterator.getLocation());
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
-                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
-                    continue;
-                }
-                shopsFoundList.add(new FoundShopItemModel(
-                        shopIterator.getPrice(),
-                        QSApi.processStockOrSpace(stockOrSpace),
-                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                        shopIterator.getLocation(),
-                        shopIterator.getItem(),
-                        toBuy
-                ));
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -119,8 +104,46 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return sortedShops;
     }
 
+    /**
+     * Checks if the shop owner has enough balance to buy at least one item
+     * @param shop The shop to check
+     * @return true if owner has enough balance, false otherwise
+     */
+    private static boolean isOwnerHavingEnoughBalance(@NotNull Shop shop) {
+        // Skip check for admin shops
+        if (shop.getOwner().getUniqueIdOptional().isEmpty()) {
+            return true;
+        }
+
+        double price = shop.getPrice();
+        double itemAmount = shop.getItem().getAmount();
+        double pricePerTransaction = price * itemAmount;
+
+        var economy = getQuickShop().getEconomy();
+        var qUser = shop.getOwner();
+        var uuid = qUser.getUniqueIdIfRealPlayer().orElse(null);
+        // return true if not a real player
+        if(Objects.isNull(uuid)) {
+            return true;
+        }
+        var bukkitPlayer = Bukkit.getOfflinePlayer(uuid);
+        var world = bukkitPlayer.getLocation().getWorld();
+        if(Objects.isNull(world)) {
+            Logger.logError("Shop owner hasn't played before ever in the server (?) - ShopInfo: " + shop.getOwner().getUsername());
+            return true;
+        }
+        var currency = shop.getCurrency();
+
+        // Get owner's balance through QuickShop API
+        return economy.getBalance(qUser, world, currency) >= pricePerTransaction;
+    }
+
+    private static QuickShop getQuickShop() {
+        return ((QuickShopBukkit) QuickShopAPI.getPluginInstance()).getQuickShop();
+    }
+
     @NotNull
-    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, List<FoundShopItemModel> shopsFoundList) {
+    static List<FoundShopItemModel> handleShopSorting(boolean toBuy, @NotNull List<FoundShopItemModel> shopsFoundList) {
         if(!shopsFoundList.isEmpty()) {
             int sortingMethod = 2;
             try {
@@ -153,19 +176,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
-                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
-                    continue;
-                }
-                shopsFoundList.add(new FoundShopItemModel(
-                        shopIterator.getPrice(),
-                        QSApi.processStockOrSpace(stockOrSpace),
-                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                        shopIterator.getLocation(),
-                        shopIterator.getItem(),
-                        toBuy
-                ));
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -187,19 +198,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
-                        : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-                if(checkIfShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
-                    continue;
-                }
-                shopsFoundList.add(new FoundShopItemModel(
-                        shopIterator.getPrice(),
-                        QSApi.processStockOrSpace(stockOrSpace),
-                        shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                        shopIterator.getLocation(),
-                        shopIterator.getItem(),
-                        toBuy
-                ));
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
             }
         }
         List<FoundShopItemModel> sortedShops = new ArrayList<>(shopsFoundList);
@@ -225,9 +224,26 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return com.ghostchu.quickshop.util.Util.getSignMaterial();
     }
 
+//    public Shop findShopAtLocation(Block block) {
+//        Location loc = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
+//        return api.getShopManager().getShop(loc);
+//    }
+
     public Shop findShopAtLocation(Block block) {
-        Location loc = new Location(block.getWorld(), block.getX(), block.getY(), block.getZ());
-        return api.getShopManager().getShop(loc);
+        Location loc = block.getLocation(); // Simpler way to get location
+
+        // Try getting shop directly first
+        Shop shop = api.getShopManager().getShopIncludeAttached(loc);
+
+        // If no shop found and block is a chest, check if it's a double chest
+        if (shop == null && block.getType() == Material.CHEST) {
+            Block secondHalf = Util.getSecondHalf(block);
+            if (secondHalf != null) {
+                shop = api.getShopManager().getShopIncludeAttached(secondHalf.getLocation());
+            }
+        }
+
+        return shop;
     }
 
     public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
@@ -307,6 +323,24 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                         .build());
     }
 
+    @Override
+    public boolean isQSShopCacheImplemented() {
+        return isQSHikariShopCacheImplemented;
+    }
+
+    @Override
+    public int processUnknownStockSpace(Location shopLoc, boolean toBuy) {
+        // This process needs to run in MAIN thread
+        Util.ensureThread(false);
+        Logger.logDebugInfo("Fetching stock/space from MAIN thread...");
+        Shop qsShop = api.getShopManager().getShop(shopLoc);
+        if(qsShop != null) {
+            return (toBuy ? qsShop.getRemainingStock() : qsShop.getRemainingSpace());
+        } else {
+            return -2;
+        }
+    }
+
     private UUID convertQUserToUUID(QUser qUser) {
         Optional<UUID> uuid = qUser.getUniqueIdOptional();
         if (uuid.isPresent()) {
@@ -327,7 +361,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
      * @param stockOrSpace
      * @return If shop needs to be ignored from list
      */
-    private boolean checkIfShopToBeIgnoredForFullOrEmpty(int stockOrSpace) {
+    private boolean isShopToBeIgnoredForFullOrEmpty(int stockOrSpace) {
         boolean ignoreEmptyChests = FindItemAddOn.getConfigProvider().IGNORE_EMPTY_CHESTS;
         if(ignoreEmptyChests) {
             return stockOrSpace == 0;
@@ -421,21 +455,32 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return mainVersion >= 6;
     }
 
-    @Override
-    public boolean isQSShopCacheImplemented() {
-        return isQSHikariShopCacheImplemented;
-    }
-
-    @Override
-    public int processUnknownStockSpace(Location shopLoc, boolean toBuy) {
-        // This process needs to run in MAIN thread
-        Util.ensureThread(false);
-        Logger.logDebugInfo("Fetching stock/space from MAIN thread...");
-        Shop qsShop = api.getShopManager().getShop(shopLoc);
-        if(qsShop != null) {
-            return (toBuy ? qsShop.getRemainingStock() : qsShop.getRemainingSpace());
-        } else {
-            return -2;
+    private void processPotentialShopMatchAndAddToFoundList(boolean toBuy, Shop shopIterator, List<FoundShopItemModel> shopsFoundList) {
+        Logger.logDebugInfo("Shop match found: " + shopIterator.getLocation());
+        // Check if shop is in a locked BentoBox island
+        if (FindItemAddOn.getConfigProvider().BENTOBOX_IGNORE_LOCKED_ISLAND_SHOPS && 
+            FindItemAddOn.getBentoboxPlugin().isIslandLocked(shopIterator.getLocation())) {
+            Logger.logDebugInfo("Shop is in locked BentoBox island - ignoring");
+            return;
         }
+        // check for stock / space
+        int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
+                : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+        if(isShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
+            return;
+        }
+        // check if owner has enough balance for buying shops
+        if(!toBuy && !isOwnerHavingEnoughBalance(shopIterator)) {
+            Logger.logDebugInfo("Shop Owner is poor");
+            return;
+        }
+        shopsFoundList.add(new FoundShopItemModel(
+                shopIterator.getPrice(),
+                QSApi.processStockOrSpace(stockOrSpace),
+                shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
+                shopIterator.getLocation(),
+                shopIterator.getItem(),
+                toBuy
+        ));
     }
 }

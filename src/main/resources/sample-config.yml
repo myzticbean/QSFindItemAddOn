@@ -195,6 +195,12 @@ blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
 
+# BentoBox plugin integration settings
+# These settings only take effect if BentoBox plugin is installed and enabled
+bentobox:
+  # When enabled, shops in locked islands will be ignored from search results
+  ignore-locked-island-shops: true
+
 # Below materials will not show up in auto-complete, nor will be allowed during shop search
 # Full materials list can be found here: https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
 blacklisted-materials:
@@ -220,4 +226,4 @@ suppress-update-notifications: false
 debug-mode: false
 
 # Do not change the below value
-config-version: 19
+config-version: 20

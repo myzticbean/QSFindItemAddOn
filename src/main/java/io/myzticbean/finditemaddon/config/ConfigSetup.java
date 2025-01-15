@@ -38,7 +38,7 @@ public class ConfigSetup {
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 19;
+    private static final int CURRENT_CONFIG_VERSION = 20;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -306,6 +306,11 @@ public class ConfigSetup {
             if(configFileConfiguration.getInt("config-version") < 19) {
                 configFileConfiguration.set("blacklisted-materials", populateSampleBlacklistedMaterials());
                 configFileConfiguration.set("suppress-update-notifications", false);
+            }
+
+            // Config 20
+            if(configFileConfiguration.getInt("config-version") < 20) {
+                configFileConfiguration.set("bentobox.ignore-locked-island-shops", true);
             }
 
             // AT LAST
