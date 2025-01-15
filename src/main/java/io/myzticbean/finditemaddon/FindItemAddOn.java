@@ -29,7 +29,7 @@ import io.myzticbean.finditemaddon.dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.dependencies.ResidencePlugin;
 import io.myzticbean.finditemaddon.dependencies.WGPlugin;
-import io.myzticbean.finditemaddon.dependencies.BentoboxPlugin;
+import io.myzticbean.finditemaddon.dependencies.BentoBoxPlugin;
 import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.listeners.MenuListener;
 import io.myzticbean.finditemaddon.listeners.PWPlayerWarpCreateEventListener;
@@ -101,7 +101,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Getter
-    private static BentoboxPlugin bentoboxPlugin;
+    private static BentoBoxPlugin bentoboxPlugin;
 
     @Override
     public void onLoad() {
@@ -208,7 +208,7 @@ public final class FindItemAddOn extends JavaPlugin {
         EssentialsXPlugin.setup();
         WGPlugin.setup();
         ResidencePlugin.setup();
-        bentoboxPlugin = new BentoboxPlugin();
+        bentoboxPlugin = new BentoBoxPlugin();
 
         initExternalPluginEventListeners();
 

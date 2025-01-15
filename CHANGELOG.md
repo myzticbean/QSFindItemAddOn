@@ -1,8 +1,11 @@
 ## Release 2.0.7.3
 ### Changes
+- JDK version upgraded from 17 to 21
 - Added check to exclude shops of `buying` shops for owners who don't have enough money.
-- Hideshop/revealshop should work with double chests also
 - Bentobox integration to ignore shops in locked islands
+
+### Bug fixes
+- Hideshop/revealshop should work with double chests also
 
 ## Release 2.0.7.2
 ### Bug fixes
