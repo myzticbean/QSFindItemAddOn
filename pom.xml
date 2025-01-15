@@ -54,7 +54,7 @@
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
                     <!--<outputDirectory>D:\${user.name}\MCServers\MCServer_1.20.1\plugins</outputDirectory>-->
                     <!-- Comment out if on a PC -->
-                    <!-- <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory> -->
+                     <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory>
                 </configuration>
             </plugin>
             <plugin>
@@ -134,17 +134,32 @@
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2/</url>
         </repository>
+<!--        <repository>-->
+<!--            <id>bentoboxworld</id>-->
+<!--            <url>https://repo.codemc.io/repository/bentoboxworld/</url>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>codemc-snapshots</id>-->
+<!--            <url>https://ci.codemc.io/repository/maven-snapshots/</url>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>codemc-repo</id>-->
+<!--            <url>https://repo.codemc.io/repository/maven-public/</url>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>codemc-repo</id>-->
+<!--            <url>https://repo.codemc.io/repository/maven-public/</url>-->
+<!--        </repository>-->
         <repository>
-            <id>bentoboxworld</id>
-            <url>https://repo.codemc.org/repository/bentoboxworld/</url>
-        </repository>
-        <repository>
-            <id>codemc-snapshots</id>
-            <url>https://repo.codemc.org/repository/maven-snapshots/</url>
-        </repository>
-        <repository>
-            <id>codemc-repo</id>
-            <url>https://repo.codemc.org/repository/maven-public/</url>
+            <id>repo</id>
+            <releases>
+                <enabled>true</enabled>
+                <checksumPolicy>ignore</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <url>${project.basedir}/lib</url>
         </repository>
     </repositories>
 
@@ -412,11 +427,18 @@
             <scope>system</scope>
             <systemPath>${project.basedir}/lib/GPFlags-5.13.4.jar</systemPath>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>world.bentobox</groupId>-->
+<!--            <artifactId>bentobox</artifactId>-->
+<!--            <version>3.2.3</version>-->
+<!--            <scope>provided</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>world.bentobox</groupId>
             <artifactId>bentobox</artifactId>
-            <version>3.2.3</version>
-            <scope>provided</scope>
+            <version>3.2.4-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/BentoBox-3.2.4-SNAPSHOT-b2813.jar</systemPath>
         </dependency>
     </dependencies>
 </project>
