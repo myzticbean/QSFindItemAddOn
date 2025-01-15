@@ -87,6 +87,8 @@ shop-gui:
   use-shorter-currency-format: true
 shop-player-visit-cooldown-in-minutes: 5
 ignore-empty-chests: true
+bentobox:
+  ignore-locked-island-shops: true
 blacklisted-worlds:
   - "world_number_1"
   - "world_number_2"
@@ -103,4 +105,4 @@ blacklisted-materials:
   - "STRUCTURE_VOID"
 suppress-update-notifications: false
 debug-mode: false
-config-version: 19
+config-version: 20

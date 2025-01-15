@@ -1,3 +1,9 @@
+## Release 2.0.7.3
+### Changes
+- Added check to exclude shops of `buying` shops for owners who don't have enough money.
+- Hideshop/revealshop should work with double chests also
+- Bentobox integration to ignore shops in locked islands
+
 ## Release 2.0.7.2
 ### Bug fixes
 - Fixed item meta not showing correctly in Search GUI
