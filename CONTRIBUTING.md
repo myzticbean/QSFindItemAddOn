@@ -8,7 +8,7 @@ But, please don't increase the plugin version number.
 ### How to compile?
 
 **Requirements**
-1. Java 17 JDK in PATH
+1. Java 21 JDK in PATH
 2. Git
 3. Maven
 
