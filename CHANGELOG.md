@@ -1,4 +1,31 @@
-## Snapshot 2.0.7.0
+## Release 2.0.7.3
+### Changes
+- JDK version upgraded from 17 to 21
+- Added check to exclude shops of `buying` shops for owners who don't have enough money.
+- Bentobox integration to ignore shops in locked islands
+
+### Bug fixes
+- Hideshop/revealshop should work with double chests also
+
+## Release 2.0.7.2
+### Bug fixes
+- Fixed item meta not showing correctly in Search GUI
+
+## Release 2.0.7.1
+### Changes
+- Added config option to suppress update notifications in chat
+  ```yaml
+  suppress-update-notifications: false
+  ```
+- Added config option to configure blacklisted materials
+  ```yaml
+  blacklisted-materials:
+  - "BARRIER"
+  - "STRUCTURE_BLOCK"
+  - "COMMAND_BLOCK"
+  ```
+
+## Release 2.0.7.0
 ### Changes
 - Added runnable custom commands on GUI item click. New related config options added.
 - Added a new permission to bypass safety check for shop tp.

@@ -29,6 +29,7 @@ import io.myzticbean.finditemaddon.dependencies.EssentialsXPlugin;
 import io.myzticbean.finditemaddon.dependencies.PlayerWarpsPlugin;
 import io.myzticbean.finditemaddon.dependencies.ResidencePlugin;
 import io.myzticbean.finditemaddon.dependencies.WGPlugin;
+import io.myzticbean.finditemaddon.dependencies.BentoBoxPlugin;
 import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.listeners.MenuListener;
 import io.myzticbean.finditemaddon.listeners.PWPlayerWarpCreateEventListener;
@@ -86,14 +87,21 @@ public final class FindItemAddOn extends JavaPlugin {
     private static final int BS_PLUGIN_METRIC_ID = 12382;
     private static final int SPIGOT_PLUGIN_ID = 95104;
     private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
+
     @Getter
     private static ConfigProvider configProvider;
+    @Getter
+    private static UpdateChecker updateChecker;
+
     private static boolean isPluginOutdated = false;
     private static boolean qSReremakeInstalled = false;
     private static boolean qSHikariInstalled = false;
     private static QSApi qsApi;
 
     private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
+
+    @Getter
+    private static BentoBoxPlugin bentoboxPlugin;
 
     @Override
     public void onLoad() {
@@ -200,6 +208,7 @@ public final class FindItemAddOn extends JavaPlugin {
         EssentialsXPlugin.setup();
         WGPlugin.setup();
         ResidencePlugin.setup();
+        bentoboxPlugin = new BentoBoxPlugin();
 
         initExternalPluginEventListeners();
 
@@ -212,7 +221,12 @@ public final class FindItemAddOn extends JavaPlugin {
         Metrics metrics = new Metrics(this, BS_PLUGIN_METRIC_ID);
 
         // Check for plugin updates
-        new UpdateChecker(SPIGOT_PLUGIN_ID).getLatestVersion(version -> {
+        updateChecker = new UpdateChecker(SPIGOT_PLUGIN_ID);
+        checkForPluginUpdates();
+    }
+
+    private void checkForPluginUpdates() {
+        updateChecker.getLatestVersion(version -> {
             if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
                 Logger.logInfo("Plugin is up to date!");
             } else {

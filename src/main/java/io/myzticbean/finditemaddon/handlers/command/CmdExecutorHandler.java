@@ -111,6 +111,11 @@ public class CmdExecutorHandler {
                 }
                 else {
                     Material mat = Material.getMaterial(itemArg.toUpperCase());
+                    if(checkMaterialBlacklist(mat, player)) {
+                        player.sendMessage(ColorTranslator.translateColorCodes(
+                            FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cThis material is not allowed."));
+                        return;
+                    }
                     if(mat != null) {
                         Logger.logDebugInfo("Material found: " + mat);
                         // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
@@ -188,29 +193,32 @@ public class CmdExecutorHandler {
         }
     }
 
+    private boolean checkMaterialBlacklist(Material mat, Player player) {
+        if(FindItemAddOn.getConfigProvider().getBlacklistedMaterials().contains(mat)) return true;
+        return false;
+    }
+
     /**
      * Handles the shop hiding feature
      * @param commandSender Who is the command sender: console or player
      */
     public void handleHideShop(CommandSender commandSender) {
-        if (!(commandSender instanceof Player)) {
-            Logger.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
-        }
-        else {
-            Player player = (Player) commandSender;
+        if(commandSender instanceof Player player) {
             if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 3);
                 Logger.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
                 if(FindItemAddOn.isQSReremakeInstalled()) {
-                    hideShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    hideReremakeShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
                 else {
-                    hideShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
+                    hideHikariShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 }
             }
             else {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
             }
+        } else {
+            Logger.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
         }
     }
 
@@ -243,60 +251,6 @@ public class CmdExecutorHandler {
             }
         }
     }
-
-    /**
-     * Handles the saving hidden shops to file feature
-     * @param commandSender Who is the command sender: console or player
-     */
-    /*
-    public void handleHiddenShopSavingToFile(CommandSender commandSender) {
-        if (!(commandSender instanceof Player)) {
-            LoggerUtils.logInfo("This command can only be run from in game");
-        }
-        else {
-            Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())) {
-                HiddenShopStorageUtil.saveHiddenShopsToFile();
-                player.sendMessage(ColorTranslator.translateColorCodes(
-                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                + "&aSaved hidden shops!"));
-            }
-            else {
-                player.sendMessage(
-                        ColorTranslator.translateColorCodes(
-                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + "&cNo permission!"));
-            }
-        }
-    }
-     */
-
-    /**
-     * Handles the loading of hidden shops from file feature
-     * @param commandSender Who is the command sender: console or player
-     */
-    /*
-    public void handleHiddenShopLoadingFromFile(CommandSender commandSender) {
-        if (!(commandSender instanceof Player)) {
-            LoggerUtils.logInfo("This command can only be run from in game");
-        }
-        else {
-            Player player = (Player) commandSender;
-            if(player.hasPermission(PlayerPerms.FINDITEM_ADMIN.toString())) {
-                HiddenShopStorageUtil.loadHiddenShopsFromFile();
-                player.sendMessage(ColorTranslator.translateColorCodes(
-                        FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                + "&aSaved hidden shops!"));
-            }
-            else {
-                player.sendMessage(
-                        ColorTranslator.translateColorCodes(
-                                FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
-                                        + "&cNo permission!"));
-            }
-        }
-    }
-     */
 
     /**
      * Handles plugin reload
@@ -390,7 +344,7 @@ public class CmdExecutorHandler {
      * @param shop
      * @param player
      */
-    private void hideShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
+    private void hideReremakeShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {
@@ -424,7 +378,7 @@ public class CmdExecutorHandler {
      * @param shop
      * @param player
      */
-    private void hideShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
+    private void hideHikariShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             // check if command runner same as shop owner
             if(FindItemAddOn.getQsApiInstance().isShopOwnerCommandRunner(player, shop)) {

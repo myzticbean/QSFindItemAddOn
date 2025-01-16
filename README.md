@@ -1,5 +1,5 @@
 # Shop Search AddOn For QuickShop
-### Version: 2.0.7.0-RELEASE
+### Version: 2.0.7.3-RELEASE
 
 An unofficial add-on for the QuickShop Hikari and Reremake spigot plugin.
 Adds a `/finditem` command in game for searching through all the shops on the server.
@@ -22,6 +22,7 @@ Adds a `/finditem` command in game for searching through all the shops on the se
 - Supports completely safe direct shop teleportation (configurable in config.yml)
 - Ignores shops that are out of stock by default
 - Support for world blacklisting (Shops in blacklisted worlds are ignored in the search result)
+- Support for material blacklisting that prevents players for searching for specific items
 
 
 **QuickShop-Hikari Support**
