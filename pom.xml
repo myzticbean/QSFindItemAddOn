@@ -355,7 +355,7 @@
         <dependency>
             <groupId>com.github.KodySimpson</groupId>
             <artifactId>SimpAPI</artifactId>
-            <version>4.5.5</version>
+            <version>4.6.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>*</groupId>
