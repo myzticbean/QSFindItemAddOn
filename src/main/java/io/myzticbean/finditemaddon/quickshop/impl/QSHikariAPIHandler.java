@@ -96,7 +96,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -176,7 +176,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
-                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
             }
         }
         List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -198,7 +198,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
                     && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
                     // check for shop if hidden
                     && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList);
+                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
             }
         }
         List<FoundShopItemModel> sortedShops = new ArrayList<>(shopsFoundList);
@@ -455,11 +455,11 @@ public class QSHikariAPIHandler implements QSApi<QuickShop, Shop> {
         return mainVersion >= 6;
     }
 
-    private void processPotentialShopMatchAndAddToFoundList(boolean toBuy, Shop shopIterator, List<FoundShopItemModel> shopsFoundList) {
+    private void processPotentialShopMatchAndAddToFoundList(boolean toBuy, Shop shopIterator, List<FoundShopItemModel> shopsFoundList, Player searchingPlayer) {
         Logger.logDebugInfo("Shop match found: " + shopIterator.getLocation());
         // Check if shop is in a locked BentoBox island
         if (FindItemAddOn.getConfigProvider().BENTOBOX_IGNORE_LOCKED_ISLAND_SHOPS && 
-            FindItemAddOn.getBentoboxPlugin().isIslandLocked(shopIterator.getLocation())) {
+            FindItemAddOn.getBentoboxPlugin().isIslandLocked(shopIterator.getLocation(), searchingPlayer)) {
             Logger.logDebugInfo("Shop is in locked BentoBox island - ignoring");
             return;
         }

@@ -17,8 +17,8 @@
         <spigot.version>1.21-R0.1-SNAPSHOT</spigot.version>
         <playerwarps-api-old>6.30.0</playerwarps-api-old>
         <playerwarps-api-new>7.7.1</playerwarps-api-new>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
+<!--        <maven.compiler.source>21</maven.compiler.source>-->
+<!--        <maven.compiler.target>21</maven.compiler.target>-->
     </properties>
 
     <build>
