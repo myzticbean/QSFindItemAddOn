@@ -10,6 +10,7 @@
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
+    <inceptionYear>2021</inceptionYear>
 
     <properties>
         <java.version>21</java.version>
@@ -20,6 +21,23 @@
 <!--        <maven.compiler.source>21</maven.compiler.source>-->
 <!--        <maven.compiler.target>21</maven.compiler.target>-->
     </properties>
+
+    <ciManagement>
+        <system>jenkins</system>
+        <url>https://ci.codemc.io/job/myzticbean/job/QSFindItemAddOn</url>
+    </ciManagement>
+
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/myzticbean/QSFindItemAddOn/issues</url>
+    </issueManagement>
+
+    <distributionManagement>
+        <repository>
+            <id>QSFindItemAddOn</id>
+            <url>https://repo.codemc.io/repository/QSFindItemAddOn/</url>
+        </repository>
+    </distributionManagement>
 
     <build>
         <plugins>
