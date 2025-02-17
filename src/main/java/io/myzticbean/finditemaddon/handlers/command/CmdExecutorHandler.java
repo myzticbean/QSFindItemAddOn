@@ -82,8 +82,10 @@ public class CmdExecutorHandler {
                         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                             List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
                             if(!searchResultList.isEmpty()) {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> {
+                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                    menu.open(searchResultList);
+                                });
                             }
                             else {
                                 if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
@@ -96,10 +98,8 @@ public class CmdExecutorHandler {
                         // Else run in MAIN thread
                         List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().fetchAllItemsFromAllShops(isBuying, player);
                         if(!searchResultList.isEmpty()) {
-                            Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
-                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
-                            });
+                            FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                            Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
                         }
                         else {
                             if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
@@ -123,8 +123,10 @@ public class CmdExecutorHandler {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player);
                                 if(!searchResultList.isEmpty()) {
-                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> {
+                                        FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                        menu.open(searchResultList);
+                                    });
                                 }
                                 else {
                                     if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG)) {
@@ -138,7 +140,7 @@ public class CmdExecutorHandler {
                             if(!searchResultList.isEmpty()) {
                                 Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                     FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                    menu.open(searchResultList);
                                 });
                             }
                             else {
@@ -156,8 +158,10 @@ public class CmdExecutorHandler {
                             Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
                                 List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
                                 if(!searchResultList.isEmpty()) {
-                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
+                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> {
+                                        FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                        menu.open(searchResultList);
+                                    });
                                 }
                                 else {
                                     // Invalid Material
@@ -170,10 +174,8 @@ public class CmdExecutorHandler {
                         } else {
                             List<FoundShopItemModel> searchResultList = FindItemAddOn.getQsApiInstance().findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player);
                             if(!searchResultList.isEmpty()) {
-                                Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
-                                    FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
-                                    Bukkit.getScheduler().runTask(FindItemAddOn.getInstance(), () -> menu.open(searchResultList));
-                                });
+                                FoundShopsMenu menu = new FoundShopsMenu(FindItemAddOn.getPlayerMenuUtility(player), searchResultList);
+                                menu.open(searchResultList);
                             }
                             else {
                                 // Invalid Material
@@ -194,8 +196,7 @@ public class CmdExecutorHandler {
     }
 
     private boolean checkMaterialBlacklist(Material mat, Player player) {
-        if(FindItemAddOn.getConfigProvider().getBlacklistedMaterials().contains(mat)) return true;
-        return false;
+        return FindItemAddOn.getConfigProvider().getBlacklistedMaterials().contains(mat);
     }
 
     /**
