@@ -56,7 +56,8 @@ public class CmdExecutorHandler {
         if (!(commandSender instanceof Player player)) {
             Logger.logInfo(THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME);
             return;
-        } else if (player.hasPermission(PlayerPermsEnum.FINDITEM_USE.value())) {
+        }
+        if (!player.hasPermission(PlayerPermsEnum.FINDITEM_USE.value())) {
             player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cNo permission!"));
             return;
         }
@@ -205,13 +206,13 @@ public class CmdExecutorHandler {
      * @param commandSender Who is the command sender: console or player
      */
     public void handlePluginReload(CommandSender commandSender) {
-        if (!(commandSender instanceof Player)) {
+        if (!(commandSender instanceof Player player)) {
             ConfigSetup.reloadConfig();
             ConfigSetup.checkForMissingProperties();
             ConfigSetup.saveConfig();
             FindItemAddOn.initConfigProvider();
-            List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
-            if(allServerShops.size() == 0) {
+            List<Shop> allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
+            if(allServerShops.isEmpty()) {
                 Logger.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
             }
             else {
@@ -220,7 +221,6 @@ public class CmdExecutorHandler {
             WarpUtils.updateWarps();
         }
         else {
-            Player player = (Player) commandSender;
             if(player.hasPermission(PlayerPermsEnum.FINDITEM_RELOAD.value()) || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value())) {
                 ConfigSetup.reloadConfig();
                 ConfigSetup.checkForMissingProperties();
@@ -228,7 +228,7 @@ public class CmdExecutorHandler {
                 FindItemAddOn.initConfigProvider();
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&aConfig reloaded!"));
                 List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
-                if(allServerShops.size() == 0) {
+                if(allServerShops.isEmpty()) {
                     player.sendMessage(ColorTranslator.translateColorCodes(
                             FindItemAddOn.getConfigProvider().PLUGIN_PREFIX
                                     + "&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!"));
