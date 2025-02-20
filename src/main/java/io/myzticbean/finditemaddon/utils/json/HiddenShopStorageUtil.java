@@ -92,7 +92,9 @@ public class HiddenShopStorageUtil {
                         shopLocation.getY(),
                         shopLocation.getZ()
                 )) {
-                    ShopSearchActivityStorageUtil.getGlobalShopsList().get(i).setHiddenFromSearch(hideShop);
+                    ShopSearchActivityStorageUtil.getGlobalShopsList()
+                            .get(i)
+                            .setHiddenFromSearch(hideShop);
                     break;
                 }
                 i++;
