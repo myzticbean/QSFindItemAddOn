@@ -20,6 +20,7 @@ package io.myzticbean.finditemaddon.handlers.gui;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.models.FoundShopItemModel;
+import io.myzticbean.finditemaddon.utils.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -80,6 +81,7 @@ public abstract class Menu implements InventoryHolder {
         inventory = Bukkit.createInventory(this, getSlots(), getMenuName());
         this.setMenuItems(foundShops);
         playerMenuUtility.getOwner().openInventory(inventory);
+        Logger.logInfo("Opening inventory for player: " + playerMenuUtility.getOwner().getName());
     }
 
     @NotNull

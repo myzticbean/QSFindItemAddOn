@@ -131,10 +131,6 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
         <repository>
-            <id>papermc</id>
-            <url>https://papermc.io/repo/repository/maven-public/</url>
-        </repository>
-        <repository>
             <id>essentials-releases</id>
             <url>https://repo.essentialsx.net/releases/</url>
         </repository>
