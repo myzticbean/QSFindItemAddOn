@@ -1,3 +1,7 @@
+## Release 2.0.7.4
+### Bug fixes
+- Fix for /finditem shows only 'searching...' but no GUI (PR #69)
+
 ## Release 2.0.7.3
 ### Changes
 - JDK version upgraded from 17 to 21
