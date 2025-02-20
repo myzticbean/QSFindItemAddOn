@@ -20,6 +20,7 @@ package io.myzticbean.finditemaddon.handlers.gui;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.models.FoundShopItemModel;
+import io.myzticbean.finditemaddon.utils.log.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.event.inventory.InventoryClickEvent;
