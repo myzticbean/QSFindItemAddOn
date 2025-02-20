@@ -43,6 +43,7 @@ public class PlayerWarpsUtil {
 
     @Nullable
     public static Warp findNearestWarp(Location shopLocation, UUID shopOwner) {
+        Logger.logDebugInfo("Find nearest warp for shop location " + shopLocation);
         List<Warp> playersWarps = PlayerWarpsPlugin.getAllWarps().stream()
                 .filter(warp -> warp.getWarpLocation().getWorld() != null)
                 .filter(warp -> warp.getWarpLocation().getWorld().equals(shopLocation.getWorld().getName()))
@@ -54,20 +55,19 @@ public class PlayerWarpsUtil {
         }
         if (!playersWarps.isEmpty()) {
             Map<Double, Warp> warpDistanceMap = new TreeMap<>();
-            playersWarps.forEach(warp ->
-                    warpDistanceMap.put(CommonUtils.calculateDistance3D(
-                            shopLocation.getX(),
-                            shopLocation.getY(),
-                            shopLocation.getZ(),
-                            warp.getWarpLocation().getX(),
-                            warp.getWarpLocation().getY(),
-                            warp.getWarpLocation().getZ()
-                    ), warp));
-            if(FindItemAddOn.getConfigProvider().DEBUG_MODE) {
-                for(Map.Entry<Double, Warp> entry : warpDistanceMap.entrySet()) {
-                    Logger.logDebugInfo("Warp Distance: " + entry.getKey() + " Warp Name: " + entry.getValue().getWarpName());
-                }
-            }
+            playersWarps.forEach(warp ->{
+                        var distance3D = CommonUtils.calculateDistance3D(
+                                shopLocation.getX(),
+                                shopLocation.getY(),
+                                shopLocation.getZ(),
+                                warp.getWarpLocation().getX(),
+                                warp.getWarpLocation().getY(),
+                                warp.getWarpLocation().getZ()
+                        );
+                        warpDistanceMap.put(distance3D, warp);
+                        Logger.logDebugInfo("Warp Distance: " + distance3D + " Warp Name: " + warp.getWarpName() + ", Warp World: " + warp.getWarpLocation().getWorld());
+                    }
+                );
             for (Map.Entry<Double, Warp> doubleWarpEntry : warpDistanceMap.entrySet()) {
                 Double distance3D = doubleWarpEntry.getKey();
                 Warp warp = doubleWarpEntry.getValue();
