@@ -219,7 +219,8 @@ public class FoundShopsMenu extends PaginatedMenu {
 
         // Record the visit and set last location for Essentials
         ShopSearchActivityStorageUtil.addPlayerVisitEntryAsync(shopLocation, player);
-        EssentialsXPlugin.setLastLocation(player);
+        if (EssentialsXPlugin.isEnabled())
+            EssentialsXPlugin.setLastLocation(player);
 
         // Apply teleport delay if necessary, otherwise teleport immediately
         if (shouldApplyTeleportDelay(player)) {
