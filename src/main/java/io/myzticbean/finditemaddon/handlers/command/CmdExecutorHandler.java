@@ -96,7 +96,7 @@ public class CmdExecutorHandler {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + "&cThis material is not allowed."));
                 return;
             }
-            if (mat != null) {
+            if (mat != null && mat.isItem()) {
                 Logger.logDebugInfo("Material found: " + mat);
                 // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
                 if(!FindItemAddOn.isQSReremakeInstalled() && FindItemAddOn.getQsApiInstance().isQSShopCacheImplemented()) {
@@ -136,7 +136,6 @@ public class CmdExecutorHandler {
                 menu.open(searchResultList);
             }
         } else {
-            Logger.logInfo("Couldn't find any shops for: " + player.getName());
             if (!StringUtils.isEmpty(errorMsg)) {
                 player.sendMessage(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().PLUGIN_PREFIX + errorMsg));
             }

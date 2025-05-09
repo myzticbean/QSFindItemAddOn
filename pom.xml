@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.finditemaddon</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.7.4-RELEASE</version>
+    <version>2.0.7.5-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -15,11 +15,11 @@
     <properties>
         <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spigot.version>1.21-R0.1-SNAPSHOT</spigot.version>
+        <spigot.version>1.21.5-R0.1-SNAPSHOT</spigot.version>
+        <qs-hikari.version>6.2.0.9-RELEASE-1</qs-hikari.version>
         <playerwarps-api-old>6.30.0</playerwarps-api-old>
         <playerwarps-api-new>7.7.1</playerwarps-api-new>
-<!--        <maven.compiler.source>21</maven.compiler.source>-->
-<!--        <maven.compiler.target>21</maven.compiler.target>-->
+        <essentialsx.version>2.21.0</essentialsx.version>
     </properties>
 
     <ciManagement>
@@ -72,7 +72,7 @@
                 <version>2.3.1</version>
                 <configuration>
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
-                    <!--<outputDirectory>D:\${user.name}\MCServers\MCServer_1.20.1\plugins</outputDirectory>-->
+                    <!-- <outputDirectory>D:\Github_myzticbean\MCServer_1.21\plugins</outputDirectory> -->
                     <!-- Comment out if on a PC -->
                     <!-- <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory> -->
                 </configuration>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-api</artifactId>
-            <version>6.2.0.5</version>
+            <version>${qs-hikari.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -220,7 +220,7 @@
         <dependency>
             <groupId>com.ghostchu</groupId>
             <artifactId>quickshop-bukkit</artifactId>
-            <version>6.2.0.5</version>
+            <version>${qs-hikari.version}</version>
             <scope>provided</scope>
             <classifier>shaded</classifier>
             <exclusions>
@@ -257,7 +257,7 @@
         <dependency>
             <groupId>net.essentialsx</groupId>
             <artifactId>EssentialsX</artifactId>
-            <version>2.20.1</version>
+            <version>${essentialsx.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -423,7 +423,7 @@
         <dependency>
             <groupId>world.bentobox</groupId>
             <artifactId>bentobox</artifactId>
-            <version>3.2.3</version>
+            <version>3.3.1</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
