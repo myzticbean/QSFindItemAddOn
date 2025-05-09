@@ -1,3 +1,8 @@
+## Release 2.0.7.5
+### Changes
+- Updated dependencies to latest version
+- Fixed a bug teleporting to a shop without essentials (PR #77)
+
 ## Release 2.0.7.4
 ### Bug fixes
 - Fix for /finditem shows only 'searching...' but no GUI (PR #69)
