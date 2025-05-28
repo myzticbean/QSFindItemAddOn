@@ -84,6 +84,7 @@ shop-gui:
     close-button-custom-model-data: ""
     goto-first-page-button-custom-model-data: ""
     goto-last-page-button-custom-model-data: ""
+    filler-item-custom-model-data: ""
   use-shorter-currency-format: true
 shop-player-visit-cooldown-in-minutes: 5
 ignore-empty-chests: true
@@ -105,4 +106,4 @@ blacklisted-materials:
   - "STRUCTURE_VOID"
 suppress-update-notifications: false
 debug-mode: false
-config-version: 20
+config-version: 21

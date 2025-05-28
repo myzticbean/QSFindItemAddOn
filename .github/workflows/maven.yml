@@ -10,7 +10,7 @@ name: Maven Build
 
 on:
   pull_request:
-    branches: [ "master" ]
+    branches: [ "master", "release/v2.0" ]
   workflow_dispatch:
 
 jobs:

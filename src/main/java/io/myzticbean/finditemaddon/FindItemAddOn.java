@@ -31,12 +31,7 @@ import io.myzticbean.finditemaddon.dependencies.ResidencePlugin;
 import io.myzticbean.finditemaddon.dependencies.WGPlugin;
 import io.myzticbean.finditemaddon.dependencies.BentoBoxPlugin;
 import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
-import io.myzticbean.finditemaddon.listeners.MenuListener;
-import io.myzticbean.finditemaddon.listeners.PWPlayerWarpCreateEventListener;
-import io.myzticbean.finditemaddon.listeners.PWPlayerWarpRemoveEventListener;
-import io.myzticbean.finditemaddon.listeners.PlayerCommandSendEventListener;
-import io.myzticbean.finditemaddon.listeners.PlayerJoinEventListener;
-import io.myzticbean.finditemaddon.listeners.PluginEnableEventListener;
+import io.myzticbean.finditemaddon.listeners.*;
 import io.myzticbean.finditemaddon.metrics.Metrics;
 import io.myzticbean.finditemaddon.quickshop.QSApi;
 import io.myzticbean.finditemaddon.quickshop.impl.QSHikariAPIHandler;
@@ -254,6 +249,9 @@ public final class FindItemAddOn extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
+        // QS-Hikari specific event listeners
+        this.getServer().getPluginManager().registerEvents(new ShopCreateEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new ShopDeleteEventListener(), this);
     }
     private void initExternalPluginEventListeners() {
         Logger.logInfo("Registering external plugin event listeners");

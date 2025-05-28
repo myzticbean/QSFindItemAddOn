@@ -20,6 +20,7 @@ package io.myzticbean.finditemaddon.config;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.utils.log.Logger;
+import lombok.experimental.UtilityClass;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.jetbrains.annotations.NotNull;
@@ -33,12 +34,13 @@ import java.util.List;
 /**
  * @author myzticbean
  */
+@UtilityClass
 public class ConfigSetup {
 
     private static File configFile;
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
-    private static final int CURRENT_CONFIG_VERSION = 20;
+    private static final int CURRENT_CONFIG_VERSION = 21;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -311,6 +313,11 @@ public class ConfigSetup {
             // Config 20
             if(configFileConfiguration.getInt("config-version") < 20) {
                 configFileConfiguration.set("bentobox.ignore-locked-island-shops", true);
+            }
+
+            // Config 21
+            if(configFileConfiguration.getInt("config-version") < 21) {
+                configFileConfiguration.set("shop-gui.custom-model-data.filler-item-custom-model-data", "");
             }
 
             // AT LAST
