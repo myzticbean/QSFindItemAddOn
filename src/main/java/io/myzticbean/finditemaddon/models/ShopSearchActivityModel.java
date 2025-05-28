@@ -24,6 +24,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author myzticbean
@@ -53,7 +54,9 @@ public class ShopSearchActivityModel {
     }
 
     public boolean compareWith(String targetWorldName, double targetX, double targetY, double targetZ) {
-        return this.getWorldName().equalsIgnoreCase(targetWorldName)
+        return (Objects.nonNull(this.getWorldName())
+                    && Objects.nonNull(targetWorldName)
+                    && this.getWorldName().equalsIgnoreCase(targetWorldName))
                 && this.getX() == targetX
                 && this.getY() == targetY
                 && this.getZ() == targetZ;

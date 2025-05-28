@@ -1,3 +1,13 @@
+## Release 2.0.7.6
+### Bug fixes
+- Fixed `/finditem hideshop`/`/finditem revealshop` not working for newly created shop
+- Added support for custom-model-data to the GUI filler item
+- Added support for `{SHOP_WORLD}` placeholder in custom commands
+
+### Changes
+- Optimized the size of the `shops.json` file
+- Updated config version to `21`
+
 ## Release 2.0.7.5
 ### Changes
 - Updated dependencies to latest version
