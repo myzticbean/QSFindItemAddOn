@@ -97,6 +97,7 @@ public class ConfigProvider {
     public final String SHOP_GUI_CLOSE_BUTTON_CMD = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_CMD + "close-button-custom-model-data");
     public final String SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_CMD = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_CMD + "goto-first-page-button-custom-model-data");
     public final String SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_CMD + "goto-last-page-button-custom-model-data");
+    public final String SHOP_GUI_FILLER_ITEM_CMD = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_CMD + "filler-item-custom-model-data");
     public final String SHOP_NAV_FIRST_PAGE_ALERT_MSG = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_NAVIGATION + "first-page-alert-message");
     public final String SHOP_NAV_LAST_PAGE_ALERT_MSG = ConfigSetup.get().getString(SHOP_GUI + SHOP_GUI_NAVIGATION + "last-page-alert-message");
     public final boolean SHOP_GUI_USE_SHORTER_CURRENCY_FORMAT = ConfigSetup.get().getBoolean(SHOP_GUI + "use-shorter-currency-format");

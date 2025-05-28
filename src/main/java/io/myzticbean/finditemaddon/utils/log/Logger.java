@@ -47,6 +47,11 @@ public class Logger {
         Bukkit.getLogger().severe(ColorTranslator.translateColorCodes(QS_FIND_ITEM_ADD_ON + e.getMessage()));
         e.printStackTrace();
     }
+
+    public static void logError(String errorMessage, Exception e) {
+        Bukkit.getLogger().severe(ColorTranslator.translateColorCodes(QS_FIND_ITEM_ADD_ON + errorMessage + ": " + e.getMessage()));
+        e.printStackTrace();
+    }
     public static void logWarning(String text) {
         Bukkit.getLogger().warning(ColorTranslator.translateColorCodes(QS_FIND_ITEM_ADD_ON + text));
     }

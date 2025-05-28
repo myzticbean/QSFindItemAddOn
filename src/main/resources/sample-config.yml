@@ -149,6 +149,7 @@ player-shop-teleportation:
   # Placeholders:
   #     {PLAYER_NAME} -> Player name
   #     {SHOP_LOC_X} {SHOP_LOC_Y} {SHOP_LOC_Z} -> Shop x,y,z coordinates
+  #     {SHOP_WORLD} -> World the shop is in
   custom-commands:
     run-custom-commands: false
     commands-list:
@@ -179,6 +180,7 @@ shop-gui:
     close-button-custom-model-data: ""
     goto-first-page-button-custom-model-data: ""
     goto-last-page-button-custom-model-data: ""
+    filler-item-custom-model-data: ""
   # Enabling this will convert currency values to a shorter format
   # For example: $10,210,100 will be shown as $10.21M
   use-shorter-currency-format: true
@@ -226,4 +228,4 @@ suppress-update-notifications: false
 debug-mode: false
 
 # Do not change the below value
-config-version: 20
+config-version: 21
