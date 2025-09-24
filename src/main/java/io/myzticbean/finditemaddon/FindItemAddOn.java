@@ -89,7 +89,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private static final int BS_PLUGIN_METRIC_ID = 12382;
     private static final int SPIGOT_PLUGIN_ID = 95104;
     private static final String MODRINTH_PROJECT_SLUG = "asp13ugE";
-    private static final int REPEATING_TASK_SCHEDULE_MINS = 1*60*20;
+    private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
     @Getter
     private static ConfigProvider configProvider;
     @Getter
