@@ -36,15 +36,15 @@ public class ModrinthService {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             Logger.logDebugInfo("Inbound Response: " + response.body());
             if (response.statusCode() == 200) {
-                return objectMapper.readValue(response.body(), new TypeReference<>() {});
+                return objectMapper.readValue(response.body(), new TypeReference<List<ProjectDetailsResponse>>() {});
             } else {
-                // In a real application, you'd want to log this error properly
                 Logger.logError("Modrinth API request failed with status code: " + response.statusCode());
             }
-        } catch (IOException | InterruptedException e) {
-            // Also log this exception properly
+        } catch (InterruptedException e) {
             Logger.logError(e);
             Thread.currentThread().interrupt();
+        } catch (IOException e) {
+            Logger.logError(e);
         }
         return Collections.emptyList();
     }

@@ -49,21 +49,36 @@ public class UpdateChecker {
         this.modrinthService = new ModrinthService();
     }
 
+    /**
+     * Checks if there is an update available for the plugin.
+     * @param updateAvailabilityConsumer Consumer to accept the update availability result. {@code True} if an update is available, {@code False} otherwise.
+     */
     public void isUpdateAvailable(Consumer<Boolean> updateAvailabilityConsumer) {
         VirtualThreadScheduler.runTaskAsync(() -> {
             var projectVersions = modrinthService.getProjectVersions(FindItemAddOn.getModrinthProjectSlug());
-            if (projectVersions == null || projectVersions.isEmpty()) return;
+            if (projectVersions == null || projectVersions.isEmpty()) {
+                Logger.logWarning("Could not fetch version information from Modrinth");
+                updateAvailabilityConsumer.accept(false);
+                return;
+            }
             var latestVersionDetails = projectVersions.getFirst();
+            if (latestVersionDetails == null || latestVersionDetails.getVersionNumber() == null) {
+                Logger.logWarning("Invalid version response from Modrinth");
+                updateAvailabilityConsumer.accept(false);
+                return;
+            }
             var latestVersion = latestVersionDetails.getVersionNumber();
-            Logger.logDebugInfo("Checking for updates:: Spigot Version: " + FindItemAddOn.getInstance().getDescription().getVersion() + " | Modrinth Latest Version: " + latestVersion);
-            updateAvailabilityConsumer.accept(FindItemAddOn.getInstance().getDescription().getVersion().equals(latestVersion));
-            if(latestVersion.toLowerCase().contains("snapshot")) {
-                Logger.logWarning("Plugin has a new snapshot version available! (Version: " + latestVersion + ")");
+            var currentVersion = FindItemAddOn.getInstance().getDescription().getVersion();
+            boolean isUpToDate = currentVersion.equals(latestVersion);
+            updateAvailabilityConsumer.accept(!isUpToDate);
+            if (!isUpToDate) {
+                if(latestVersion.toLowerCase().contains("snapshot")) {
+                    Logger.logWarning("Plugin has a new snapshot version available! (Version: " + latestVersion + ")");
+                } else {
+                    Logger.logWarning("Plugin has a new update available! (Version: " + latestVersion + ")");
+                }
+                Logger.logWarning("Download here: https://modrinth.com/plugin/shop-search/version/" + latestVersion);
             }
-            else {
-                Logger.logWarning("Plugin has a new update available! (Version: " + latestVersion + ")");
-            }
-            Logger.logWarning("Download here: https://modrinth.com/plugin/shop-search/version/" + latestVersion);
         });
     }
 
