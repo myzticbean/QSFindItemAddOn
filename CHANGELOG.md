@@ -1,3 +1,10 @@
+## Release 2.0.7.7
+### Changes
+- Added initial classes for Modrinth API integration and a VirtualThreadScheduler for handling asynchronous tasks.
+- Relocated all enum classes from the `utils.enums` package to `models.enums` to improve project structure and organization.
+- Bumped Spigot dependency to `1.21.8-R0.1-SNAPSHOT`
+- Bumped QS-Hikari dependency to `6.2.0.10`
+
 ## Release 2.0.7.6
 ### Bug fixes
 - Fixed `/finditem hideshop`/`/finditem revealshop` not working for newly created shop

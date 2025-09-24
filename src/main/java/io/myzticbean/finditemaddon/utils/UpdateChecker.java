@@ -19,7 +19,9 @@
 package io.myzticbean.finditemaddon.utils;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
-import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.models.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.utils.api.modrinth.ModrinthService;
+import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.bukkit.Bukkit;
@@ -37,19 +39,39 @@ import java.util.function.Consumer;
  */
 public class UpdateChecker {
 
-    private final int resourceId;
+    private static final String SPIGOT_DOWNLOAD_LINK = "https://www.spigotmc.org/resources/" + FindItemAddOn.getPluginID() + "/";
+    private static final String MODRINTH_DOWNLOAD_LINK = "https://modrinth.com/plugin/shop-search/versions/";
     private final boolean suppressUpdateNotifications;
+    private final ModrinthService modrinthService;
 
-    public UpdateChecker(int resourceId) {
-        this.resourceId = resourceId;
+    public UpdateChecker() {
         this.suppressUpdateNotifications = FindItemAddOn.getConfigProvider().SUPPRESS_UPDATE_NOTIFICATIONS;
+        this.modrinthService = new ModrinthService();
     }
 
+    public void isUpdateAvailable(Consumer<Boolean> updateAvailabilityConsumer) {
+        VirtualThreadScheduler.runTaskAsync(() -> {
+            var projectVersions = modrinthService.getProjectVersions(FindItemAddOn.getModrinthProjectSlug());
+            if (projectVersions == null || projectVersions.isEmpty()) return;
+            var latestVersionDetails = projectVersions.getFirst();
+            var latestVersion = latestVersionDetails.getVersionNumber();
+            Logger.logDebugInfo("Checking for updates:: Spigot Version: " + FindItemAddOn.getInstance().getDescription().getVersion() + " | Modrinth Latest Version: " + latestVersion);
+            updateAvailabilityConsumer.accept(FindItemAddOn.getInstance().getDescription().getVersion().equals(latestVersion));
+            if(latestVersion.toLowerCase().contains("snapshot")) {
+                Logger.logWarning("Plugin has a new snapshot version available! (Version: " + latestVersion + ")");
+            }
+            else {
+                Logger.logWarning("Plugin has a new update available! (Version: " + latestVersion + ")");
+            }
+            Logger.logWarning("Download here: https://modrinth.com/plugin/shop-search/version/" + latestVersion);
+        });
+    }
+
+    @Deprecated(since = "v2.0.7.7")
     public void getLatestVersion(Consumer<String> consumer) {
         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
             try (
-                    InputStream inputStream = new URL(
-                            "https://api.spigotmc.org/legacy/update.php?resource=" + this.resourceId).openStream();
+                    InputStream inputStream = new URL("https://api.spigotmc.org/legacy/update.php?resource=" + FindItemAddOn.getPluginID()).openStream();
                     Scanner scanner = new Scanner(inputStream)) {
                 if (scanner.hasNext()) {
                     consumer.accept(scanner.next());
@@ -66,7 +88,7 @@ public class UpdateChecker {
         }
         Player player = event.getPlayer();
         if ((player.isOp() || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value()))
-                && FindItemAddOn.getPluginOutdated()) {
+                && FindItemAddOn.isPluginOutdated()) {
             String prefix = "&8["
                     + "&#55a800Q"
                     + "&#5ea800S"
@@ -89,11 +111,8 @@ public class UpdateChecker {
                             + "&#59b300Hey &#73e600" + player.getName()
                             + "&#59b300! Plugin has an update... You are still on v"
                             + FindItemAddOn.getInstance().getDescription().getVersion()));
-            player.sendMessage(ColorTranslator.translateColorCodes(
-                    prefix
-                            + "&#59b300Download here: &#a3a3c2&nhttps://www.spigotmc.org/resources/"
-                            + FindItemAddOn.getPluginID() + "/"));
-
+//            player.sendMessage(ColorTranslator.translateColorCodes(prefix + "&#59b300Download here: &#a3a3c2&n" + SPIGOT_DOWNLOAD_LINK));
+            player.sendMessage(ColorTranslator.translateColorCodes(prefix + "&#59b300Download here: &#a3a3c2&n" + MODRINTH_DOWNLOAD_LINK));
         }
     }
 

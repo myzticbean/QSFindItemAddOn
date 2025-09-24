@@ -37,7 +37,8 @@ import io.myzticbean.finditemaddon.quickshop.QSApi;
 import io.myzticbean.finditemaddon.quickshop.impl.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.quickshop.impl.QSReremakeAPIHandler;
 import io.myzticbean.finditemaddon.scheduledtasks.Task15MinInterval;
-import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.models.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import io.myzticbean.finditemaddon.utils.UpdateChecker;
@@ -74,29 +75,36 @@ public final class FindItemAddOn extends JavaPlugin {
     // ************************************************************************************
 
     private static Plugin pluginInstance;
-    public FindItemAddOn() { pluginInstance = this; }
+
+    public FindItemAddOn() {
+        pluginInstance = this;
+    }
+
     public static Plugin getInstance() {
         return pluginInstance;
     }
+
     public static String serverVersion;
+
     private static final int BS_PLUGIN_METRIC_ID = 12382;
     private static final int SPIGOT_PLUGIN_ID = 95104;
-    private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
-
+    private static final String MODRINTH_PROJECT_SLUG = "asp13ugE";
+    private static final int REPEATING_TASK_SCHEDULE_MINS = 1*60*20;
     @Getter
     private static ConfigProvider configProvider;
     @Getter
     private static UpdateChecker updateChecker;
-
+    @Getter
     private static boolean isPluginOutdated = false;
+    @Getter
     private static boolean qSReremakeInstalled = false;
+    @Getter
     private static boolean qSHikariInstalled = false;
     private static QSApi qsApi;
-
-    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
-
     @Getter
     private static BentoBoxPlugin bentoboxPlugin;
+
+    private static final HashMap<Player, PlayerMenuUtility> playerMenuUtilityMap = new HashMap<>();
 
     @Override
     public void onLoad() {
@@ -165,6 +173,7 @@ public final class FindItemAddOn extends JavaPlugin {
         else if(!ENABLE_TRIAL_PERIOD) {
             Logger.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari or QuickShop-Reremake installed.");
         }
+        VirtualThreadScheduler.shutdown();
         Logger.logInfo("Bye!");
     }
 
@@ -213,26 +222,31 @@ public final class FindItemAddOn extends JavaPlugin {
 
         // init metrics
         Logger.logInfo("Registering anonymous bStats metrics");
-        Metrics metrics = new Metrics(this, BS_PLUGIN_METRIC_ID);
+        new Metrics(this, BS_PLUGIN_METRIC_ID);
 
         // Check for plugin updates
-        updateChecker = new UpdateChecker(SPIGOT_PLUGIN_ID);
+        updateChecker = new UpdateChecker();
         checkForPluginUpdates();
     }
 
     private void checkForPluginUpdates() {
-        updateChecker.getLatestVersion(version -> {
-            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
-                Logger.logInfo("Plugin is up to date!");
-            } else {
+//        updateChecker.getLatestVersion(version -> {
+//            if(this.getDescription().getVersion().equalsIgnoreCase(version)) {
+//                Logger.logInfo("Plugin is up to date!");
+//            } else {
+//                isPluginOutdated = true;
+//                if(version.toLowerCase().contains("snapshot")) {
+//                    Logger.logWarning("Plugin has a new snapshot version available! (Version: " + version + ")");
+//                }
+//                else {
+//                    Logger.logWarning("Plugin has a new update available! (Version: " + version + ")");
+//                }
+//                Logger.logWarning("Download here: https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
+//            }
+//        });
+        updateChecker.isUpdateAvailable(isUpdateAvailable -> {
+            if(Boolean.TRUE.equals(isUpdateAvailable)) {
                 isPluginOutdated = true;
-                if(version.toLowerCase().contains("snapshot")) {
-                    Logger.logWarning("Plugin has a new snapshot version available! (Version: " + version + ")");
-                }
-                else {
-                    Logger.logWarning("Plugin has a new update available! (Version: " + version + ")");
-                }
-                Logger.logWarning("Download here: https://www.spigotmc.org/resources/" + SPIGOT_PLUGIN_ID + "/");
             }
         });
     }
@@ -253,6 +267,7 @@ public final class FindItemAddOn extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new ShopCreateEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new ShopDeleteEventListener(), this);
     }
+
     private void initExternalPluginEventListeners() {
         Logger.logInfo("Registering external plugin event listeners");
         if(PlayerWarpsPlugin.getIsEnabled()) {
@@ -277,12 +292,12 @@ public final class FindItemAddOn extends JavaPlugin {
         }
     }
 
-    public static boolean getPluginOutdated() {
-        return isPluginOutdated;
-    }
-
     public static int getPluginID() {
         return SPIGOT_PLUGIN_ID;
+    }
+
+    public static String getModrinthProjectSlug() {
+        return MODRINTH_PROJECT_SLUG;
     }
 
     private void initFindItemCmd() {
@@ -367,14 +382,6 @@ public final class FindItemAddOn extends JavaPlugin {
         } catch (NoSuchFieldException | IllegalAccessException e) {
             Logger.logError(e);
         }
-    }
-
-    public static boolean isQSReremakeInstalled() {
-        return qSReremakeInstalled;
-    }
-
-    public static boolean isQSHikariInstalled() {
-        return qSHikariInstalled;
     }
 
     public static void setQSReremakeInstalled(boolean qSReremakeInstalled) {
