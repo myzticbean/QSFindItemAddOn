@@ -24,6 +24,7 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.models.HiddenShopModel;
 import io.myzticbean.finditemaddon.models.PlayerShopVisitModel;
 import io.myzticbean.finditemaddon.models.ShopSearchActivityModel;
+import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import lombok.Getter;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
@@ -251,7 +252,7 @@ public class ShopSearchActivityStorageUtil {
     }
 
     public static void addPlayerVisitEntryAsync(Location shopLocation, Player visitingPlayer) {
-        Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+        VirtualThreadScheduler.runTaskAsync(() -> {
             if(handleCooldownIfPresent(shopLocation, visitingPlayer)) {
                 Iterator<ShopSearchActivityModel> shopSearchActivityIterator = globalShopsList.iterator();
                 int i = 0;
@@ -267,7 +268,7 @@ public class ShopSearchActivityStorageUtil {
                         playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
                         playerShopVisit.setVisitDateTime();
                         globalShopsList.get(i).getPlayerVisitList().add(playerShopVisit);
-                        Logger.logDebugInfo("Added new player visit entry at " + shopLocation.toString());
+                        Logger.logDebugInfo("Added new player visit entry at " + shopLocation);
                         break;
                     }
                     i++;

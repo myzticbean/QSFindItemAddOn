@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.models.HiddenShopModel;
 import io.myzticbean.finditemaddon.models.ShopSearchActivityModel;
+import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;
@@ -54,6 +55,7 @@ public class HiddenShopStorageUtil {
      * QuickShop Reremake
      * @param shop
      */
+    @Deprecated(since = "v2.0.7.7")
     public static void handleShopSearchVisibilityAsync(Shop shop, boolean hideShop) {
         Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
             Iterator<ShopSearchActivityModel> shopSearchActivityIterator = ShopSearchActivityStorageUtil.getGlobalShopsList().iterator();
@@ -80,7 +82,7 @@ public class HiddenShopStorageUtil {
      * @param shop
      */
     public static void handleShopSearchVisibilityAsync(com.ghostchu.quickshop.api.shop.Shop shop, boolean hideShop) {
-        Bukkit.getScheduler().runTaskAsynchronously(FindItemAddOn.getInstance(), () -> {
+        VirtualThreadScheduler.runTaskAsync(() -> {
             Iterator<ShopSearchActivityModel> shopSearchActivityIterator = ShopSearchActivityStorageUtil.getGlobalShopsList().iterator();
             int i = 0;
             while(shopSearchActivityIterator.hasNext()) {

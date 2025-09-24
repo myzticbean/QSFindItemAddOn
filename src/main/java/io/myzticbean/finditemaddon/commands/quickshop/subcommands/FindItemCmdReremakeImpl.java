@@ -20,7 +20,7 @@ package io.myzticbean.finditemaddon.commands.quickshop.subcommands;
 
 import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.handlers.command.CmdExecutorHandler;
-import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.models.enums.PlayerPermsEnum;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Material;
