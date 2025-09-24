@@ -1,9 +1,11 @@
 ## Release 2.0.7.7
 ### Changes
+- Changed comma delimiter to triple pipe (PR #83 by @MattDeWeerd)
 - Added initial classes for Modrinth API integration and a VirtualThreadScheduler for handling asynchronous tasks.
 - Relocated all enum classes from the `utils.enums` package to `models.enums` to improve project structure and organization.
 - Bumped Spigot dependency to `1.21.8-R0.1-SNAPSHOT`
 - Bumped QS-Hikari dependency to `6.2.0.10`
+- Bumped Bentobox dependency to `3.7.3`
 
 ## Release 2.0.7.6
 ### Bug fixes
