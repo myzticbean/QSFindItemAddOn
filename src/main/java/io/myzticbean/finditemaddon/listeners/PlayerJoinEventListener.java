@@ -31,6 +31,6 @@ public class PlayerJoinEventListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        new UpdateChecker(FindItemAddOn.getPluginID()).notifyPlayerAboutUpdateOnJoin(event);
+        new UpdateChecker().notifyPlayerAboutUpdateOnJoin(event);
     }
 }

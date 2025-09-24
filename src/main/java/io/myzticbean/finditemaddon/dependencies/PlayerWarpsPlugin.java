@@ -21,7 +21,7 @@ package io.myzticbean.finditemaddon.dependencies;
 import com.olziedev.playerwarps.api.PlayerWarpsAPI;
 import com.olziedev.playerwarps.api.warp.Warp;
 import io.myzticbean.finditemaddon.FindItemAddOn;
-import io.myzticbean.finditemaddon.utils.enums.NearestWarpModeEnum;
+import io.myzticbean.finditemaddon.models.enums.NearestWarpModeEnum;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import lombok.experimental.UtilityClass;
 import org.bukkit.Bukkit;

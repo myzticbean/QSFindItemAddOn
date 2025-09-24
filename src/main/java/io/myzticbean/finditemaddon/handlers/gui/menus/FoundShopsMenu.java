@@ -29,10 +29,9 @@ import io.myzticbean.finditemaddon.FindItemAddOn;
 import io.myzticbean.finditemaddon.handlers.gui.PaginatedMenu;
 import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.models.FoundShopItemModel;
-import io.myzticbean.finditemaddon.utils.enums.CustomCmdPlaceholdersEnum;
-import io.myzticbean.finditemaddon.utils.enums.NearestWarpModeEnum;
-import io.myzticbean.finditemaddon.utils.enums.PlayerPermsEnum;
-import io.myzticbean.finditemaddon.utils.enums.ShopLorePlaceholdersEnum;
+import io.myzticbean.finditemaddon.models.enums.CustomCmdPlaceholdersEnum;
+import io.myzticbean.finditemaddon.models.enums.PlayerPermsEnum;
+import io.myzticbean.finditemaddon.models.enums.ShopLorePlaceholdersEnum;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.utils.LocationUtils;
 import io.myzticbean.finditemaddon.utils.log.Logger;
@@ -168,7 +167,7 @@ public class FoundShopsMenu extends PaginatedMenu {
         }
 
         String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
-        List<String> locDataList = Arrays.asList(locData.split("\\s*,\\s*"));
+        List<String> locDataList = Arrays.asList(locData.split("\\s*\\|\\|\\|\\s*"));
 
         // Handle direct teleportation to shop
         if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP && locDataList.size() > 1) {
@@ -586,7 +585,7 @@ public class FoundShopsMenu extends PaginatedMenu {
         if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP) {
             // Store exact coordinates for direct teleportation
             Location shopLoc = foundShop.getShopLocation();
-            locData = String.format("%s,%d,%d,%d", shopLoc.getWorld().getName(), shopLoc.getBlockX(),
+            locData = String.format("%s|||%d|||%d|||%d", shopLoc.getWorld().getName(), shopLoc.getBlockX(),
                     shopLoc.getBlockY(), shopLoc.getBlockZ());
         } else if (configProvider.TP_PLAYER_TO_NEAREST_WARP) {
             // Store nearest warp info for warp teleportation
