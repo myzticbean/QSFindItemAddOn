@@ -6,14 +6,6 @@ labels: bug
 assignees: myzticbean
 
 ---
-## Important Notes Before Reporting 
-
-> [!NOTE]
-> **🔔Please Note**
->
-> - Bug fixes can take time and I cannot provide an ETA for resolution.
-> - Support for QuickShop-Reremake integration has been dropped.
-> - Search first. Check existing issues to avoid duplicates.
 
 ## 🐞Bug Report
 
@@ -38,3 +30,9 @@ A clear and concise description of what you expected to happen.
 
 **Additional context**
 Add any other context about the problem here.
+
+> [!🔔NOTE]
+> - Bug fixes can take time and I cannot provide an ETA for resolution.
+> - Prioritization is based on development capacity & bug criticality
+> - Support for QuickShop-Reremake integration has been dropped.
+> - Search first. Check existing issues to avoid duplicates.
