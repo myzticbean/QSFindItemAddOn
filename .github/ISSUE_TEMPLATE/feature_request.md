@@ -15,10 +15,8 @@ A clear and concise description of what enhancement you are looking for.
 Add any other context or screenshots about the feature request here.
 
 ---
-> [!🔔NOTE]
-> **Feature requests help improve the plugin, but please understand:**
->
+> [!NOTE]
 > - Submitting a feature request doesn't guarantee implementation.
-> - Features are prioritized purely based on my development capacity & community needs.
+> - Features are prioritized purely based on development capacity & community needs.
 
 ---
