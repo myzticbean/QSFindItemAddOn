@@ -170,7 +170,7 @@ public class FoundShopsMenu extends PaginatedMenu {
         List<String> locDataList = Arrays.asList(locData.split("\\s*\\|\\|\\|\\s*"));
 
         // Handle direct teleportation to shop
-        if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP && locDataList.size() > 1) {
+        if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP && locDataList.size() >= 4) {
             handleDirectShopTeleport(player, locDataList);
         }
         // Handle teleportation to nearest warp
@@ -259,7 +259,7 @@ public class FoundShopsMenu extends PaginatedMenu {
      */
     private void handleCustomCommands(Player player, List<String> locDataList) {
         if (configProvider.CUSTOM_CMDS_RUN_ENABLED && !configProvider.CUSTOM_CMDS_LIST.isEmpty()
-                && locDataList.size() > 1) {
+                && locDataList.size() >= 4) {
             Location shopLocation = parseShopLocation(locDataList);
             if (shopLocation == null)
                 return;
@@ -277,13 +277,24 @@ public class FoundShopsMenu extends PaginatedMenu {
      * @return A Bukkit Location, or null if parsing fails
      */
     private @Nullable Location parseShopLocation(@NotNull List<String> locDataList) {
-        if (locDataList.size() <= 1)
+        if (locDataList.size() < 4) {
+            Logger.logError("Malformed shop location data (expected 4 parts, got " + locDataList.size() + "): " + locDataList);
             return null;
+        }
         World world = Bukkit.getWorld(locDataList.get(0));
-        int locX = Integer.parseInt(locDataList.get(1));
-        int locY = Integer.parseInt(locDataList.get(2));
-        int locZ = Integer.parseInt(locDataList.get(3));
-        return new Location(world, locX, locY, locZ);
+        if (world == null) {
+            Logger.logError("World not found for shop location: " + locDataList.get(0));
+            return null;
+        }
+        try {
+            int locX = Integer.parseInt(locDataList.get(1));
+            int locY = Integer.parseInt(locDataList.get(2));
+            int locZ = Integer.parseInt(locDataList.get(3));
+            return new Location(world, locX, locY, locZ);
+        } catch (NumberFormatException e) {
+            Logger.logError("Invalid coordinates in shop location data: " + locDataList);
+            return null;
+        }
     }
 
     /**

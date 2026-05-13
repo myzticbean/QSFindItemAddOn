@@ -54,15 +54,18 @@ public abstract class Menu implements InventoryHolder {
     protected Menu(PlayerMenuUtility playerMenuUtility) {
         this.playerMenuUtility = playerMenuUtility;
 
-        assert FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM != null;
-        Material fillerMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM);
+        String fillerItemConfig = FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM;
+        Material fillerMaterial = (fillerItemConfig != null) ? Material.getMaterial(fillerItemConfig) : null;
         if (fillerMaterial == null) {
             fillerMaterial = Material.GRAY_STAINED_GLASS_PANE;
         }
         if (!fillerMaterial.isAir()) {
             GUI_FILLER_ITEM = new ItemStack(fillerMaterial);
             ItemMeta fillerItemItemMeta = this.GUI_FILLER_ITEM.getItemMeta();
-            assert fillerItemItemMeta != null;
+            if (fillerItemItemMeta == null) {
+                fillerItemItemMeta = Bukkit.getItemFactory().getItemMeta(fillerMaterial);
+            }
+            if (fillerItemItemMeta == null) return;
             fillerItemItemMeta.setDisplayName(" ");
             if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_FILLER_ITEM_CMD)) {
                 try {

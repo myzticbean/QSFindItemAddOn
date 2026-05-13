@@ -44,10 +44,26 @@ Each lives in `dependencies/` as a static setup-and-check class: `PlayerWarpsPlu
 - Any call that touches a shop's block / chunk / location on Folia must be wrapped in the scheduler's region task.
 
 ### Config
-`config/ConfigSetup` handles file creation, missing-key backfill, and writing out `sample-config.yml`. `config/ConfigProvider` is the typed accessor used throughout the code (`FindItemAddOn.getConfigProvider().SOME_KEY`). When adding a config option: add the field + parse logic in `ConfigProvider`, add the default to `resources/config.yml`, and update `ConfigSetup.checkForMissingProperties()` so existing installs get the new key.
+`config/ConfigSetup` handles file creation, missing-key backfill, and writing out `sample-config.yml`. `config/ConfigProvider` is the typed accessor used throughout the code (`FindItemAddOn.getConfigProvider().SOME_KEY`). When adding a config option: add the field + parse logic in `ConfigProvider`, add the default to `resources/config.yml`, update `ConfigSetup.checkForMissingProperties()` so existing installs get the new key, and **increment `config-version`** (currently 21) in the default config.
 
-## Conventions (from .windsurfrules)
+### Permissions
+All permission nodes are declared in `models/enums/PlayerPermsEnum`. Use `PlayerPermsEnum.PERMISSION_NAME.getPermission()` for checks — never hardcode permission strings. The nodes are: `finditem.use`, `finditem.hideshop`, `finditem.reload`, `finditem.admin`, `finditem.shoptp`, `finditem.shoptp.own`, `finditem.shoptp-delay.bypass`, `finditem.shoptp.bypass-safetycheck`.
+
+### Shop cache sync
+`handlers/events/ShopCreateEventListener` and `ShopDeleteEventListener` keep the in-memory shop list in sync when shops are created or removed at runtime. Any feature that modifies the cached shop list must go through these listeners, not inline in command handlers.
+
+### Enums
+`models/enums/` holds cross-cutting enums: `PlayerPermsEnum` (permissions), `ShopLorePlaceholdersEnum` (GUI lore placeholders like `{ITEM_PRICE}`, `{SHOP_OWNER}`, `{NEAREST_WARP}`), `CustomCmdPlaceholdersEnum` (placeholders for custom TP commands), and `NearestWarpModeEnum`.
+
+### GriefPrevention
+GriefPrevention is a Maven dependency but is **not** listed in `plugin.yml`'s `softdepend`. Its integration is handled in utils (not in `dependencies/`), making it the odd one out — do not follow the `dependencies/` pattern for it.
+
+### MenuListener threading
+As of v2.0.8.0, `MenuListener` handles `InventoryClickEvent` asynchronously. Any GUI click logic that touches Bukkit APIs must be dispatched back to the main/region thread via `FindItemAddOn.getScheduler()`.
+
+## Conventions
 
 - PascalCase classes, camelCase methods/variables, ALL_CAPS constants.
 - Lombok is available and used (`@Getter`, `@Slf4j`) — prefer it over hand-written boilerplate.
 - Logging goes through `utils/log/Logger` (`logInfo`, `logWarning`, `logError`), not `System.out` or raw `getLogger()`.
+- Permissions checks always use `PlayerPermsEnum`, never hardcoded strings.

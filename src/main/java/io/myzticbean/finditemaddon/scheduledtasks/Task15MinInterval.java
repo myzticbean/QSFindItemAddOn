@@ -20,6 +20,7 @@ package io.myzticbean.finditemaddon.scheduledtasks;
 
 import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
+import io.myzticbean.finditemaddon.utils.log.Logger;
 import io.myzticbean.finditemaddon.utils.warp.WarpUtils;
 
 /**
@@ -31,8 +32,16 @@ public class Task15MinInterval implements Runnable {
         // v2.0.6.0 - Changed tasks to run in async thread
         // v2.0.7.7 - Switched to virtual thread
         VirtualThreadScheduler.runTaskAsync(() -> {
-            WarpUtils.updateWarps();
-            ShopSearchActivityStorageUtil.syncShops();
+            try {
+                WarpUtils.updateWarps();
+            } catch (Exception e) {
+                Logger.logError("Error during scheduled warp update", e);
+            }
+            try {
+                ShopSearchActivityStorageUtil.syncShops();
+            } catch (Exception e) {
+                Logger.logError("Error during scheduled shop sync", e);
+            }
         });
     }
 }

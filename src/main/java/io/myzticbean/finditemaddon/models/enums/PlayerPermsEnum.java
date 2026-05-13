@@ -30,9 +30,6 @@ public enum PlayerPermsEnum {
     FINDITEM_HIDESHOP("finditem.hideshop"),
     FINDITEM_RELOAD("finditem.reload"),
 
-    @Deprecated
-    FINDITEM_RESTART("finditem.restart"),
-
     FINDITEM_SHOPTP("finditem.shoptp"),
     FINDITEM_SHOPTP_OWN("finditem.shoptp.own"),
     FINDITEM_SHOPTP_BYPASS_DELAY("finditem.shoptp-delay.bypass"),

@@ -55,7 +55,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -97,7 +96,7 @@ public final class FindItemAddOn extends JavaPlugin {
     private static final int BS_PLUGIN_METRIC_ID = 12382;
     private static final int SPIGOT_PLUGIN_ID = 95104;
     private static final String MODRINTH_PROJECT_SLUG = "asp13ugE";
-    private static final int REPEATING_TASK_SCHEDULE_MINS = 15*60*20;
+    private static final int REPEATING_TASK_SCHEDULE_TICKS = 15 * 60 * 20;
     @Getter
     private static ConfigProvider configProvider;
     @Getter
@@ -132,14 +131,14 @@ public final class FindItemAddOn extends JavaPlugin {
             Logger.logWarning("THIS IS A TRIAL BUILD!");
             LocalDateTime trialEndDate = LocalDate.of(TRIAL_END_YEAR, TRIAL_END_MONTH, TRIAL_END_DAY).atTime(LocalTime.MIDNIGHT);
             LocalDateTime today = LocalDateTime.now();
-            Duration duration = Duration.between(trialEndDate, today);
-            boolean hasPassed = Duration.ofDays(ChronoUnit.DAYS.between(today, trialEndDate)).isNegative();
+            long daysRemaining = ChronoUnit.DAYS.between(today, trialEndDate);
+            boolean hasPassed = daysRemaining < 0;
             if(hasPassed) {
                 Logger.logError("Your trial has expired! Please contact the developer.");
                 getServer().getPluginManager().disablePlugin(this);
                 return;
             } else {
-                Logger.logWarning("You have " + Math.abs(duration.toDays()) + " days remaining in your trial.");
+                Logger.logWarning("You have " + daysRemaining + " days remaining in your trial.");
             }
         }
 
@@ -225,7 +224,7 @@ public final class FindItemAddOn extends JavaPlugin {
 
         // Initiate batch tasks
         Logger.logInfo("Registering tasks");
-        FindItemAddOn.getScheduler().runTimerAsync(new Task15MinInterval(), 0, REPEATING_TASK_SCHEDULE_MINS);
+        FindItemAddOn.getScheduler().runTimerAsync(new Task15MinInterval(), 0, REPEATING_TASK_SCHEDULE_TICKS);
 
         // init metrics
         Logger.logInfo("Registering anonymous bStats metrics");
@@ -256,6 +255,7 @@ public final class FindItemAddOn extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerCommandSendEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new MenuListener(), this);
         this.getServer().getPluginManager().registerEvents(new PlayerJoinEventListener(), this);
+        this.getServer().getPluginManager().registerEvents(new PlayerQuitEventListener(), this);
         // QS-Hikari specific event listeners
         this.getServer().getPluginManager().registerEvents(new ShopCreateEventListener(), this);
         this.getServer().getPluginManager().registerEvents(new ShopDeleteEventListener(), this);
@@ -273,16 +273,12 @@ public final class FindItemAddOn extends JavaPlugin {
         configProvider = new ConfigProvider();
     }
 
-    public static PlayerMenuUtility getPlayerMenuUtility(Player p){
-        PlayerMenuUtility playerMenuUtility;
-        if(playerMenuUtilityMap.containsKey(p)) {
-            return playerMenuUtilityMap.get(p);
-        }
-        else {
-            playerMenuUtility = new PlayerMenuUtility(p);
-            playerMenuUtilityMap.put(p, playerMenuUtility);
-            return playerMenuUtility;
-        }
+    public static PlayerMenuUtility getPlayerMenuUtility(Player p) {
+        return playerMenuUtilityMap.computeIfAbsent(p, PlayerMenuUtility::new);
+    }
+
+    public static void removePlayerMenuUtility(Player p) {
+        playerMenuUtilityMap.remove(p);
     }
 
     public static int getPluginID() {
@@ -295,8 +291,8 @@ public final class FindItemAddOn extends JavaPlugin {
 
     private void initFindItemCmd() {
         List<String> aliases;
-        if(StringUtils.isEmpty(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE)
-                || StringUtils.containsIgnoreCase(FindItemAddOn.getConfigProvider().FIND_ITEM_TO_SELL_AUTOCOMPLETE, " ")) {
+        if(FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS == null
+                || FindItemAddOn.getConfigProvider().FIND_ITEM_COMMAND_ALIAS.isEmpty()) {
             aliases = Arrays.asList("shopsearch", "searchshop", "searchitem");
         }
         else {

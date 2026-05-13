@@ -35,8 +35,6 @@ import org.bukkit.block.Block;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.maxgamer.quickshop.api.shop.Shop;
-
 import java.util.List;
 
 /**
@@ -136,12 +134,7 @@ public class CmdExecutorHandler {
             if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 3);
                 Logger.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
-                if(FindItemAddOn.isQSReremakeInstalled()) {
-                    hideReremakeShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                }
-                else {
-                    hideHikariShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                }
+                hideHikariShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
             }
             else {
                 PlayerUtil.sendMessage(player, getPluginPrefix() + NO_PERMISSION);
@@ -161,12 +154,7 @@ public class CmdExecutorHandler {
                 Block playerLookAtBlock = player.getTargetBlock(null, 5);
                 if(playerLookAtBlock != null) {
                     Logger.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
-                    if(FindItemAddOn.isQSReremakeInstalled()) {
-                        revealShop((Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                    }
-                    else {
-                        revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
-                    }
+                    revealShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
                 } else {
                     Logger.logDebugInfo("TargetBlock is null!");
                 }
@@ -223,66 +211,6 @@ public class CmdExecutorHandler {
     }
 
     /**
-     * @deprecated
-     * Handles plugin restart
-     * @param commandSender Who is the command sender: console or player
-     */
-    @Deprecated(forRemoval = true)
-    public void handlePluginRestart(CommandSender commandSender) {
-//        if (!(commandSender instanceof Player)) {
-//            Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
-//            Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-//            Logger.logInfo("&aPlugin restarted!");
-//            List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
-//            if(allServerShops.size() == 0) {
-//                Logger.logWarning("&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
-//            } else {
-//                Logger.logInfo("&aFound &e" + allServerShops.size() + " &ashops on the server.");
-//            }
-//        } else {
-//            Player player = (Player) commandSender;
-//            if(player.hasPermission(PlayerPermsEnum.FINDITEM_RESTART.value()) || player.hasPermission(PlayerPermsEnum.FINDITEM_ADMIN.value())) {
-//                Bukkit.getPluginManager().disablePlugin(FindItemAddOn.getInstance());
-//                Bukkit.getPluginManager().enablePlugin(FindItemAddOn.getPlugin(FindItemAddOn.class));
-//                PlayerUtil.sendMessage(player, getPluginPrefix() + "&aPlugin restarted!");
-//                List allServerShops = FindItemAddOn.getQsApiInstance().getAllShops();
-//                if(allServerShops.size() == 0) {
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + "&6Found &e0 &6shops on the server. If you ran &e/qs reload &6recently, please restart your server!");
-//                } else {
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + "&aFound &e" + allServerShops.size() + " &ashops on the server.");
-//                }
-//            } else {
-//                PlayerUtil.sendMessage(player, getPluginPrefix() + NO_PERMISSION);
-//            }
-//        }
-    }
-
-    /**
-     * Handles hide shop for QuickShop Reremake
-     * @param shop
-     * @param player
-     */
-    @Deprecated(forRemoval = true)
-    private void hideReremakeShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
-//        if(shop != null) {
-//            QSReremakeAPIHandler qsReremakeAPIHandler = (QSReremakeAPIHandler) FindItemAddOn.getQsApiInstance();
-//            // check if command runner same as shop owner
-//            if(qsReremakeAPIHandler.isShopOwnerCommandRunner(player, shop)) {
-//                if(!HiddenShopStorageUtil.isShopHidden(shop)) {
-//                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, true);
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG);
-//                } else {
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_HIDDEN_MSG);
-//                }
-//            } else {
-//                PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG);
-//            }
-//        } else {
-//            PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG);
-//        }
-    }
-
-    /**
      * Handles hide shop for QuickShop Hikari
      * @param shop
      * @param player
@@ -304,31 +232,6 @@ public class CmdExecutorHandler {
         } else {
             PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG);
         }
-    }
-
-    /**
-     * Handles reveal shop for QuickShop Reremake
-     * @param shop
-     * @param player
-     */
-    @Deprecated(forRemoval = true)
-    private void revealShop(org.maxgamer.quickshop.api.shop.Shop shop, Player player) {
-//        if(shop != null) {
-//            QSReremakeAPIHandler qsReremakeAPIHandler = (QSReremakeAPIHandler) FindItemAddOn.getQsApiInstance();
-//            // check if command runner same as shop owner
-//            if(qsReremakeAPIHandler.isShopOwnerCommandRunner(player, shop)) {
-//                if(HiddenShopStorageUtil.isShopHidden(shop)) {
-//                    HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, false);
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG);
-//                } else {
-//                    PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_ALREADY_PUBLIC_MSG);
-//                }
-//            } else {
-//                PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_HIDING_SHOP_OWNER_INVALID_MSG);
-//            }
-//        } else {
-//            PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_SHOP_BLOCK_MSG);
-//        }
     }
 
     /**

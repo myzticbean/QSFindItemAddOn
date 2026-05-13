@@ -57,6 +57,8 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Implementation of QSApi for Hikari
@@ -186,6 +188,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
      * @see BuiltInShopPermission#SEARCH
      * @since 1.0.0
      */
+    private static final int PERMISSION_CHECK_TIMEOUT_SECONDS = 5;
+
     private CompletableFuture<Boolean> permissionCheckFuture(Player searchingPlayer, Shop shopIterator) {
         CompletableFuture<Boolean> permissionCheckFuture = new CompletableFuture<>();
         FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, (t) -> {
@@ -195,7 +199,15 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                 permissionCheckFuture.completeExceptionally(e);
             }
         });
-        return permissionCheckFuture;
+        // If the player disconnects before the scheduler fires, the future would never
+        // complete and allOf().join() would block the virtual thread indefinitely.
+        return permissionCheckFuture.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .exceptionally(ex -> {
+                    if (ex instanceof TimeoutException) {
+                        Logger.logDebugInfo("Permission check timed out for player: " + searchingPlayer.getName());
+                    }
+                    return Boolean.FALSE;
+                });
     }
 
     /**
@@ -293,7 +305,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     @Override
     public boolean isShopOwnerCommandRunner(Player player, Shop shop) {
         Logger.logDebugInfo("Shop owner: " + shop.getOwner() + " | Player: " + player.getUniqueId());
-        return shop.getOwner().getUniqueId().toString().equalsIgnoreCase(player.getUniqueId().toString());
+        return shop.getOwner().getUniqueId().equals(player.getUniqueId());
     }
 
     @Override

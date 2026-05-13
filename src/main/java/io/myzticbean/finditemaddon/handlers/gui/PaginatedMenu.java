@@ -26,6 +26,7 @@ import io.myzticbean.finditemaddon.utils.log.Logger;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
 import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -93,123 +94,72 @@ public abstract class PaginatedMenu extends Menu {
     }
 
     private void createGUIBackButton() {
-        Material backButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_MATERIAL);
-        if(backButtonMaterial == null) {
-            backButton = createPlayerHead(BACK_BUTTON_SKIN_ID);
-        }
-        else {
-            backButton = new ItemStack(backButtonMaterial);
-        }
-        ItemMeta backButtonMeta = backButton.getItemMeta();
-        assert backButtonMeta != null;
-        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT)) {
-            backButtonMeta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT));
-        }
-        int backButtonCMD;
-        try {
-            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_CMD)) {
-                backButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_CMD);
-                backButtonMeta.setCustomModelData(backButtonCMD);
-            }
-        }
-        catch (NumberFormatException e) {
-            Logger.logDebugInfo("Invalid Custom Model Data for Back Button in config.yml");
-        }
-        backButton.setItemMeta(backButtonMeta);
+        Material mat = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_MATERIAL);
+        backButton = buildNavButton(mat, BACK_BUTTON_SKIN_ID,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_TEXT,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_BACK_BUTTON_CMD,
+                "Back Button");
     }
 
     private void createGUINextButton() {
-        Material nextButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_MATERIAL);
-        if(nextButtonMaterial == null) {
-            nextButton = createPlayerHead(NEXT_BUTTON_SKIN_ID);
-        }
-        else {
-            nextButton = new ItemStack(nextButtonMaterial);
-        }
-        ItemMeta nextButtonMeta = nextButton.getItemMeta();
-        assert nextButtonMeta != null;
-        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT)) {
-            nextButtonMeta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT));
-        }
-        int nextButtonCMD;
-        try {
-            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_CMD)) {
-                nextButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_CMD);
-                nextButtonMeta.setCustomModelData(nextButtonCMD);
-            }
-        }
-        catch (NumberFormatException e) {
-            Logger.logDebugInfo("Invalid Custom Model Data for Next Button in config.yml");
-        }
-        nextButton.setItemMeta(nextButtonMeta);
+        Material mat = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_MATERIAL);
+        nextButton = buildNavButton(mat, NEXT_BUTTON_SKIN_ID,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_TEXT,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_NEXT_BUTTON_CMD,
+                "Next Button");
     }
 
     private void createGUIFirstPageButton() {
-        Material firstPageButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_MATERIAL);
-        if(firstPageButtonMaterial == null)
-            firstPageButton = createPlayerHead(FIRST_PAGE_BUTTON_SKIN_ID);
-        else
-            firstPageButton = new ItemStack(firstPageButtonMaterial);
-        ItemMeta firstPageButtonMeta = firstPageButton.getItemMeta();
-        if(firstPageButtonMeta != null && !StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_TEXT))
-            firstPageButtonMeta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_TEXT));
-        int firstPageButtonCMD;
-        try {
-            if(firstPageButtonMeta != null && !StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_CMD)) {
-                firstPageButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_CMD);
-                firstPageButtonMeta.setCustomModelData(firstPageButtonCMD);
-            }
-        }
-        catch (NumberFormatException e) {
-            Logger.logDebugInfo("Invalid Custom Model Data for Goto First Page Button in config.yml");
-        }
-        firstPageButton.setItemMeta(firstPageButtonMeta);
+        Material mat = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_MATERIAL);
+        firstPageButton = buildNavButton(mat, FIRST_PAGE_BUTTON_SKIN_ID,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_TEXT,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_FIRST_PAGE_BUTTON_CMD,
+                "Goto First Page Button");
     }
 
     private void createGUILastPageButton() {
-        Material lastPageButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_MATERIAL);
-        if(lastPageButtonMaterial == null)
-            lastPageButton = createPlayerHead(LAST_PAGE_BUTTON_SKIN_ID);
-        else
-            lastPageButton = new ItemStack(lastPageButtonMaterial);
-        ItemMeta lastPageButtonMeta = lastPageButton.getItemMeta();
-        if(lastPageButtonMeta != null && !StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_TEXT))
-            lastPageButtonMeta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_TEXT));
-        int lastPageButtonCMD;
-        try {
-            if(lastPageButtonMeta != null && !StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD)) {
-                lastPageButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD);
-                lastPageButtonMeta.setCustomModelData(lastPageButtonCMD);
-            }
-        }
-        catch (NumberFormatException e) {
-            Logger.logDebugInfo("Invalid Custom Model Data for Goto Last Page Button in config.yml");
-        }
-        lastPageButton.setItemMeta(lastPageButtonMeta);
+        Material mat = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_MATERIAL);
+        lastPageButton = buildNavButton(mat, LAST_PAGE_BUTTON_SKIN_ID,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_TEXT,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_GOTO_LAST_PAGE_BUTTON_CMD,
+                "Goto Last Page Button");
     }
 
     private void createGUICloseInvButton() {
-        Material closeInvButtonMaterial = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_MATERIAL);
-        if(closeInvButtonMaterial == null) {
-            closeInvButtonMaterial = Material.BARRIER;
+        Material mat = Material.getMaterial(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_MATERIAL);
+        if (mat == null) mat = Material.BARRIER;
+        closeInvButton = buildNavButton(mat, null,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT,
+                FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_CMD,
+                "Close Button");
+    }
+
+    /**
+     * Builds a navigation bar button. Falls back to a player-head texture when {@code material} is
+     * null and {@code skinId} is provided; falls back to STONE when both are absent.
+     */
+    private ItemStack buildNavButton(Material material, String skinId, String displayText, String cmdValue, String buttonLabel) {
+        ItemStack item;
+        if (material == null && skinId != null) {
+            item = createPlayerHead(skinId);
+        } else {
+            item = new ItemStack(material != null ? material : Material.STONE);
         }
-        closeInvButton = new ItemStack(closeInvButtonMaterial);
-        ItemMeta closeInvMeta = closeInvButton.getItemMeta();
-        assert closeInvMeta != null;
-        if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT)) {
-            closeInvMeta.setDisplayName(ColorTranslator.translateColorCodes(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_TEXT));
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) meta = Bukkit.getItemFactory().getItemMeta(item.getType());
+        if (meta == null) return item;
+        if (!StringUtils.isEmpty(displayText)) {
+            meta.setDisplayName(ColorTranslator.translateColorCodes(displayText));
         }
-        int closeInvButtonCMD;
-        try {
-            if(!StringUtils.isEmpty(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_CMD)) {
-                closeInvButtonCMD = Integer.parseInt(FindItemAddOn.getConfigProvider().SHOP_GUI_CLOSE_BUTTON_CMD);
-                closeInvMeta.setCustomModelData(closeInvButtonCMD);
+        if (!StringUtils.isEmpty(cmdValue)) {
+            try {
+                meta.setCustomModelData(Integer.parseInt(cmdValue));
+            } catch (NumberFormatException e) {
+                Logger.logDebugInfo("Invalid Custom Model Data for " + buttonLabel + " in config.yml");
             }
         }
-        catch (NumberFormatException e) {
-            Logger.logDebugInfo("Invalid Custom Model Data for Close Button in config.yml");
-        }
-        closeInvButton.setItemMeta(closeInvMeta);
+        item.setItemMeta(meta);
+        return item;
     }
 
     private ItemStack createPlayerHead(String textureValue) {

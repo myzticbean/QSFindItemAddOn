@@ -96,7 +96,7 @@
                 <version>2.3.1</version>
                 <configuration>
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
-                    <!-- <outputDirectory>D:\Github_myzticbean\MCServer_1.21_SNAPSHOT\plugins</outputDirectory> -->
+                    <outputDirectory>D:\Github_myzticbean\MCServer_1.21_SNAPSHOT_FOLIA\plugins</outputDirectory>
                     <!-- Comment out if on a PC -->
                     <!-- <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory> -->
                 </configuration>
