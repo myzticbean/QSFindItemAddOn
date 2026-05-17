@@ -169,9 +169,12 @@ public class FoundShopsMenu extends PaginatedMenu {
         String locData = meta.getPersistentDataContainer().get(key, PersistentDataType.STRING);
         List<String> locDataList = Arrays.asList(locData.split("\\s*\\|\\|\\|\\s*"));
 
+        // Parse location once — reused by TP and custom commands
+        Location shopLocation = locDataList.size() >= 4 ? parseShopLocation(locDataList) : null;
+
         // Handle direct teleportation to shop
-        if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP && locDataList.size() >= 4) {
-            handleDirectShopTeleport(player, locDataList);
+        if (configProvider.TP_PLAYER_DIRECTLY_TO_SHOP && shopLocation != null) {
+            handleDirectShopTeleport(player, shopLocation);
         }
         // Handle teleportation to nearest warp
         else if (configProvider.TP_PLAYER_TO_NEAREST_WARP && locDataList.size() == 1
@@ -180,27 +183,23 @@ public class FoundShopsMenu extends PaginatedMenu {
         }
 
         // Execute custom commands if enabled
-        handleCustomCommands(player, locDataList);
+        handleCustomCommands(player, shopLocation);
         player.closeInventory();
     }
 
     /**
      * Handles direct teleportation to a shop
-     * 
-     * @param player      The player to teleport
-     * @param locDataList List containing location data
+     *
+     * @param player       The player to teleport
+     * @param shopLocation The parsed shop location
      */
-    private void handleDirectShopTeleport(@NotNull Player player, List<String> locDataList) {
+    private void handleDirectShopTeleport(@NotNull Player player, @NotNull Location shopLocation) {
         VirtualThreadScheduler.runTaskAsync(() -> {
             // Check if player has permission to teleport
             if (!PlayerUtil.hasPermission(player, PlayerPermsEnum.FINDITEM_SHOPTP.value())) {
                 sendNoPermissionMessage(player);
                 return;
             }
-
-            Location shopLocation = parseShopLocation(locDataList);
-            if (shopLocation == null)
-                return;
 
             // Check if player is teleporting to their own shop
             UUID shopOwner = ShopSearchActivityStorageUtil.getShopOwnerUUID(shopLocation);
@@ -253,17 +252,13 @@ public class FoundShopsMenu extends PaginatedMenu {
 
     /**
      * Executes custom commands if enabled
-     * 
-     * @param player      The player who triggered the commands
-     * @param locDataList List containing location data
+     *
+     * @param player       The player who triggered the commands
+     * @param shopLocation The parsed shop location, or null if unavailable
      */
-    private void handleCustomCommands(Player player, List<String> locDataList) {
+    private void handleCustomCommands(Player player, @Nullable Location shopLocation) {
         if (configProvider.CUSTOM_CMDS_RUN_ENABLED && !configProvider.CUSTOM_CMDS_LIST.isEmpty()
-                && locDataList.size() >= 4) {
-            Location shopLocation = parseShopLocation(locDataList);
-            if (shopLocation == null)
-                return;
-
+                && shopLocation != null) {
             for (String cmd : configProvider.CUSTOM_CMDS_LIST) {
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), replaceCustomCmdPlaceholders(cmd, player, shopLocation));
             }
