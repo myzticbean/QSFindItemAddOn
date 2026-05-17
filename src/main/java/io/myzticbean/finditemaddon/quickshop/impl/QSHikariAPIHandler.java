@@ -50,7 +50,9 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -286,26 +288,28 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
             ));
         });
 
-        for (ShopSearchActivityModel shop_temp : tempGlobalShopsList) {
-            ShopSearchActivityModel tempShopToRemove = null;
-            for (ShopSearchActivityModel shop_global : globalShopsList) {
-                if (shop_global != null
-                        && shop_temp.getWorldName().equalsIgnoreCase(shop_global.getWorldName())
-                        && shop_temp.getX() == shop_global.getX()
-                        && shop_temp.getY() == shop_global.getY()
-                        && shop_temp.getZ() == shop_global.getZ()
-                        && shop_temp.getShopOwnerUUID().equalsIgnoreCase(shop_global.getShopOwnerUUID())) {
-                    shop_temp.setPlayerVisitList(shop_global.getPlayerVisitList());
-                    shop_temp.setHiddenFromSearch(shop_global.isHiddenFromSearch());
-                    tempShopToRemove = shop_global;
-                    break;
-                }
+        // Index the persisted shop list by location+owner key for O(1) lookup
+        Map<String, ShopSearchActivityModel> globalShopsMap = HashMap.newHashMap(globalShopsList.size());
+        for (ShopSearchActivityModel shop_global : globalShopsList) {
+            if (shop_global != null) {
+                globalShopsMap.put(shopKey(shop_global), shop_global);
             }
-            if (tempShopToRemove != null)
-                globalShopsList.remove(tempShopToRemove);
+        }
+        // For each live shop, pull saved visit/hidden state from the index if it exists.
+        // remove() is used so each persisted entry is consumed at most once.
+        for (ShopSearchActivityModel shopTemp : tempGlobalShopsList) {
+            ShopSearchActivityModel shopGlobal = globalShopsMap.remove(shopKey(shopTemp));
+            if (shopGlobal != null) {
+                shopTemp.setPlayerVisitList(shopGlobal.getPlayerVisitList());
+                shopTemp.setHiddenFromSearch(shopGlobal.isHiddenFromSearch());
+            }
         }
         Logger.logDebugInfo("Shops List sync complete. Time took: " + (System.currentTimeMillis() - start) + "ms.");
         return tempGlobalShopsList;
+    }
+
+    private static String shopKey(ShopSearchActivityModel shop) {
+        return shop.getWorldName().toLowerCase() + ":" + shop.getX() + ":" + shop.getY() + ":" + shop.getZ() + ":" + shop.getShopOwnerUUID().toLowerCase();
     }
 
     /**
