@@ -104,6 +104,7 @@ blacklisted-materials:
   - "DEBUG_STICK"
   - "LIGHT"
   - "STRUCTURE_VOID"
+shop-search-max-distance: 0
 suppress-update-notifications: false
 debug-mode: false
-config-version: 21
+config-version: 22

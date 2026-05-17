@@ -118,6 +118,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                             if (isAuthorized.equals(Boolean.TRUE)
                                     && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
                                     && !HiddenShopStorageUtil.isShopHidden(shopIterator)
+                                    && isWithinSearchDistance(shopIterator.getLocation(), searchingPlayer.getLocation())
                                     && itemFilter.test(shopIterator)) {
                                 processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
                             }
@@ -129,6 +130,13 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
             QSApi.logTimeTookMsg(begin);
             return sortedShops;
         });
+    }
+
+    private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {
+        int maxDistance = FindItemAddOn.getConfigProvider().SHOP_SEARCH_MAX_DISTANCE;
+        if (maxDistance <= 0) return true;
+        if (!shopLocation.getWorld().equals(playerLocation.getWorld())) return true;
+        return shopLocation.distanceSquared(playerLocation) <= (double) maxDistance * maxDistance;
     }
 
     /**

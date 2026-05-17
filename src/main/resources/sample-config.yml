@@ -217,6 +217,12 @@ blacklisted-materials:
   - "LIGHT"
   - "STRUCTURE_VOID"
 
+# Limits how far away a shop can be from the searching player and still appear in search results.
+# Measured in blocks. Set to 0 (or any negative number) to disable the limit (all shops are shown).
+# Shops in a different world than the player are always shown regardless of this setting.
+# Example: set to 1000 to only show shops within a 1000-block radius of the player.
+shop-search-max-distance: 0
+
 # Suppress update notification messages in chat
 # Set this to true if you don't want to see update notifications in chat
 # Console messages are always shown and cannot be suppressed
@@ -228,4 +234,4 @@ suppress-update-notifications: false
 debug-mode: false
 
 # Do not change the below value
-config-version: 21
+config-version: 22

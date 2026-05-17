@@ -5,6 +5,7 @@
 - **Search results now always respect your configured sorting method** — previously, browsing all shops (`/finditem TO_BUY *`) ignored your `shop-sorting-method` setting and always sorted by a fixed method. It now behaves the same as all other searches.
 - **Snappier GUI clicks** — shop teleportation and custom command execution on GUI click are now faster under the hood, with less redundant work per click.
 - **Java 25 & Paper API 26.x support** — ready for the latest server versions out of the box.
+- **New: limit search results by distance** ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): a new `shop-search-max-distance` config option lets you hide shops that are too far away from the searching player. Set it to a block radius (e.g. `1000`) to keep results local. Disabled by default (set to `0`).
 
 ### Changes (technical)
 - Upgraded to Paper API 26.x / Java 25
@@ -17,6 +18,7 @@
 - Tab-completion material list in `BuySubCmd` / `SellSubCmd` built once statically instead of per instance
 - Shop location string parsed once per GUI click and passed to all handlers, instead of being re-parsed by each handler independently
 - Cleaned up `ShopSearchActivityStorageUtil`: `loadShopsFromFile` now calls `syncShops()` consistently; marked Reremake-era `addShop` overload and `getShopOwner` as `@Deprecated`
+- Added `shop-search-max-distance` config option ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): filters out shops beyond a configurable block radius from the searching player; `0` disables (default); cross-world shops are always included; bumped config version to 22
 
 
 ## Release 2.0.8.0

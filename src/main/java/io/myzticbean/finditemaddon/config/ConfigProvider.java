@@ -106,6 +106,7 @@ public class ConfigProvider {
     public final boolean IGNORE_EMPTY_CHESTS = ConfigSetup.get().getBoolean("ignore-empty-chests");
     private final List<String> BLACKLISTED_WORLDS = (List<String>) ConfigSetup.get().getList("blacklisted-worlds");
     private final List<String> BLACKLISTED_MATERIALS = (List<String>) ConfigSetup.get().getList("blacklisted-materials");
+    public final int SHOP_SEARCH_MAX_DISTANCE = ConfigSetup.get().getInt("shop-search-max-distance");
     public final boolean SUPPRESS_UPDATE_NOTIFICATIONS = ConfigSetup.get().getBoolean("suppress-update-notifications");
     public final int CONFIG_VERSION = ConfigSetup.get().getInt("config-version");
     public final boolean BENTOBOX_IGNORE_LOCKED_ISLAND_SHOPS = ConfigSetup.get().getBoolean(BENTOBOX + "ignore-locked-island-shops");

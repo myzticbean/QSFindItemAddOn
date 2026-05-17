@@ -42,7 +42,7 @@ public class ConfigSetup {
     private static File sampleConfigFile;
     private static FileConfiguration configFileConfiguration;
     @Getter
-    private static final int CURRENT_CONFIG_VERSION = 21;
+    private static final int CURRENT_CONFIG_VERSION = 22;
 
     public static void setupConfig() {
         configFile = new File(FindItemAddOn.getInstance().getDataFolder(), "config.yml");
@@ -320,6 +320,11 @@ public class ConfigSetup {
             // Config 21
             if(configFileConfiguration.getInt("config-version") < 21) {
                 configFileConfiguration.set("shop-gui.custom-model-data.filler-item-custom-model-data", "");
+            }
+
+            // Config 22
+            if(configFileConfiguration.getInt("config-version") < 22) {
+                configFileConfiguration.set("shop-search-max-distance", 0);
             }
 
             // AT LAST
