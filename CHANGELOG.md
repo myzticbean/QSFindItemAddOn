@@ -1,10 +1,21 @@
 ## Snapshot 2.0.8.1
-### Changes
+
+### What's new for server owners
+- **Noticeably faster searches on large servers** — the shop list sync that runs every 15 minutes (and on startup) has been rewritten to scale linearly instead of getting slower the more shops your server has. Servers with thousands of shops will see a significant drop in that sync time.
+- **Search results now always respect your configured sorting method** — previously, browsing all shops (`/finditem TO_BUY *`) ignored your `shop-sorting-method` setting and always sorted by a fixed method. It now behaves the same as all other searches.
+- **Snappier GUI clicks** — shop teleportation and custom command execution on GUI click are now faster under the hood, with less redundant work per click.
+- **Java 25 & Paper API 26.x support** — ready for the latest server versions out of the box.
+
+### Changes (technical)
 - Upgraded to Paper API 26.x / Java 25
 - Added `PlatformBridge` abstraction (`BukkitPlatformBridge`) to decouple platform-specific calls from core logic
-- Refactored `QSHikariAPIHandler`: consolidated three duplicate shop-search methods (`findItemBasedOnTypeFromAllShops`, `findItemBasedOnDisplayNameFromAllShops`, `fetchAllItemsFromAllShops`) into a single private `searchShops(Predicate, boolean, Player)` method, removing ~70 lines of duplication
+- Refactored `QSHikariAPIHandler`: consolidated three duplicate shop-search methods into a single `searchShops(Predicate, boolean, Player)` method, removing ~70 lines of duplication
 - Optimized `syncShopsListForStorage` from O(n²) nested loop to O(n) `HashMap` lookup — significant speedup on servers with large shop counts
 - `fetchAllItemsFromAllShops` now respects the configured `shop-sorting-method` (previously hardcoded to method 1)
+- Eliminated per-shop QS version string parse in stock/space cache lookup — replaced with boolean flag computed once at startup
+- MC version regex in GUI compiled once as `static final` instead of on every menu open
+- Tab-completion material list in `BuySubCmd` / `SellSubCmd` built once statically instead of per instance
+- Shop location string parsed once per GUI click and passed to all handlers, instead of being re-parsed by each handler independently
 - Cleaned up `ShopSearchActivityStorageUtil`: `loadShopsFromFile` now calls `syncShops()` consistently; marked Reremake-era `addShop` overload and `getShopOwner` as `@Deprecated`
 
 
