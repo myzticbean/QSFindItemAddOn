@@ -59,6 +59,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.function.Predicate;
 
 /**
  * Implementation of QSApi for Hikari
@@ -67,6 +68,7 @@ import java.util.concurrent.TimeoutException;
 public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
 
     private static final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
+    private static final int PERMISSION_CHECK_TIMEOUT_SECONDS = 5;
     private final QuickShopAPI api;
     private final String pluginVersion;
     private final ConcurrentMap<Long, CachedShop> shopCache;
@@ -81,95 +83,47 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     }
 
     public CompletableFuture<List<FoundShopItemModel>> findItemBasedOnTypeFromAllShops(ItemStack item, boolean toBuy, Player searchingPlayer) {
-        var begin = Instant.now();
-        return VirtualThreadScheduler.supplyAsync(() -> {
-            List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
-            List<Shop> allShops = fetchAllShopsFromQS();
-            Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
-            for (Shop shopIterator : allShops) {
-                CompletableFuture<Void> processingFuture = permissionCheckFuture(searchingPlayer, shopIterator)
-                        .thenAcceptAsync(isAuthorized -> {
-                            if (isAuthorized.equals(Boolean.TRUE)
-                                    // check for blacklisted worlds
-                                    && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-                                    && shopIterator.getItem().getType().equals(item.getType())
-                                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
-                                    // check for shop if hidden
-                                    && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
-                            }
-                });
-                futures.add(processingFuture);
-            }
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-            List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
-            QSApi.logTimeTookMsg(begin);
-            return sortedShops;
-        });
+        return searchShops(
+            shop -> shop.getItem().getType().equals(item.getType()) && (toBuy ? shop.isSelling() : shop.isBuying()),
+            toBuy, searchingPlayer);
     }
 
     public CompletableFuture<List<FoundShopItemModel>> findItemBasedOnDisplayNameFromAllShops(String displayName, boolean toBuy, Player searchingPlayer) {
+        return searchShops(
+            shop -> shop.getItem().hasItemMeta()
+                && Objects.requireNonNull(shop.getItem().getItemMeta()).hasDisplayName()
+                && shop.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
+                && (toBuy ? shop.isSelling() : shop.isBuying()),
+            toBuy, searchingPlayer);
+    }
+
+    public CompletableFuture<List<FoundShopItemModel>> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
+        return searchShops(
+            shop -> toBuy ? shop.isSelling() : shop.isBuying(),
+            toBuy, searchingPlayer);
+    }
+
+    private CompletableFuture<List<FoundShopItemModel>> searchShops(Predicate<Shop> itemFilter, boolean toBuy, Player searchingPlayer) {
         var begin = Instant.now();
         return VirtualThreadScheduler.supplyAsync(() -> {
             List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
             List<Shop> allShops = fetchAllShopsFromQS();
             Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
-
             List<CompletableFuture<Void>> futures = new ArrayList<>();
-
             for (Shop shopIterator : allShops) {
                 CompletableFuture<Void> processingFuture = permissionCheckFuture(searchingPlayer, shopIterator)
                         .thenAcceptAsync(isAuthorized -> {
                             if (isAuthorized.equals(Boolean.TRUE)
-                                    // check for blacklisted worlds
                                     && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-                                    // match the item based on query
-                                    && shopIterator.getItem().hasItemMeta()
-                                    && Objects.requireNonNull(shopIterator.getItem().getItemMeta()).hasDisplayName()
-                                    && (shopIterator.getItem().getItemMeta().getDisplayName().toLowerCase().contains(displayName.toLowerCase())
-                                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
-                                    // check for shop if hidden
-                                    && !HiddenShopStorageUtil.isShopHidden(shopIterator)) {
+                                    && !HiddenShopStorageUtil.isShopHidden(shopIterator)
+                                    && itemFilter.test(shopIterator)) {
                                 processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
                             }
-                });
+                        });
                 futures.add(processingFuture);
             }
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
             List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
-            QSApi.logTimeTookMsg(begin);
-            return sortedShops;
-        });
-    }
-
-    public CompletableFuture<List<FoundShopItemModel>> fetchAllItemsFromAllShops(boolean toBuy, Player searchingPlayer) {
-        var begin = Instant.now();
-        return VirtualThreadScheduler.supplyAsync(() -> {
-            List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
-            List<Shop> allShops = fetchAllShopsFromQS();
-            Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
-            List<CompletableFuture<Void>> futures = new ArrayList<>();
-            for (Shop shopIterator : allShops) {
-                CompletableFuture<Void> processingFuture = permissionCheckFuture(searchingPlayer, shopIterator)
-                        .thenAcceptAsync(isAuthorized -> {
-                            if (isAuthorized.equals(Boolean.TRUE)
-                                    // check for blacklisted worlds
-                                    && (!FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-                                    && (toBuy ? shopIterator.isSelling() : shopIterator.isBuying()))
-                                    // check for shop if hidden
-                                    && (!HiddenShopStorageUtil.isShopHidden(shopIterator))) {
-                                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
-                            }
-                });
-                futures.add(processingFuture);
-            }
-            CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
-            List<FoundShopItemModel> sortedShops = new ArrayList<>(shopsFoundList);
-            if(!shopsFoundList.isEmpty()) {
-                int sortingMethod = 1;
-                sortedShops = QSApi.sortShops(sortingMethod, shopsFoundList, toBuy);
-            }
             QSApi.logTimeTookMsg(begin);
             return sortedShops;
         });
@@ -188,11 +142,9 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
      * @see BuiltInShopPermission#SEARCH
      * @since 1.0.0
      */
-    private static final int PERMISSION_CHECK_TIMEOUT_SECONDS = 5;
-
     private CompletableFuture<Boolean> permissionCheckFuture(Player searchingPlayer, Shop shopIterator) {
         CompletableFuture<Boolean> permissionCheckFuture = new CompletableFuture<>();
-        FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, (t) -> {
+        FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, _ -> {
             try {
                 permissionCheckFuture.complete(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH));
             } catch (Exception e) {
