@@ -6,22 +6,23 @@
 
     <groupId>io.myzticbean.finditemaddon</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.8.0-RELEASE</version>
+    <version>2.0.8.1-SNAPSHOT-260517</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
     <inceptionYear>2021</inceptionYear>
 
     <properties>
-        <java.version>21</java.version>
+        <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <paper-api.version>1.21.11-R0.1-SNAPSHOT</paper-api.version>
+        <paper-api.version>26.1.2.build.64-stable</paper-api.version>
         <qs-hikari.version>6.2.0.11</qs-hikari.version>
         <playerwarps-api-old>6.30.0</playerwarps-api-old>
         <playerwarps-api-new>7.10.0</playerwarps-api-new>
         <essentialsx.version>2.21.2</essentialsx.version>
         <worldguard-bukkit.version>7.0.16</worldguard-bukkit.version>
         <jackson.version>2.21.0</jackson.version>
+        <bentobox.version>3.16.0</bentobox.version>
     </properties>
 
     <ciManagement>
@@ -58,16 +59,22 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>25</release>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.46</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.6.0</version>
+                <version>3.6.2</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -96,7 +103,7 @@
                 <version>2.3.1</version>
                 <configuration>
                     <!-- Below path is where your plugin jar will be copied automatically upon build, comment out if on a Mac -->
-                    <outputDirectory>D:\Github_myzticbean\MCServer_1.21_SNAPSHOT_FOLIA\plugins</outputDirectory>
+                    <outputDirectory>D:\Github_myzticbean\MCServer_26.1_SNAPSHOT\plugins</outputDirectory>
                     <!-- Comment out if on a PC -->
                     <!-- <outputDirectory>/Users/${user.name}/IdeaProjects/MCServer_1.21/plugins</outputDirectory> -->
                 </configuration>
@@ -181,6 +188,10 @@
         <repository>
             <id>tcoded-releases</id>
             <url>https://repo.tcoded.com/releases</url>
+        </repository>
+        <repository>
+            <id>papermc</id>
+            <url>https://repo.papermc.io/repository/maven-public/</url>
         </repository>
     </repositories>
 
@@ -409,7 +420,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.34</version>
+            <version>1.18.46</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -462,7 +473,7 @@
         <dependency>
             <groupId>world.bentobox</groupId>
             <artifactId>bentobox</artifactId>
-            <version>3.7.3</version>
+            <version>${bentobox.version}</version>
             <scope>provided</scope>
         </dependency>
         <!-- For @Nullable on generics type -->

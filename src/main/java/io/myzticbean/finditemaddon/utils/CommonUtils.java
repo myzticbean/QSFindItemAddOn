@@ -18,9 +18,8 @@
  */
 package io.myzticbean.finditemaddon.utils;
 
+import io.myzticbean.finditemaddon.FindItemAddOn;
 import lombok.experimental.UtilityClass;
-import me.kodysimpson.simpapi.colors.ColorTranslator;
-import net.md_5.bungee.api.ChatMessageType;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
@@ -35,7 +34,7 @@ public class CommonUtils {
     }
 
     public static void sendPlayerActionBar(Player player, String msg) {
-        player.spigot().sendMessage(ChatMessageType.ACTION_BAR, ColorTranslator.translateColorCodesToTextComponent(msg));
+        FindItemAddOn.getPlatformBridge().sendActionBar(player, msg);
     }
 
     public static String capitalizeFirstLetters(String str) {

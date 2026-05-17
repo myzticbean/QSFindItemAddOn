@@ -16,30 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <https://www.gnu.org/licenses/>.
  */
-package io.myzticbean.finditemaddon.utils;
+package io.myzticbean.finditemaddon.utils.platform;
 
-import io.myzticbean.finditemaddon.FindItemAddOn;
-import lombok.experimental.UtilityClass;
 import org.bukkit.Location;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 
 /**
- * Static facade over {@link io.myzticbean.finditemaddon.utils.platform.PlatformBridge}.
- * Call sites remain unchanged; all Bukkit logic lives in BukkitPlatformBridge.
+ * Abstracts all direct Bukkit player-interaction API calls so that future
+ * Paper API changes only require updating the single {@link BukkitPlatformBridge}
+ * implementation rather than every call site.
+ *
+ * @see BukkitPlatformBridge
  */
-@UtilityClass
-public class PlayerUtil {
+public interface PlatformBridge {
 
-    public void sendMessage(HumanEntity player, String message) {
-        FindItemAddOn.getPlatformBridge().sendMessage(player, message);
-    }
+    /**
+     * Sends a color-translated message to a player, dispatched on the entity's thread.
+     */
+    void sendMessage(HumanEntity player, String message);
 
-    public void teleport(Player player, Location locToTeleport) {
-        FindItemAddOn.getPlatformBridge().teleport(player, locToTeleport);
-    }
+    /**
+     * Sends a color-translated action-bar message to a player.
+     */
+    void sendActionBar(Player player, String message);
 
-    public boolean hasPermission(Player player, String permission) {
-        return FindItemAddOn.getPlatformBridge().hasPermission(player, permission);
-    }
+    /**
+     * Teleports a player to the given location using the platform scheduler.
+     */
+    void teleport(Player player, Location location);
+
+    /**
+     * Returns whether the player has the given permission, safe to call from any thread.
+     */
+    boolean hasPermission(Player player, String permission);
 }

@@ -43,6 +43,8 @@ import io.myzticbean.finditemaddon.utils.UpdateChecker;
 import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.utils.log.Logger;
+import io.myzticbean.finditemaddon.utils.platform.BukkitPlatformBridge;
+import io.myzticbean.finditemaddon.utils.platform.PlatformBridge;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import me.kodysimpson.simpapi.colors.ColorTranslator;
@@ -78,6 +80,8 @@ public final class FindItemAddOn extends JavaPlugin {
     private static Plugin pluginInstance;
     @Getter
     private static FoliaLib foliaLib;
+    @Getter
+    private static PlatformBridge platformBridge;
 
     public FindItemAddOn() {
         pluginInstance = this;
@@ -116,6 +120,7 @@ public final class FindItemAddOn extends JavaPlugin {
     @Override
     public void onLoad() {
         foliaLib = new FoliaLib(this);
+        platformBridge = new BukkitPlatformBridge();
         Logger.logInfo("A Shop Search AddOn for QuickShop developed by myzticbean");
 
         // Show warning if it's a snapshot build
