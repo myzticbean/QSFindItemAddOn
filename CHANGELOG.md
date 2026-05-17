@@ -1,3 +1,13 @@
+## Snapshot 2.0.8.1
+### Changes
+- Upgraded to Paper API 26.x / Java 25
+- Added `PlatformBridge` abstraction (`BukkitPlatformBridge`) to decouple platform-specific calls from core logic
+- Refactored `QSHikariAPIHandler`: consolidated three duplicate shop-search methods (`findItemBasedOnTypeFromAllShops`, `findItemBasedOnDisplayNameFromAllShops`, `fetchAllItemsFromAllShops`) into a single private `searchShops(Predicate, boolean, Player)` method, removing ~70 lines of duplication
+- Optimized `syncShopsListForStorage` from O(n²) nested loop to O(n) `HashMap` lookup — significant speedup on servers with large shop counts
+- `fetchAllItemsFromAllShops` now respects the configured `shop-sorting-method` (previously hardcoded to method 1)
+- Cleaned up `ShopSearchActivityStorageUtil`: `loadShopsFromFile` now calls `syncShops()` consistently; marked Reremake-era `addShop` overload and `getShopOwner` as `@Deprecated`
+
+
 ## Release 2.0.8.0
 ### Changes
 - QS-Reremake support has been dropped completely
