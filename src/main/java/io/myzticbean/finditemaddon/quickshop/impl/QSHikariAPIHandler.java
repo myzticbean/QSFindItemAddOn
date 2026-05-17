@@ -383,9 +383,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     }
 
     private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
-        String mainVersionStr = pluginVersion.split("\\.")[0];
-        int mainVersion = Integer.parseInt(mainVersionStr);
-        if (mainVersion >= 6) {
+        if (isQSHikariShopCacheImplemented) {
             // New feature available
             Util.ensureThread(true);
             int stockOrSpace = (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
