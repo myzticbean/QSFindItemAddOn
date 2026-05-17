@@ -37,8 +37,9 @@ import java.util.List;
  */
 public class BuySubCmd extends SubCommand {
 
+    private static List<String> itemsList;
+
     private final String buySubCommand;
-    private final List<String> itemsList = new ArrayList<>();
     private final CmdExecutorHandler cmdExecutor;
 
     public BuySubCmd() {
@@ -50,11 +51,11 @@ public class BuySubCmd extends SubCommand {
         else {
             buySubCommand = FindItemAddOn.getConfigProvider().FIND_ITEM_TO_BUY_AUTOCOMPLETE;
         }
-        if(itemsList.isEmpty()) {
-            itemsList.addAll(Arrays.stream(Material.values())
+        if(itemsList == null) {
+            itemsList = Arrays.stream(Material.values())
                     .filter(mat -> !FindItemAddOn.getConfigProvider().getBlacklistedMaterials().contains(mat))
                     .map(Material::name)
-                    .toList());
+                    .toList();
         }
         cmdExecutor = new CmdExecutorHandler();
     }
