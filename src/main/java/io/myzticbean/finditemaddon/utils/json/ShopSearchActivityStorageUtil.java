@@ -112,6 +112,7 @@ public class ShopSearchActivityStorageUtil {
      * QuickShop Reremake
      * @param shop
      */
+    @Deprecated
     public void addShop(org.maxgamer.quickshop.api.shop.Shop shop) {
         for(ShopSearchActivityModel shop_i : globalShopsList) {
             if(shop_i.getX() == shop.getLocation().getX()
@@ -190,7 +191,7 @@ public class ShopSearchActivityStorageUtil {
                 Logger.logError("Failed to load shops from file", e);
             }
         }
-        globalShopsList = FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList);
+        syncShops();
     }
 
     public static void saveShopsToFile() {
@@ -287,6 +288,7 @@ public class ShopSearchActivityStorageUtil {
     }
 
     @Nullable
+    @Deprecated
     public static OfflinePlayer getShopOwner(@NotNull Location shopLocation) {
         for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
             if (shopSearchActivity.compareWith(
@@ -303,9 +305,7 @@ public class ShopSearchActivityStorageUtil {
 
     @Nullable
     public static UUID getShopOwnerUUID(@NotNull Location shopLocation) {
-        Iterator<ShopSearchActivityModel> globalShopsListIterator = globalShopsList.iterator();
-        while(globalShopsListIterator.hasNext()) {
-            ShopSearchActivityModel shopSearchActivity = globalShopsListIterator.next();
+        for (ShopSearchActivityModel shopSearchActivity : globalShopsList) {
             if (shopSearchActivity.compareWith(
                     shopLocation.getWorld().getName(),
                     shopLocation.getX(),
@@ -315,8 +315,8 @@ public class ShopSearchActivityStorageUtil {
                 String uuidStr = shopSearchActivity.getShopOwnerUUID();
                 try {
                     return UUID.fromString(uuidStr);
-                } catch (IllegalArgumentException e) {
-                    if(!FindItemAddOn.isQSReremakeInstalled()) {
+                } catch (IllegalArgumentException _) {
+                    if (!FindItemAddOn.isQSReremakeInstalled()) {
                         UUID uuid = FindItemAddOn.getQsApiInstance().convertNameToUuid(uuidStr);
                         int index = globalShopsList.indexOf(shopSearchActivity);
                         globalShopsList.get(index).setShopOwnerUUID(uuid.toString());
