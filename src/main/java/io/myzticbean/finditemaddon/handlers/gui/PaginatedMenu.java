@@ -87,10 +87,8 @@ public abstract class PaginatedMenu extends Menu {
         inventory.setItem(52, lastPageButton);
         inventory.setItem(49, closeInvButton);
 
-        inventory.setItem(47, super.GUI_FILLER_ITEM);
-        inventory.setItem(48, super.GUI_FILLER_ITEM);
-        inventory.setItem(50, super.GUI_FILLER_ITEM);
-        inventory.setItem(51, super.GUI_FILLER_ITEM);
+        // Slots 47, 48, 50, 51 are intentionally left empty here.
+        // FoundShopsMenu fills them with sort/filter control buttons.
     }
 
     private void createGUIBackButton() {
