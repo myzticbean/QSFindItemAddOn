@@ -41,6 +41,7 @@ import io.myzticbean.finditemaddon.quickshop.impl.QSHikariAPIHandler;
 import io.myzticbean.finditemaddon.scheduledtasks.Task15MinInterval;
 import io.myzticbean.finditemaddon.utils.UpdateChecker;
 import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
+import io.myzticbean.finditemaddon.utils.json.PlayerPrefsStorageUtil;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import io.myzticbean.finditemaddon.utils.platform.BukkitPlatformBridge;
@@ -182,6 +183,7 @@ public final class FindItemAddOn extends JavaPlugin {
         // Plugin shutdown logic
         if(qsApi != null) {
             ShopSearchActivityStorageUtil.saveShopsToFile();
+            PlayerPrefsStorageUtil.save();
         }
         else if(!ENABLE_TRIAL_PERIOD) {
             Logger.logError("Uh oh! Looks like either this plugin has crashed or you don't have QuickShop-Hikari installed.");
@@ -214,6 +216,7 @@ public final class FindItemAddOn extends JavaPlugin {
 
         // Load all hidden shops from file
         ShopSearchActivityStorageUtil.loadShopsFromFile();
+        PlayerPrefsStorageUtil.load();
 
         // v2.0.0.0 - Migrating hiddenShops.json to shops.json
         ShopSearchActivityStorageUtil.migrateHiddenShopsToShopsJson();

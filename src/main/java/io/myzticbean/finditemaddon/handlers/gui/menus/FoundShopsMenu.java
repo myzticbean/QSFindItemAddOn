@@ -29,9 +29,12 @@ import io.myzticbean.finditemaddon.dependencies.WGPlugin;
 import io.myzticbean.finditemaddon.handlers.gui.PaginatedMenu;
 import io.myzticbean.finditemaddon.handlers.gui.PlayerMenuUtility;
 import io.myzticbean.finditemaddon.models.FoundShopItemModel;
+import io.myzticbean.finditemaddon.models.PlayerSortFilterPrefs;
 import io.myzticbean.finditemaddon.models.enums.CustomCmdPlaceholdersEnum;
 import io.myzticbean.finditemaddon.models.enums.PlayerPermsEnum;
 import io.myzticbean.finditemaddon.models.enums.ShopLorePlaceholdersEnum;
+import io.myzticbean.finditemaddon.models.enums.SortMode;
+import io.myzticbean.finditemaddon.utils.json.PlayerPrefsStorageUtil;
 import io.myzticbean.finditemaddon.utils.PlayerUtil;
 import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.json.ShopSearchActivityStorageUtil;
@@ -59,9 +62,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 /**
  * Handler class for FoundShops GUI
@@ -128,6 +133,7 @@ public class FoundShopsMenu extends PaginatedMenu {
      * @return true if a navigation button was clicked, false otherwise
      */
     private boolean handleNavigationClick(InventoryClickEvent event, int slot) {
+        Player player = (Player) event.getWhoClicked();
         return switch (slot) {
             case 45 -> {
                 handleMenuClickForNavToPrevPage(event);
@@ -135,6 +141,42 @@ public class FoundShopsMenu extends PaginatedMenu {
             }
             case 46 -> {
                 handleFirstPageClick(event);
+                yield true;
+            }
+            case 47 -> {
+                // Sort cycle: DEFAULT → PRICE_ASC → PRICE_DESC → DISTANCE_ASC → DEFAULT
+                PlayerSortFilterPrefs prefs47 = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+                prefs47.setSortMode(prefs47.getSortMode().next());
+                PlayerPrefsStorageUtil.saveAsync();
+                page = 0;
+                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+                yield true;
+            }
+            case 48 -> {
+                // Filter: Has Stock/Space toggle
+                PlayerSortFilterPrefs prefs48 = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+                prefs48.setFilterHasStock(!prefs48.isFilterHasStock());
+                PlayerPrefsStorageUtil.saveAsync();
+                page = 0;
+                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+                yield true;
+            }
+            case 50 -> {
+                // Filter: Same World Only toggle
+                PlayerSortFilterPrefs prefs50 = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+                prefs50.setFilterSameWorld(!prefs50.isFilterSameWorld());
+                PlayerPrefsStorageUtil.saveAsync();
+                page = 0;
+                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
+                yield true;
+            }
+            case 51 -> {
+                // Filter: Exclude Own Shops toggle
+                PlayerSortFilterPrefs prefs51 = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+                prefs51.setFilterExcludeOwnShops(!prefs51.isFilterExcludeOwnShops());
+                PlayerPrefsStorageUtil.saveAsync();
+                page = 0;
+                super.open(super.playerMenuUtility.getPlayerShopSearchResult());
                 yield true;
             }
             case 52 -> {
@@ -425,25 +467,27 @@ public class FoundShopsMenu extends PaginatedMenu {
     public void setMenuItems(List<FoundShopItemModel> foundShops) {
         // Add the bottom navigation bar to the menu
         addMenuBottomBar();
+        // Populate sort/filter buttons in slots 47, 48, 50, 51
+        setSortFilterButtons();
 
         // If no shops were found, return early
         if (foundShops == null || foundShops.isEmpty()) {
             return;
         }
 
+        // Apply player's sort/filter preferences lazily — raw list is never modified
+        List<FoundShopItemModel> viewList = applyPrefs(foundShops);
+
         int maxItemsPerPage = MAX_ITEMS_PER_PAGE;
         // Iterate through the slots for this page
         for (int guiSlotCounter = 0; guiSlotCounter < maxItemsPerPage; guiSlotCounter++) {
-            // Calculate the index in the foundShops list for the current slot
+            // Calculate the index in the view list for the current slot
             index = maxItemsPerPage * page + guiSlotCounter;
-            if (index >= foundShops.size()) {
+            if (index >= viewList.size()) {
                 break;
             }
 
-            FoundShopItemModel foundShop = foundShops.get(index);
-            if (foundShop == null) {
-                continue;
-            }
+            FoundShopItemModel foundShop = viewList.get(index);
 
             // Create an ItemStack for the shop and add it to the inventory
             ItemStack item = createShopItem(foundShop);
@@ -452,8 +496,131 @@ public class FoundShopsMenu extends PaginatedMenu {
     }
 
     /**
+     * Applies the player's sort/filter preferences to the raw shop list.
+     * Returns the raw list directly when no preferences are active (zero-overhead path).
+     * The raw list is never modified; the returned list is a fresh view computed on demand.
+     * Runs inside runAtEntity (main/region thread), so player.getLocation() is safe.
+     */
+    private List<FoundShopItemModel> applyPrefs(List<FoundShopItemModel> raw) {
+        Player player = playerMenuUtility.getOwner();
+        if (player == null) return raw;
+
+        PlayerSortFilterPrefs prefs = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+
+        // Short-circuit: nothing to do — return raw directly with zero allocation
+        if (prefs.getSortMode() == SortMode.DEFAULT
+                && !prefs.isFilterHasStock()
+                && !prefs.isFilterSameWorld()
+                && !prefs.isFilterExcludeOwnShops()) {
+            return raw;
+        }
+
+        // Filter nulls first — mirrors the original null-guard in the loop above
+        Stream<FoundShopItemModel> stream = raw.stream().filter(Objects::nonNull);
+
+        // --- Filters (cheap predicates, applied in ascending cost order) ---
+
+        if (prefs.isFilterHasStock()) {
+            // Keep shops with actual stock/space.
+            // Sentinel values: -1 and MAX_VALUE mean unlimited (always shown).
+            // -2 means unknown (cache miss) — excluded when filter is ON to avoid showing stale data.
+            stream = stream.filter(s -> {
+                int v = s.getRemainingStockOrSpace();
+                return v > 0 || v == -1 || v == Integer.MAX_VALUE;
+            });
+        }
+
+        if (prefs.isFilterSameWorld()) {
+            World playerWorld = player.getWorld();
+            stream = stream.filter(s -> playerWorld.equals(s.getShopLocation().getWorld()));
+        }
+
+        if (prefs.isFilterExcludeOwnShops()) {
+            UUID playerUUID = player.getUniqueId();
+            stream = stream.filter(s -> !s.getShopOwner().equals(playerUUID));
+        }
+
+        // --- Sort (at most one comparator applied) ---
+
+        Comparator<FoundShopItemModel> comparator = switch (prefs.getSortMode()) {
+            case PRICE_ASC  -> Comparator.comparingDouble(FoundShopItemModel::getShopPrice);
+            case PRICE_DESC -> Comparator.comparingDouble(FoundShopItemModel::getShopPrice).reversed();
+            case DISTANCE_ASC -> {
+                // Use distanceSquared (no sqrt) for performance.
+                // Cross-world shops have no meaningful distance — push them to the end.
+                Location playerLoc = player.getLocation();
+                yield Comparator.comparingDouble((FoundShopItemModel s) -> {
+                    if (!playerLoc.getWorld().equals(s.getShopLocation().getWorld())) {
+                        return Double.MAX_VALUE;
+                    }
+                    return playerLoc.distanceSquared(s.getShopLocation());
+                });
+            }
+            default -> null;
+        };
+
+        if (comparator != null) {
+            stream = stream.sorted(comparator);
+        }
+
+        return stream.toList();
+    }
+
+    /**
+     * Places the sort and filter control buttons into nav bar slots 47, 48, 50, 51.
+     * Called from setMenuItems() after addMenuBottomBar() has populated the other slots.
+     */
+    private void setSortFilterButtons() {
+        Player player = playerMenuUtility.getOwner();
+        if (player == null) return;
+        PlayerSortFilterPrefs prefs = PlayerPrefsStorageUtil.getPrefs(player.getUniqueId());
+
+        inventory.setItem(47, buildSortButton(prefs.getSortMode()));
+        inventory.setItem(48, buildFilterButton("Has Stock/Space",   prefs.isFilterHasStock()));
+        inventory.setItem(50, buildFilterButton("Same World Only",   prefs.isFilterSameWorld()));
+        inventory.setItem(51, buildFilterButton("Exclude Own Shops", prefs.isFilterExcludeOwnShops()));
+    }
+
+    /**
+     * Builds the sort cycle button for slot 47.
+     * Display name reflects the currently active sort mode.
+     */
+    private ItemStack buildSortButton(SortMode mode) {
+        String label = switch (mode) {
+            case PRICE_ASC    -> "&aSort: Price ↑";
+            case PRICE_DESC   -> "&aSort: Price ↓";
+            case DISTANCE_ASC -> "&aSort: Distance ↑";
+            default           -> "&7Sort: Default";
+        };
+        ItemStack item = new ItemStack(Material.HOPPER);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        meta.setDisplayName(ColorTranslator.translateColorCodes(label));
+        meta.setLore(List.of(ColorTranslator.translateColorCodes("&7Click to cycle sort mode")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    /**
+     * Builds a filter toggle button for slots 48, 50, or 51.
+     *
+     * @param label  Human-readable filter name shown in the display name.
+     * @param active Whether this filter is currently ON.
+     */
+    private ItemStack buildFilterButton(String label, boolean active) {
+        ItemStack item = new ItemStack(active ? Material.LIME_DYE : Material.GRAY_DYE);
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null) return item;
+        String prefix = active ? "&a✔ " : "&7✘ ";
+        meta.setDisplayName(ColorTranslator.translateColorCodes(prefix + label));
+        meta.setLore(List.of(ColorTranslator.translateColorCodes("&7Click to toggle")));
+        item.setItemMeta(meta);
+        return item;
+    }
+
+    /**
      * Creates an ItemStack representing a shop
-     * 
+     *
      * @param foundShop The shop to create an item for
      * @return An ItemStack representing the shop
      */
