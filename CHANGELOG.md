@@ -1,6 +1,10 @@
 ## Snapshot 2.0.8.1
 
+# Ideas
+- ability to search enchantment type if its an enchantment book
+
 ### What's new for server owners
+- **In-GUI sort and filter controls** — players can now sort and filter search results directly from the shop search GUI without re-running the command. A sort button (HOPPER, slot 47) cycles through Default → Price ↑ → Price ↓ → Distance ↑. Three filter toggle buttons (slots 48, 50, 51) let players show only shops with available stock/space, restrict results to their current world, or hide their own shops. Preferences are saved per-player and persist across server restarts (`player_prefs.json`).
 - **Noticeably faster searches on large servers** — the shop list sync that runs every 15 minutes (and on startup) has been rewritten to scale linearly instead of getting slower the more shops your server has. Servers with thousands of shops will see a significant drop in that sync time.
 - **Search results now always respect your configured sorting method** — previously, browsing all shops (`/finditem TO_BUY *`) ignored your `shop-sorting-method` setting and always sorted by a fixed method. It now behaves the same as all other searches.
 - **Snappier GUI clicks** — shop teleportation and custom command execution on GUI click are now faster under the hood, with less redundant work per click.
@@ -8,6 +12,11 @@
 - **New: limit search results by distance** ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): a new `shop-search-max-distance` config option lets you hide shops that are too far away from the searching player. Set it to a block radius (e.g. `1000`) to keep results local. Disabled by default (set to `0`).
 
 ### Changes (technical)
+- Added `SortMode` enum (`DEFAULT`, `PRICE_ASC`, `PRICE_DESC`, `DISTANCE_ASC`) with `next()` cycle method
+- Added `PlayerSortFilterPrefs` model (Gson-serializable POJO) holding sort mode and three filter booleans
+- Added `PlayerPrefsStorageUtil`: `ConcurrentHashMap`-backed per-player prefs store, async saves via `VirtualThreadScheduler`, persists to `player_prefs.json` in plugin data folder; loaded in `runPluginStartupTasks`, flushed synchronously in `onDisable`
+- `FoundShopsMenu`: sort/filter applied lazily via Java stream inside `setMenuItems()` — raw result list is never copied or modified; short-circuits to zero overhead when no preferences are active; cross-world shops sorted to end for distance mode using `distanceSquared` (no sqrt)
+- `PaginatedMenu`: freed nav bar slots 47/48/50/51 (previously idle fillers) for `FoundShopsMenu` to populate with dynamic sort/filter buttons
 - Upgraded to Paper API 26.x / Java 25
 - Added `PlatformBridge` abstraction (`BukkitPlatformBridge`) to decouple platform-specific calls from core logic
 - Refactored `QSHikariAPIHandler`: consolidated three duplicate shop-search methods into a single `searchShops(Predicate, boolean, Player)` method, removing ~70 lines of duplication
