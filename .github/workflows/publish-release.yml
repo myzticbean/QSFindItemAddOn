@@ -12,6 +12,19 @@ on:
 #  push:
 #    branches: [ "master" ]
   workflow_dispatch:
+    inputs:
+      release_type:
+        description: 'Type of build to publish'
+        required: true
+        type: choice
+        options:
+          - snapshot
+          - release
+        default: snapshot
+      changelog:
+        description: 'Changelog to publish to Modrinth for this version'
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -28,6 +41,41 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
           cache: maven
+      - name: Compute build version
+        id: build_version
+        run: |
+          base_version=$(mvn -q -Dexpression=project.version -DforceStdout help:evaluate)
+          paper_api_version=$(mvn -q -Dexpression=paper-api.version -DforceStdout help:evaluate)
+          game_version=$(echo "$paper_api_version" | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
+
+          if [[ "${{ inputs.release_type }}" == "snapshot" ]]; then
+            case "${{ github.ref_name }}" in
+              snapshot/*) ;;
+              *)
+                echo "release_type is 'snapshot' but the workflow was triggered from branch '${{ github.ref_name }}', not a snapshot/** branch" >&2
+                exit 1
+                ;;
+            esac
+            if [[ "$base_version" != *-SNAPSHOT ]]; then
+              echo "release_type is 'snapshot' but pom.xml version ($base_version) has no -SNAPSHOT suffix" >&2
+              exit 1
+            fi
+            full_version="${base_version}-${{ github.run_number }}"
+            version_type="beta"
+          else
+            if [[ "$base_version" == *-SNAPSHOT ]]; then
+              echo "release_type is 'release' but pom.xml version ($base_version) still has a -SNAPSHOT suffix" >&2
+              exit 1
+            fi
+            full_version="$base_version"
+            version_type="release"
+          fi
+
+          mvn versions:set -DnewVersion="$full_version" -DgenerateBackupPoms=false
+
+          echo "full_version=$full_version" >> "$GITHUB_OUTPUT"
+          echo "version_type=$version_type" >> "$GITHUB_OUTPUT"
+          echo "game_version=$game_version" >> "$GITHUB_OUTPUT"
       - name: Build with Maven
         run: mvn -B package --file pom.xml
       - name: Upload JAR as artifact
@@ -42,7 +90,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+          COMMIT_MESSAGE: ${{ inputs.changelog }}
       - name: Get Release Info and Rename
         id: get_release
         env:
@@ -87,3 +135,19 @@ jobs:
           asset_path: ./target/${{ steps.get_release.outputs.jar_name }}
           asset_name: ${{ steps.get_release.outputs.jar_name }}
           asset_content_type: application/java-archive
+      - name: Publish to Modrinth
+        uses: Kir-Antipov/mc-publish@v3.3
+        with:
+          modrinth-id: asp13ugE
+          modrinth-token: ${{ secrets.MODRINTH_PAT }}
+          files: target/QSFindItemAddOn-*.jar
+          name: ${{ steps.build_version.outputs.full_version }}
+          version: ${{ steps.build_version.outputs.full_version }}
+          version-type: ${{ steps.build_version.outputs.version_type }}
+          changelog: ${{ inputs.changelog }}
+          loaders: |
+            folia
+            paper
+            purpur
+          game-versions: |
+            ${{ steps.build_version.outputs.game_version }}
