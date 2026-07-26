@@ -6,6 +6,7 @@
 - **Snappier GUI clicks** — shop teleportation and custom command execution on GUI click are now faster under the hood, with less redundant work per click.
 - **Java 25 & Paper API 26.x support** — ready for the latest server versions out of the box.
 - **New: limit search results by distance** ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): a new `shop-search-max-distance` config option lets you hide shops that are too far away from the searching player. Set it to a block radius (e.g. `1000`) to keep results local. Disabled by default (set to `0`).
+- **Fixed `/finditem` silently doing nothing when searching enchanted books** ([#110](https://github.com/myzticbean/QSFindItemAddOn/issues/110)), most noticeable with custom-enchantment plugins installed — a per-shop item check was running off the main thread and any error there was being swallowed instead of shown to the player.
 
 ### Changes (technical)
 - Upgraded to Paper API 26.x / Java 25
@@ -19,6 +20,8 @@
 - Shop location string parsed once per GUI click and passed to all handlers, instead of being re-parsed by each handler independently
 - Cleaned up `ShopSearchActivityStorageUtil`: `loadShopsFromFile` now calls `syncShops()` consistently; marked Reremake-era `addShop` overload and `getShopOwner` as `@Deprecated`
 - Added `shop-search-max-distance` config option ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): filters out shops beyond a configurable block radius from the searching player; `0` disables (default); cross-world shops are always included; bumped config version to 22
+- `QSHikariAPIHandler.searchShops`: merged the per-shop permission check and item-match filtering into a single scheduler hop (`processShopMatchFuture`) so item/meta reads always happen on the entity's region thread instead of `ForkJoinPool.commonPool()`; per-shop failures are now logged and skipped instead of failing the whole search ([#110](https://github.com/myzticbean/QSFindItemAddOn/issues/110))
+- `CmdExecutorHandler.handleShopSearch`: added `.exceptionally` handling to all three search futures so an unexpected failure logs and notifies the player instead of the command silently doing nothing ([#110](https://github.com/myzticbean/QSFindItemAddOn/issues/110))
 
 
 ## Release 2.0.8.0

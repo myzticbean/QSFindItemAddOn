@@ -113,17 +113,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
             Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
             List<CompletableFuture<Void>> futures = new ArrayList<>();
             for (Shop shopIterator : allShops) {
-                CompletableFuture<Void> processingFuture = permissionCheckFuture(searchingPlayer, shopIterator)
-                        .thenAcceptAsync(isAuthorized -> {
-                            if (isAuthorized.equals(Boolean.TRUE)
-                                    && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
-                                    && !HiddenShopStorageUtil.isShopHidden(shopIterator)
-                                    && isWithinSearchDistance(shopIterator.getLocation(), searchingPlayer.getLocation())
-                                    && itemFilter.test(shopIterator)) {
-                                processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
-                            }
-                        });
-                futures.add(processingFuture);
+                futures.add(processShopMatchFuture(itemFilter, toBuy, shopIterator, shopsFoundList, searchingPlayer));
             }
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
             List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -132,44 +122,51 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
         });
     }
 
+    /**
+     * Checks permission and evaluates the item filter/match for a single shop, all on the
+     * entity's region thread (via the Folia-safe scheduler) since {@code itemFilter} and
+     * {@link #processPotentialShopMatchAndAddToFoundList} touch Bukkit/QuickShop APIs
+     * (shop item, meta, location) that are not safe to call off-thread.
+     * Any failure for a single shop is logged and skipped rather than failing the whole search.
+     *
+     * @see BuiltInShopPermission#SEARCH
+     */
+    private CompletableFuture<Void> processShopMatchFuture(Predicate<Shop> itemFilter, boolean toBuy, Shop shopIterator,
+                                                             List<FoundShopItemModel> shopsFoundList, Player searchingPlayer) {
+        CompletableFuture<Void> future = new CompletableFuture<>();
+        FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, _ -> {
+            try {
+                boolean isAuthorized = shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH);
+                if (isAuthorized
+                        && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                        && !HiddenShopStorageUtil.isShopHidden(shopIterator)
+                        && isWithinSearchDistance(shopIterator.getLocation(), searchingPlayer.getLocation())
+                        && itemFilter.test(shopIterator)) {
+                    processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
+                }
+                future.complete(null);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        // If the player disconnects before the scheduler fires, the future would never
+        // complete and allOf().join() would block the virtual thread indefinitely.
+        return future.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .exceptionally(ex -> {
+                    if (ex instanceof TimeoutException) {
+                        Logger.logDebugInfo("Shop search processing timed out for player: " + searchingPlayer.getName());
+                    } else {
+                        Logger.logWarning("Skipping shop during search due to error (" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
+                    }
+                    return null;
+                });
+    }
+
     private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {
         int maxDistance = FindItemAddOn.getConfigProvider().SHOP_SEARCH_MAX_DISTANCE;
         if (maxDistance <= 0) return true;
         if (!shopLocation.getWorld().equals(playerLocation.getWorld())) return true;
         return shopLocation.distanceSquared(playerLocation) <= (double) maxDistance * maxDistance;
-    }
-
-    /**
-     * Asynchronously checks if a player has permission to search a specific shop.
-     * The permission check is performed on the main server thread to ensure thread safety.
-     *
-     * @param searchingPlayer The player whose permissions are being checked
-     * @param shopIterator The shop to check permissions against
-     * @return A CompletableFuture that will complete with:
-     *         - {@code true} if the player has permission to search the shop
-     *         - {@code false} if the player doesn't have permission
-     *         - Completes exceptionally if an error occurs during permission check
-     * @see BuiltInShopPermission#SEARCH
-     * @since 1.0.0
-     */
-    private CompletableFuture<Boolean> permissionCheckFuture(Player searchingPlayer, Shop shopIterator) {
-        CompletableFuture<Boolean> permissionCheckFuture = new CompletableFuture<>();
-        FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, _ -> {
-            try {
-                permissionCheckFuture.complete(shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH));
-            } catch (Exception e) {
-                permissionCheckFuture.completeExceptionally(e);
-            }
-        });
-        // If the player disconnects before the scheduler fires, the future would never
-        // complete and allOf().join() would block the virtual thread indefinitely.
-        return permissionCheckFuture.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
-                .exceptionally(ex -> {
-                    if (ex instanceof TimeoutException) {
-                        Logger.logDebugInfo("Permission check timed out for player: " + searchingPlayer.getName());
-                    }
-                    return Boolean.FALSE;
-                });
     }
 
     /**

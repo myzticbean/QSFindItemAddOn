@@ -45,6 +45,7 @@ public class CmdExecutorHandler {
 
     private static final String THIS_COMMAND_CAN_ONLY_BE_RUN_FROM_IN_GAME = "This command can only be run from in game";
     public static final String NO_PERMISSION = "&cNo permission!";
+    private static final String SEARCH_ERROR_MSG = "&cAn error occurred while searching for shops. Please try again or contact an admin.";
 
     /**
      * Handles the main shop search process
@@ -82,7 +83,8 @@ public class CmdExecutorHandler {
                 FindItemAddOn
                         .getQsApiInstance()
                         .fetchAllItemsFromAllShops(isBuying, player)
-                        .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
+                        .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG))
+                        .exceptionally(ex -> this.handleShopSearchError(player, ex));
             } else {
                 Material mat = Material.getMaterial(itemArg.toUpperCase());
                 if(this.checkMaterialBlacklist(mat)) {
@@ -96,7 +98,8 @@ public class CmdExecutorHandler {
                     FindItemAddOn
                             .getQsApiInstance()
                             .findItemBasedOnTypeFromAllShops(new ItemStack(mat), isBuying, player)
-                            .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG));
+                            .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().NO_SHOP_FOUND_MSG))
+                            .exceptionally(ex -> this.handleShopSearchError(player, ex));
                 } else {
                     Logger.logDebugInfo("Material not found! Performing query based search..");
                     // If QS Hikari installed and Shop Cache feature available (>6), then run in async thread (Fix for Issue #12)
@@ -104,10 +107,21 @@ public class CmdExecutorHandler {
                     FindItemAddOn
                             .getQsApiInstance()
                             .findItemBasedOnDisplayNameFromAllShops(itemArg, isBuying, player)
-                            .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG));
+                            .thenAccept(searchResultList -> this.openShopMenu(player, searchResultList, FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_INVALID_MATERIAL_MSG))
+                            .exceptionally(ex -> this.handleShopSearchError(player, ex));
                 }
             }
         });
+    }
+
+    private Void handleShopSearchError(Player player, Throwable ex) {
+        Throwable cause = ex;
+        while (cause instanceof java.util.concurrent.CompletionException && cause.getCause() != null) {
+            cause = cause.getCause();
+        }
+        Logger.logError("Shop search failed for player " + player.getName() + ": " + cause.getMessage());
+        PlayerUtil.sendMessage(player, getPluginPrefix() + SEARCH_ERROR_MSG);
+        return null;
     }
 
     private void openShopMenu(Player player, List<FoundShopItemModel> searchResultList, String errorMsg) {
