@@ -30,15 +30,19 @@ permissions:
   contents: write
 
 jobs:
-  release:
-    name: Setup Environment, Build JAR and Release Project
+  build:
+    name: Build JAR
     runs-on: ubuntu-latest
+    outputs:
+      full_version: ${{ steps.build_version.outputs.full_version }}
+      version_type: ${{ steps.build_version.outputs.version_type }}
+      game_version: ${{ steps.build_version.outputs.game_version }}
     steps:
       - uses: actions/checkout@v4
-      - name: Set up JDK 21
+      - name: Set up JDK 25
         uses: actions/setup-java@v4
         with:
-          java-version: '21'
+          java-version: '25'
           distribution: 'temurin'
           cache: maven
       - name: Compute build version
@@ -83,10 +87,30 @@ jobs:
         with:
           name: QSFindItemAddOn
           path: target/QSFindItemAddOn-*.jar
+
+  github-release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'temurin'
+          cache: maven
+      - name: Apply computed version
+        run: mvn -q versions:set -DnewVersion="${{ needs.build.outputs.full_version }}" -DgenerateBackupPoms=false
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: QSFindItemAddOn
+          path: target
       - name: Automatic Release
         uses: Fulminazzo/java-automatic-release@v2
         with:
-          java-version: '21'
+          java-version: '25'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
@@ -98,30 +122,30 @@ jobs:
         run: |
           release_info=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
             "https://api.github.com/repos/${{ github.repository }}/releases/latest")
-          
+
           release_id=$(echo "$release_info" | jq -r .id)
           upload_url=$(echo "$release_info" | jq -r .upload_url)
           version=$(echo "$release_info" | jq -r .tag_name)
-          
+
           # Extract full version from the release name (including RELEASE or SNAPSHOT)
           full_version=$(echo "$release_info" | jq -r .name | sed 's/.*[[:space:]]//')
-          
+
           # Determine if it's a RELEASE or SNAPSHOT
           if [[ $full_version == *-SNAPSHOT ]]; then
             jar_suffix="-SNAPSHOT"
           else
             jar_suffix="-RELEASE"
           fi
-          
+
           # Construct the full JAR name
           jar_name="QSFindItemAddOn-${full_version}${jar_suffix}.jar"
-          
+
           # Update the release name to include RELEASE or SNAPSHOT
           curl -X PATCH -H "Authorization: token $GITHUB_TOKEN" \
             -H "Accept: application/vnd.github.v3+json" \
             "https://api.github.com/repos/${{ github.repository }}/releases/$release_id" \
             -d "{\"name\":\"$full_version\"}"
-          
+
           echo "upload_url=$upload_url" >> $GITHUB_OUTPUT
           echo "version=$full_version" >> $GITHUB_OUTPUT
           echo "jar_name=$jar_name" >> $GITHUB_OUTPUT
@@ -135,19 +159,30 @@ jobs:
           asset_path: ./target/${{ steps.get_release.outputs.jar_name }}
           asset_name: ${{ steps.get_release.outputs.jar_name }}
           asset_content_type: application/java-archive
+
+  modrinth-publish:
+    name: Publish to Modrinth
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: QSFindItemAddOn
+          path: target
       - name: Publish to Modrinth
         uses: Kir-Antipov/mc-publish@v3.3
         with:
           modrinth-id: asp13ugE
           modrinth-token: ${{ secrets.MODRINTH_PAT }}
           files: target/QSFindItemAddOn-*.jar
-          name: ${{ steps.build_version.outputs.full_version }}
-          version: ${{ steps.build_version.outputs.full_version }}
-          version-type: ${{ steps.build_version.outputs.version_type }}
+          name: ${{ needs.build.outputs.full_version }}
+          version: ${{ needs.build.outputs.full_version }}
+          version-type: ${{ needs.build.outputs.version_type }}
           changelog: ${{ inputs.changelog }}
           loaders: |
             folia
             paper
             purpur
           game-versions: |
-            ${{ steps.build_version.outputs.game_version }}
+            ${{ needs.build.outputs.game_version }}

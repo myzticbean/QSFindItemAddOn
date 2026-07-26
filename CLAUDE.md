@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project
 
-Bukkit/Paper plugin that adds a `/finditem` command for searching items across all QuickShop-Hikari shops on a Minecraft server. Also exposes `/finditemadmin` (alias `/fiadmin`) for reload/debug. Java 21, built with Maven, shaded into a single jar. Paper 1.20+ API, with Folia support via FoliaLib.
+Bukkit/Paper plugin that adds a `/finditem` command for searching items across all QuickShop-Hikari shops on a Minecraft server. Also exposes `/finditemadmin` (alias `/fiadmin`) for reload/debug. Java 25, built with Maven, shaded into a single jar. Paper 1.20+ API, with Folia support via FoliaLib.
 
 ## Build & Run
 
@@ -14,7 +14,7 @@ Bukkit/Paper plugin that adds a `/finditem` command for searching items across a
 - `pom.xml` has commented-out `<outputDirectory>` entries in `maven-jar-plugin` intended to auto-copy the jar into a local test server's `plugins/` folder — uncomment the relevant one for your OS when iterating locally.
 - One system-scope dependency lives in `lib/Residence5.1.5.1.jar` (not on any Maven repo) — keep that file in place.
 - `pom.xml`'s `<version>` is a clean channel version with no build-specific suffix (e.g. `2.0.8.1-SNAPSHOT` or `2.0.8.1-RELEASE`) — bump it by hand only when starting new work or cutting a release. Never hand-append a date or build number to it; `plugin.yml` picks up `${project.version}` via resource filtering.
-- The `.github/workflows/publish-release.yml` workflow (manual `workflow_dispatch`, inputs: `release_type` snapshot/release + required `changelog`) computes the actual build version ephemerally via `mvn versions:set` — snapshots get `-${{ github.run_number }}` appended, releases use the pom version as-is — then builds the jar, cuts the GitHub release, and publishes that exact same version to Modrinth (project `asp13ugE`) via the `Kir-Antipov/mc-publish` action. This guarantees the installed jar's version always matches what's published, which is what `UpdateChecker` compares against. `release_type: snapshot` is only allowed when run from a `snapshot/**` branch (enforced in the "Compute build version" step); the `changelog` input doubles as both the Modrinth changelog and the GitHub release description.
+- The `.github/workflows/publish-release.yml` workflow (manual `workflow_dispatch`, inputs: `release_type` snapshot/release + required `changelog`) is 3 jobs: `build` computes the actual build version ephemerally via `mvn versions:set` (snapshots get `-${{ github.run_number }}` appended, releases use the pom version as-is) and uploads the jar as an artifact; `github-release` and `modrinth-publish` both `needs: build`, run in parallel, and each download that same artifact — one cuts the GitHub release, the other publishes to Modrinth (project `asp13ugE`) via `Kir-Antipov/mc-publish`, both using the exact version string computed in `build`. This guarantees the installed jar's version always matches what's published, which is what `UpdateChecker` compares against. `release_type: snapshot` is only allowed when run from a `snapshot/**` branch (enforced in `build`'s "Compute build version" step); the `changelog` input is shared by both downstream jobs.
 
 ## Architecture
 
