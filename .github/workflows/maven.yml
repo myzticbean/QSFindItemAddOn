@@ -20,6 +20,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+    - name: Reject local-only maven-jar-plugin outputDirectory override
+      run: |
+        python3 - <<'PYEOF'
+        import sys
+        import xml.etree.ElementTree as ET
+
+        ns = {'m': 'http://maven.apache.org/POM/4.0.0'}
+        root = ET.parse('pom.xml').getroot()
+        for plugin in root.iter('{http://maven.apache.org/POM/4.0.0}plugin'):
+            artifact_id = plugin.find('m:artifactId', ns)
+            if artifact_id is None or artifact_id.text != 'maven-jar-plugin':
+                continue
+            config = plugin.find('m:configuration', ns)
+            output_dir = config.find('m:outputDirectory', ns) if config is not None else None
+            if output_dir is not None:
+                print(f"::error::maven-jar-plugin has an active <outputDirectory> override ({output_dir.text}) in pom.xml. "
+                      "This is a local-dev-only setting and must stay commented out in committed code.")
+                sys.exit(1)
+        print("OK: no active outputDirectory override in maven-jar-plugin")
+        PYEOF
     - name: Set up JDK 25
       uses: actions/setup-java@v3
       with:
