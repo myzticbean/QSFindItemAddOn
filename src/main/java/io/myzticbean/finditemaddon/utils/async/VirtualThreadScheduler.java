@@ -40,6 +40,16 @@ public class VirtualThreadScheduler {
         return CompletableFuture.supplyAsync(supplier, VIRTUAL_EXECUTOR);
     }
 
+    /**
+     * Run a task asynchronously on a Java Virtual Thread, returning a CompletableFuture for chaining.
+     *
+     * @param task The task to run.
+     * @return a CompletableFuture that completes when the task finishes.
+     */
+    public static CompletableFuture<Void> runAsync(Runnable task) {
+        return CompletableFuture.runAsync(task, VIRTUAL_EXECUTOR);
+    }
+
                                                        /**
      * Shut down the virtual thread executor gracefully.
      */

@@ -144,12 +144,12 @@ public class ShopSearchActivityStorageUtil {
      */
     public static void addShop(com.ghostchu.quickshop.api.shop.Shop shop) {
         ShopSearchActivityModel shopModel = new ShopSearchActivityModel(
-                shop.getLocation().getWorld().getName(),
-                shop.getLocation().getX(),
-                shop.getLocation().getY(),
-                shop.getLocation().getZ(),
-                shop.getLocation().getPitch(),
-                shop.getLocation().getYaw(),
+                shop.bukkitLocation().getWorld().getName(),
+                shop.bukkitLocation().getX(),
+                shop.bukkitLocation().getY(),
+                shop.bukkitLocation().getZ(),
+                shop.bukkitLocation().getPitch(),
+                shop.bukkitLocation().getYaw(),
                 shop.getOwner().toString(),
                 new ArrayList<>(),
                 false
@@ -163,10 +163,10 @@ public class ShopSearchActivityStorageUtil {
      */
     public static void removeShop(com.ghostchu.quickshop.api.shop.Shop shop) {
         globalShopsList.removeIf(shopSearchActivity -> shopSearchActivity.compareWith(
-                shop.getLocation().getWorld().getName(),
-                shop.getLocation().getX(),
-                shop.getLocation().getY(),
-                shop.getLocation().getZ()
+                shop.bukkitLocation().getWorld().getName(),
+                shop.bukkitLocation().getX(),
+                shop.bukkitLocation().getY(),
+                shop.bukkitLocation().getZ()
         ));
     }
 

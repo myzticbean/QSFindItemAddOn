@@ -59,6 +59,7 @@ import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Predicate;
@@ -71,6 +72,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
 
     private static final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
     private static final int PERMISSION_CHECK_TIMEOUT_SECONDS = 5;
+    private static final int CHUNK_LOAD_TIMEOUT_SECONDS = 5;
     private final QuickShopAPI api;
     private final String pluginVersion;
     private final ConcurrentMap<Long, CachedShop> shopCache;
@@ -108,7 +110,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     private CompletableFuture<List<FoundShopItemModel>> searchShops(Predicate<Shop> itemFilter, boolean toBuy, Player searchingPlayer) {
         var begin = Instant.now();
         return VirtualThreadScheduler.supplyAsync(() -> {
-            List<FoundShopItemModel> shopsFoundList = new ArrayList<>();
+            List<FoundShopItemModel> shopsFoundList = new CopyOnWriteArrayList<>();
             List<Shop> allShops = fetchAllShopsFromQS();
             Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
             List<CompletableFuture<Void>> futures = new ArrayList<>();
@@ -123,35 +125,40 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     }
 
     /**
-     * Checks permission and evaluates the item filter/match for a single shop, all on the
-     * entity's region thread (via the Folia-safe scheduler) since {@code itemFilter} and
-     * {@link #processPotentialShopMatchAndAddToFoundList} touch Bukkit/QuickShop APIs
-     * (shop item, meta, location) that are not safe to call off-thread.
+     * Checks permission and evaluates the item filter/match for a single shop on the entity's
+     * region thread (via the Folia-safe scheduler), since {@code itemFilter}, the BentoBox lock
+     * check, and {@code Shop#getItem()} touch Bukkit/QuickShop APIs (shop item, meta, location -
+     * {@code getItem()} fires a {@code ShopItemEvent} internally) that are not safe to call
+     * off-thread ({@link BuiltInShopPermission#SEARCH}). The matched item is captured here, on the
+     * main thread, so the async phase below never has to call {@code getItem()} again.
+     * <p>
+     * If matched, stock/space is then read and the shop is added to the list on a virtual thread.
+     * This has to happen off the region thread: QuickShop-Hikari's cache-backed
+     * {@code getRemainingStock()}/{@code getRemainingSpace()} (see
+     * {@link #getRemainingStockOrSpaceFromShopCache}) asserts it is NOT running on the main thread
+     * and throws otherwise.
+     * <p>
      * Any failure for a single shop is logged and skipped rather than failing the whole search.
-     *
-     * @see BuiltInShopPermission#SEARCH
      */
     private CompletableFuture<Void> processShopMatchFuture(Predicate<Shop> itemFilter, boolean toBuy, Shop shopIterator,
                                                              List<FoundShopItemModel> shopsFoundList, Player searchingPlayer) {
-        CompletableFuture<Void> future = new CompletableFuture<>();
+        CompletableFuture<ItemStack> matchFuture = new CompletableFuture<>();
         FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, _ -> {
             try {
-                boolean isAuthorized = shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH);
-                if (isAuthorized
-                        && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.getLocation().getWorld())
+                boolean isMatch = shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
+                        && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.bukkitLocation().getWorld())
                         && !HiddenShopStorageUtil.isShopHidden(shopIterator)
-                        && isWithinSearchDistance(shopIterator.getLocation(), searchingPlayer.getLocation())
-                        && itemFilter.test(shopIterator)) {
-                    processPotentialShopMatchAndAddToFoundList(toBuy, shopIterator, shopsFoundList, searchingPlayer);
-                }
-                future.complete(null);
+                        && isWithinSearchDistance(shopIterator.bukkitLocation(), searchingPlayer.getLocation())
+                        && itemFilter.test(shopIterator)
+                        && !isShopInLockedBentoboxIsland(shopIterator, searchingPlayer);
+                matchFuture.complete(isMatch ? shopIterator.getItem() : null);
             } catch (Exception e) {
-                future.completeExceptionally(e);
+                matchFuture.completeExceptionally(e);
             }
         });
         // If the player disconnects before the scheduler fires, the future would never
         // complete and allOf().join() would block the virtual thread indefinitely.
-        return future.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        return matchFuture.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .exceptionally(ex -> {
                     if (ex instanceof TimeoutException) {
                         Logger.logDebugInfo("Shop search processing timed out for player: " + searchingPlayer.getName());
@@ -159,7 +166,10 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                         Logger.logWarning("Skipping shop during search due to error (" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
                     }
                     return null;
-                });
+                })
+                .thenCompose(matchedItem -> matchedItem != null
+                        ? VirtualThreadScheduler.runAsync(() -> finalizeMatchedShop(toBuy, shopIterator, matchedItem, shopsFoundList))
+                        : CompletableFuture.completedFuture(null));
     }
 
     private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {
@@ -279,7 +289,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
         // now check shops from temp globalShopsList in current globalShopsList and pull playerVisit data
         List<ShopSearchActivityModel> tempGlobalShopsList = new ArrayList<>();
         getAllShops().forEach(shopItem -> {
-            Location shopLoc = shopItem.getLocation();
+            Location shopLoc = shopItem.bukkitLocation();
             tempGlobalShopsList.add(new ShopSearchActivityModel(
                     shopLoc.getWorld().getName(),
                     shopLoc.getX(),
@@ -419,18 +429,32 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
         return mainVersion >= 6;
     }
 
-    private void processPotentialShopMatchAndAddToFoundList(boolean toBuy, Shop shopIterator, List<FoundShopItemModel> shopsFoundList, Player searchingPlayer) {
-        Logger.logDebugInfo("Shop match found: " + shopIterator.getLocation());
-        // Check if shop is in a locked BentoBox island
+    private boolean isShopInLockedBentoboxIsland(Shop shop, Player searchingPlayer) {
         if (FindItemAddOn.getConfigProvider().BENTOBOX_IGNORE_LOCKED_ISLAND_SHOPS
                 && Objects.nonNull(FindItemAddOn.getBentoboxPlugin())
-                && FindItemAddOn.getBentoboxPlugin().isIslandLocked(shopIterator.getLocation(), searchingPlayer)) {
+                && FindItemAddOn.getBentoboxPlugin().isIslandLocked(shop.bukkitLocation(), searchingPlayer)) {
             Logger.logDebugInfo("Shop is in locked BentoBox island - ignoring");
-            return;
+            return true;
         }
+        return false;
+    }
+
+    /**
+     * Runs on a virtual thread (see {@link #processShopMatchFuture}), so this must not touch
+     * any Bukkit/QuickShop API that fires an event or otherwise requires the main thread -
+     * {@code matchedItem} is passed in rather than re-read via {@code shopIterator.getItem()}.
+     */
+    private void finalizeMatchedShop(boolean toBuy, Shop shopIterator, ItemStack matchedItem, List<FoundShopItemModel> shopsFoundList) {
+        Logger.logDebugInfo("Shop match found: " + shopIterator.bukkitLocation());
         // check for stock / space
         int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
                 : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
+        if (stockOrSpace == 0 && !isShopChunkLoaded(shopIterator)) {
+            // The cached/DB-backed stock value can be stale (or never populated) for a shop whose
+            // chunk isn't currently loaded - force a live read by loading the chunk on its
+            // owning region thread instead of trusting the cache. See issue #111.
+            stockOrSpace = fetchLiveStockOrSpaceForUnloadedChunk(shopIterator, toBuy);
+        }
         if(isShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
             return;
         }
@@ -443,9 +467,50 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                 shopIterator.getPrice(),
                 QSApi.processStockOrSpace(stockOrSpace),
                 shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                shopIterator.getLocation(),
-                shopIterator.getItem(),
+                shopIterator.bukkitLocation(),
+                matchedItem,
                 toBuy
         ));
+    }
+
+    private boolean isShopChunkLoaded(Shop shop) {
+        Location loc = shop.bukkitLocation();
+        var world = loc.getWorld();
+        return world != null && world.isChunkLoaded(loc.getBlockX() >> 4, loc.getBlockZ() >> 4);
+    }
+
+    /**
+     * Forces the shop's chunk to load on its owning region thread (Folia-safe via
+     * {@link com.tcoded.folialib.impl.PlatformScheduler#runAtLocation}), re-reads stock/space with
+     * the chunk actually present, then unloads the chunk again if this call is what loaded it.
+     */
+    private int fetchLiveStockOrSpaceForUnloadedChunk(Shop shop, boolean toBuy) {
+        Location loc = shop.bukkitLocation();
+        CompletableFuture<Integer> future = new CompletableFuture<>();
+        FindItemAddOn.getScheduler().runAtLocation(loc, _ -> {
+            try {
+                var world = loc.getWorld();
+                int chunkX = loc.getBlockX() >> 4;
+                int chunkZ = loc.getBlockZ() >> 4;
+                boolean wasLoaded = world != null && world.isChunkLoaded(chunkX, chunkZ);
+                if (!wasLoaded && world != null) {
+                    world.getChunkAt(chunkX, chunkZ);
+                }
+                int liveStockOrSpace = toBuy ? shop.getRemainingStock() : shop.getRemainingSpace();
+                if (!wasLoaded && world != null) {
+                    world.unloadChunk(chunkX, chunkZ, true);
+                }
+                future.complete(liveStockOrSpace);
+            } catch (Exception e) {
+                future.completeExceptionally(e);
+            }
+        });
+        return future.orTimeout(CHUNK_LOAD_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .exceptionally(ex -> {
+                    Logger.logDebugInfo("Failed to load chunk to verify live stock/space for shop at "
+                            + loc + ": " + ex.getClass().getSimpleName() + " - " + ex.getMessage());
+                    return 0;
+                })
+                .join();
     }
 }
