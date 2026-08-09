@@ -67,7 +67,7 @@ jobs:
         run: |
           base_version=$(mvn -q -Dexpression=project.version -DforceStdout help:evaluate)
           paper_api_version=$(mvn -q -Dexpression=paper-api.version -DforceStdout help:evaluate)
-          game_version=$(echo "$paper_api_version" | grep -oE '^[0-9]+\.[0-9]+\.[0-9]+')
+          game_version=$(echo "$paper_api_version" | grep -oE '^[0-9]+(\.[0-9]+)*')
 
           if [[ "${{ inputs.release_type }}" == "snapshot" ]]; then
             case "${{ github.ref_name }}" in
