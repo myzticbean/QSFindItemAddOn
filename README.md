@@ -1,83 +1,149 @@
-# Shop Search AddOn For QuickShop
+# Shop Search AddOn for QuickShop
 ### Version: 2.0.8.1-SNAPSHOT
 
-An unofficial add-on for the QuickShop Hikari and Reremake spigot plugin.
-Adds a `/finditem` command in game for searching through all the shops on the server.
+An unofficial add-on for [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) that gives your players an in-game `/finditem` command to search every shop on the server at once, instead of walking around hoping to spot the right sign.
 
-[//]: # (![MC]&#40;https://img.shields.io/badge/Minecraft-Java%20Edition:%201.16.5%20--%201.20.4-brightgreen&#41;)
 ![ModrinthAvailableFor](https://img.shields.io/badge/dynamic/json?label=Minecraft%20Java%20Edition:&color=4bab62&query=version&url=https://api.blueish.dev/api/minecraft/version?id=asp13ugE)
 ![Ver](https://img.shields.io/spiget/version/95104?label=Latest%20Spigot%20Version)
 ![Build Status](https://github.com/myzticbean/QSFindItemAddOn/actions/workflows/maven.yml/badge.svg?branch=master)
 
-## Features
-- Search items based on buying/selling shops
-- Search items by item type
-- Supports query based item search
-- Supports item custom model data for custom items
-- Configurable shop sorting methods
-- Displays enchantments in the result for enchanted items
-- Hides item enchants if item has hide_enchants flag
-- Displays potion effects in the result for Potion items
-- Hide certain shops from appearing in search lists
-- Supports completely safe direct shop teleportation (configurable in config.yml)
-- Ignores shops that are out of stock by default
-- Support for world blacklisting (Shops in blacklisted worlds are ignored in the search result)
-- Support for material blacklisting that prevents players for searching for specific items
+## What it does
 
-**Hexcode color support**
-- All messages in the config.yml support hexcodes.
+Players type `/finditem`, and a menu opens where they can search for an item by name or type. The plugin scans every shop on the server, both buying and selling, and shows the results in a paginated GUI with prices, stock, owner, location, and (optionally) a warp or teleport button to get there. No more asking in chat "does anyone sell diamonds."
 
-**View all shops on server**
-- You can do `/finditem TO_BUY *` or `/finditem TO_SELL *` to view all shops on the server. As of this version, the sequence is always randomized. Sorting options are a work in progress.
+## Getting started
 
-**Shop visit count**
-- You can choose to display shop visits count in the shop lore in Search GUI. Just add the placeholder `{SHOP_VISITS}` in the `shop-gui-item-lore` in config.yml. To prevent visit spamming, a new config property `shop-player-visit-cooldown-in-minutes` has been added. Please don't use decimals here. 😁
+1. Make sure [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) and [Vault](https://www.spigotmc.org/resources/34315/) (with an economy plugin) are installed.
+2. Drop the plugin jar into your server's `plugins` folder.
+3. Restart the server. A `config.yml` will be generated automatically.
+4. In game, run `/finditem` to try it out.
 
-**Customizable command aliases**
-- You can find a property in config.yml called `command-alias` where you can specify your own list of command aliases for /finditem command. If you don't wish to add any, just make it as:
-```yaml
-command-alias: []
-```
+That's it, no extra setup is required to get the basic search working. Everything else below is optional tuning.
 
-## Integrations
-- Supports [PlayerWarps](https://www.spigotmc.org/resources/66692/) (by Olzie-12) integration. It shows the nearest warp to each shop in the search result GUI.
-- Supports EssentialsX Warps integration for fetching nearest warps.
-  - Global warps list for essentials is updated in batches every 15 minutes due to technical limitations, which is then used in every search query.
-  - If you added a new warp and want it to get updated immediately, run **/finditemadmin reload**
-  - Remember, this applies only to Essential Warps.
-- WorldGuard region support for fetching the WorldGuard region the shop is in (if overlapping regions, highest priority will be chosen)
-- Residence support for fetching the residence the shop is in (including subzones)
+## Using `/finditem`
 
->Check out the sample config.yml [here](https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml).
+- `/finditem TO_SELL <item>`: find shops that are selling this item, so you know where to buy it
+- `/finditem TO_BUY <item>`: find shops that are buying this item, so you know where to sell it
+- `/finditem TO_SELL *` or `/finditem TO_BUY *`: browse every shop on the server
+- `/finditem hideshop`: while looking at a shop chest, hides that shop from search results
+- `/finditem revealshop`: makes a previously hidden shop searchable again
+- `/finditem` on its own shows the full command list in game
 
-## Requires
-- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v6.2.0.11 or higher
+The `TO_SELL` / `TO_BUY` labels describe what the *shop* does, same as QuickShop itself. If that wording feels backwards for your players, you can rename these in `config.yml` under `find-item-command.to-buy-autocomplete` and `to-sell-autocomplete`.
 
-**Note:** [QuickShop Reremake](https://www.spigotmc.org/resources/62575/) support has been dropped completely.
+Players can also search by typing a partial item name (tab completion helps here), and custom items with custom model data are matched correctly, not just lumped in with the base item.
 
-## Assumptions
-- A compatible economy plugin is installed
-- [Vault](https://www.spigotmc.org/resources/34315/) 1.7.3 or higher is installed
+By default the command also works as `/searchshop`, `/shopsearch`, and `/searchitem`. You can change or remove these aliases in `config.yml` under `find-item-command.command-alias`.
 
-## Issue Tracking
-Please create a new issue [here](https://github.com/myzticbean/QSFindItemAddOn/issues) if you encounter any errors. Please try to explain in detail about your issue, and attach your console log if possible.
-You can also find the list of features currently being worked on (if any) in the same link.
+### Demo
 
-## How to contribute?
-See more details [here](https://github.com/myzticbean/QSFindItemAddOn/blob/master/CONTRIBUTING.md).
+**Searching for an item:**
 
-## BStats Metrics
-[![BigImage](https://bstats.org/signatures/bukkit/QSFindItemAddOn.svg)](https://bstats.org/plugin/bukkit/QSFindItemAddOn/12382)
-
-## Demo
-### How to use `/finditem`?
 ![/finditem_usage](https://cdn.modrinth.com/data/asp13ugE/images/bb37966809c9d7ab3201988ef58b2060688584f3.png)
 ![alt text](https://cdn.modrinth.com/data/asp13ugE/images/878e9b703343a65c963d790d875ad5dbe6ac309d.png)
-### Multiple search result pages:
+
+**Multiple result pages:**
+
 ![alt text](https://cdn.modrinth.com/data/asp13ugE/images/33cb7d96cabb709bc630685c9e6fdc1b9cd7b3bb.png)
-### Shows item enchantments:
+
+**Enchantments shown in the listing:**
+
 ![alt text](https://cdn.modrinth.com/data/asp13ugE/images/8ac5643bc042b897e549400e29186d87024b3a71.png)
-### Shows Potion colors and effects:
+
+**Potion colors and effects shown in the listing:**
+
 ![alt text](https://cdn.modrinth.com/data/asp13ugE/images/786ce10d42c5e92cbbd12b7f1ee81011796acbe0.png)
-### Shows custom item names and lore:
+
+**Custom item names and lore preserved:**
+
 ![alt text](https://cdn.modrinth.com/data/asp13ugE/images/0c30b767bfc9df1f4a79afef677c0fc262fa62c5.png)
+
+## Admin commands
+
+`/finditemadmin` (alias `/fiadmin`) is for server staff:
+
+- `/finditemadmin reload`: reloads `config.yml` without restarting the server
+- `/finditemadmin debug-mode {enable|disable}`: turns on extra logging if you're troubleshooting an issue and want more detail in the console
+
+## Features
+
+**Search**
+- Search by item type or by a free-text query, with tab completion
+- Matches custom items by their custom model data instead of just the base material
+- Enchantments and potion effects (including custom colors) are shown right in the results
+- Enchant glow is hidden automatically if the item has the "hide enchants" flag
+- Out-of-stock shops are skipped by default so players don't waste a trip
+- Optionally limit results to a distance from the player (`shop-search-max-distance` in `config.yml`), handy on large servers where a shop three continents away isn't useful
+- Optionally restrict searches to already-loaded chunks for lower server load
+
+**Shop privacy**
+- Shop owners can hide their own shop from search results with `/finditem hideshop`, and unhide it with `/finditem revealshop`
+
+**Getting to the shop**
+- Safe direct teleportation to a shop, with an optional delay and a check that the landing spot isn't going to hurt the player (both are configurable, and both can be bypassed with permissions if you want staff to skip them)
+- Or teleport players to the nearest warp instead, using PlayerWarps or EssentialsX warps
+- Run your own custom commands when a player clicks a search result, useful if you use a different teleport or warp plugin
+
+**Customization**
+- Every message in `config.yml` supports hex color codes
+- Command aliases, GUI titles, button materials, and lore text are all editable in `config.yml`
+- Large prices can be shortened automatically (for example, `$10,210,100` shown as `$10.21M`)
+- Optional shop visit counter you can show in the GUI lore with the `{SHOP_VISITS}` placeholder
+
+**Server control**
+- Block specific worlds from appearing in search results
+- Block specific materials from being searchable at all (useful for blocking things like command blocks or barriers that shouldn't be shop items in the first place)
+- Works on both Paper and Folia servers
+
+## Permissions
+
+| Permission | Default | What it allows |
+|---|---|---|
+| `finditem.use` | everyone | Use `/finditem` to search |
+| `finditem.hideshop` | everyone | Use `/finditem hideshop` and `/finditem revealshop` |
+| `finditem.shoptp` | op | Teleport directly to a shop (only matters if direct teleport is enabled in config) |
+| `finditem.shoptp.own` | everyone | Teleport to your own shops |
+| `finditem.shoptp-delay.bypass` | op | Skip the configured teleport delay |
+| `finditem.shoptp.bypass-safetycheck` | nobody | Skip the "is it safe to land here" check |
+| `finditem.reload` | op | Use `/finditemadmin reload` |
+| `finditem.admin` | op | Use all admin commands |
+
+## Integrations
+
+The plugin picks these up automatically if they're installed, no extra configuration needed beyond what's in `config.yml`:
+
+- **[PlayerWarps](https://www.spigotmc.org/resources/66692/)**: shows the nearest warp to each shop in the search results
+- **EssentialsX Warps**: same idea, using Essentials warps instead. The warp list refreshes every 15 minutes in the background to keep searches fast. If you just added a warp and don't want to wait, run `/finditemadmin reload`
+- **WorldGuard**: can show which region a shop is in (if regions overlap, the highest priority one is used)
+- **Residence**: can show which residence (including subzones) a shop is in
+- **BentoBox**: shops on locked islands are excluded from search results
+
+None of these are required. The plugin works fine with just QuickShop-Hikari and Vault installed.
+
+## Configuration
+
+All settings live in `config.yml`, which is generated the first time the plugin starts. A fully annotated sample, with every option explained, is available on the [wiki](https://github.com/myzticbean/QSFindItemAddOn/wiki/Sample-config.yml).
+
+When you update the plugin, any new config options are added automatically to your existing `config.yml` the next time the server starts, so you won't lose your existing settings.
+
+## Requirements
+
+- [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) v6.3.0.0 or higher
+- [Vault](https://www.spigotmc.org/resources/34315/) with a compatible economy plugin
+- Paper 1.20 or higher (Folia is supported too)
+
+**Note:** support for the older QuickShop Reremake fork has been dropped completely. If you're still on Reremake, this plugin won't work for you.
+
+## Getting help / reporting a bug
+
+If something's not working, please [open an issue](https://github.com/myzticbean/QSFindItemAddOn/issues) and include as much detail as you can, ideally with your console log attached. That same page also lists what's currently being worked on.
+
+## Contributing
+
+Pull requests are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for how to set up a build and the branch naming convention we use.
+
+## Metrics
+
+We use bStats to see how many servers are running the plugin and on what versions, which helps prioritize what to support. No personal data is collected.
+
+[![BigImage](https://bstats.org/signatures/bukkit/QSFindItemAddOn.svg)](https://bstats.org/plugin/bukkit/QSFindItemAddOn/12382)
