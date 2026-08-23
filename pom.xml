@@ -16,7 +16,7 @@
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper-api.version>26.2.build.111-stable</paper-api.version>
-        <qs-hikari.version>6.3.0.0-SNAPSHOT-12</qs-hikari.version>
+        <qs-hikari.version>6.3.0.0</qs-hikari.version>
         <playerwarps-api-old>6.30.0</playerwarps-api-old>
         <playerwarps-api-new>7.10.0</playerwarps-api-new>
         <essentialsx.version>2.21.2</essentialsx.version>
