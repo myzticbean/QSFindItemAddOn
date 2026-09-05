@@ -169,9 +169,12 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                     }
                     return null;
                 })
-                .thenCompose(matchedItem -> matchedItem != null
+                // Async, not just off the region thread for its own sake: QuickShop's
+                // queryShopInventoryCacheInDatabase() (used inside finalizeMatchedShop) asserts its
+                // caller is already off the main/region thread and throws otherwise.
+                .thenComposeAsync(matchedItem -> matchedItem != null
                         ? finalizeMatchedShop(toBuy, shopIterator, matchedItem, shopsFoundList)
-                        : CompletableFuture.completedFuture(null));
+                        : CompletableFuture.completedFuture(null), VirtualThreadScheduler.executor());
     }
 
     private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {
