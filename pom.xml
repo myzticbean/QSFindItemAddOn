@@ -6,7 +6,7 @@
 
     <groupId>io.myzticbean.finditemaddon</groupId>
     <artifactId>QSFindItemAddOn</artifactId>
-    <version>2.0.8.1-SNAPSHOT</version>
+    <version>2.0.8.2-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>QSFindItemAddOn</name>
@@ -16,7 +16,7 @@
         <java.version>25</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <paper-api.version>26.2.build.111-stable</paper-api.version>
-        <qs-hikari.version>6.3.0.0-SNAPSHOT-12</qs-hikari.version>
+        <qs-hikari.version>6.3.0.2</qs-hikari.version>
         <playerwarps-api-old>6.30.0</playerwarps-api-old>
         <playerwarps-api-new>7.10.0</playerwarps-api-new>
         <essentialsx.version>2.21.2</essentialsx.version>
@@ -162,6 +162,10 @@
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
         <repository>
+            <id>codemc-quickshop</id>
+            <url>https://repo.codemc.io/repository/ghost-chu/</url>
+        </repository>
+        <repository>
             <id>essentials-releases</id>
             <url>https://repo.essentialsx.net/releases/</url>
         </repository>
@@ -240,76 +244,9 @@
         </dependency>
         <dependency>
             <groupId>com.ghostchu</groupId>
-            <artifactId>quickshop-api</artifactId>
+            <artifactId>quickshop-hikari</artifactId>
             <version>${qs-hikari.version}</version>
             <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jetbrains</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>adventure-platform-bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.juliomarcopineda</groupId>
-                    <artifactId>jdbc-stream</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>one.util</groupId>
-                    <artifactId>streamex</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>tne.tne</groupId>
-                    <artifactId>TheNewEconomy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>me.xanium</groupId>
-                    <artifactId>GemsEconomy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.ghostchu</groupId>
-                    <artifactId>quickshop-common</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>com.ghostchu</groupId>
-            <artifactId>quickshop-bukkit</artifactId>
-            <version>${qs-hikari.version}</version>
-            <scope>provided</scope>
-            <classifier>shaded</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jetbrains</groupId>
-                    <artifactId>annotations</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>net.kyori</groupId>
-                    <artifactId>adventure-platform-bukkit</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.github.juliomarcopineda</groupId>
-                    <artifactId>jdbc-stream</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>one.util</groupId>
-                    <artifactId>streamex</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>tne.tne</groupId>
-                    <artifactId>TheNewEconomy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>me.xanium</groupId>
-                    <artifactId>GemsEconomy</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.ghostchu</groupId>
-                    <artifactId>quickshop-common</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>net.essentialsx</groupId>

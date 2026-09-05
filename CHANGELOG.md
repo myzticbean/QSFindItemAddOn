@@ -1,4 +1,4 @@
-## Snapshot 2.0.8.1 (2026-08-09)
+## Snapshot 2.0.8.2 (2026-09-05)
 
 ### What's new for server owners
 - **Noticeably faster searches on large servers** — the shop list sync that runs every 15 minutes (and on startup) has been rewritten to scale linearly instead of getting slower the more shops your server has. Servers with thousands of shops will see a significant drop in that sync time.
@@ -8,6 +8,8 @@
 - **New: limit search results by distance** ([#107](https://github.com/myzticbean/QSFindItemAddOn/issues/107)): a new `shop-search-max-distance` config option lets you hide shops that are too far away from the searching player. Set it to a block radius (e.g. `1000`) to keep results local. Disabled by default (set to `0`).
 - **Fixed `/finditem` silently doing nothing when searching enchanted books** ([#110](https://github.com/myzticbean/QSFindItemAddOn/issues/110)), most noticeable with custom-enchantment plugins installed — a per-shop item check was running off the main thread and any error there was being swallowed instead of shown to the player.
 - **Fixed shops in unloaded chunks showing 0 stock/space and dropping out of search results** ([#111](https://github.com/myzticbean/QSFindItemAddOn/issues/111)): with `search-loaded-shops-only: false`, a matched shop whose chunk wasn't currently loaded could report as out of stock even when it wasn't, and get silently filtered out. FindItem now double-checks with a live read before discarding a shop like that.
+- **Faster stock/space checks on servers with lots of unloaded shops**: instead of force-loading a shop's chunk just to count what's inside it, FindItem now asks QuickShop-Hikari for its own stored stock/space figure first. Chunk loading is now a last resort, used only when QuickShop has no stored figure yet. This should also resolve reports of `/finditem` only listing a handful of shops after updating QuickShop-Hikari to 6.3.x — its stock/space check changed to return `0` for any shop in an unloaded chunk, which `ignore-empty-chests: true` (the default) then silently dropped from results.
+- Fixed a typo in the sample `custom-commands` list in `config.yml`: `{PLAYER}` is not a valid placeholder, `{PLAYER_NAME}` is.
 
 ### Changes (technical)
 - Upgraded to Paper API 26.x / Java 25
@@ -27,6 +29,12 @@
 - Matched shops with a cached/DB stock reading of `0` are now re-verified live if their chunk isn't loaded: `QSHikariAPIHandler` hops to the shop's own region (`FoliaLib#runAtLocation`), force-loads the chunk, re-reads stock/space, then unloads the chunk again if it was the one that loaded it ([#111](https://github.com/myzticbean/QSFindItemAddOn/issues/111))
 - `shopsFoundList` changed from `ArrayList` to `CopyOnWriteArrayList` since matched shops are now added concurrently from multiple virtual threads
 - Bumped QuickShop-Hikari to `6.3.0.0-SNAPSHOT-12` and Paper API to `26.2.build.111-stable`; migrated all `Shop#getLocation()` calls to `Shop#bukkitLocation()` (QuickShop-Hikari made `Shop` generic, so the raw-typed `getLocation()` call now erases to `Object` instead of `org.bukkit.Location`)
+- Bumped QuickShop-Hikari to the released `6.3.0.2` and migrated to its new CodeMC repository (`repo.codemc.io/repository/ghost-chu/`); the split `quickshop-api` / `quickshop-bukkit:shaded` artifacts were replaced by a single `com.ghostchu:quickshop-hikari` dependency, which QuickShop now publishes there
+- Stock/space resolution now follows a ladder: unlimited shop → live read if the chunk is loaded → QuickShop's persisted inventory count cache (`ShopManager#queryShopInventoryCacheInDatabase`) → chunk force-load as a last resort
+- Search stock reads use QuickShop-Hikari 6.3.0.0's `ShopInventory#getRemainingStockAsync()` and are composed into the existing `CompletableFuture` chain, removing the per-shop 5-second blocking `join()`
+- Fixed a thread-safety violation: QuickShop-Hikari's `ShopManager#queryShopInventoryCacheInDatabase` asserts its caller is already off the main/region thread and throws otherwise. `QSHikariAPIHandler.processShopMatchFuture`'s dispatch into `finalizeMatchedShop` is now pinned to the virtual-thread executor so it never runs on the region thread
+- Removed the `Util.ensureThread(true)` assertion from the stock/space cache read — QuickShop-Hikari's own getters no longer require an off-main caller as of 6.3.0.0, and the explicit virtual-thread dispatch above now guarantees it regardless
+- Migrated off `Shop#getPrice()` (deprecated for removal in 6.3.0.0) to `ShopPrice#price()`
 
 
 ## Release 2.0.8.0

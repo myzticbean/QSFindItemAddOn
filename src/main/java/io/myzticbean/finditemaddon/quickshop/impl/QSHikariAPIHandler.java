@@ -73,6 +73,8 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     private static final int SHOP_CACHE_TIMEOUT_SECONDS = 5*60;
     private static final int PERMISSION_CHECK_TIMEOUT_SECONDS = 5;
     private static final int CHUNK_LOAD_TIMEOUT_SECONDS = 5;
+    /** Shared timeout for the stock/space reads in {@link #resolveStockOrSpaceAsync}. */
+    private static final int STOCK_READ_TIMEOUT_SECONDS = 5;
     private final QuickShopAPI api;
     private final String pluginVersion;
     private final ConcurrentMap<Long, CachedShop> shopCache;
@@ -132,11 +134,11 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
      * off-thread ({@link BuiltInShopPermission#SEARCH}). The matched item is captured here, on the
      * main thread, so the async phase below never has to call {@code getItem()} again.
      * <p>
-     * If matched, stock/space is then read and the shop is added to the list on a virtual thread.
-     * This has to happen off the region thread: QuickShop-Hikari's cache-backed
-     * {@code getRemainingStock()}/{@code getRemainingSpace()} (see
-     * {@link #getRemainingStockOrSpaceFromShopCache}) asserts it is NOT running on the main thread
-     * and throws otherwise.
+     * If matched, stock/space is then read and the shop is added to the list on a virtual thread
+     * (see {@link #resolveStockOrSpace}). As of QuickShop-Hikari 6.3.0.0 the stock/space getters no
+     * longer assert they are off the main thread - {@code getRemainingStock()} performs its own
+     * region hop internally - but running off-region is still what we want, so that the search does
+     * not occupy a region thread for the duration.
      * <p>
      * Any failure for a single shop is logged and skipped rather than failing the whole search.
      */
@@ -167,9 +169,12 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
                     }
                     return null;
                 })
-                .thenCompose(matchedItem -> matchedItem != null
-                        ? VirtualThreadScheduler.runAsync(() -> finalizeMatchedShop(toBuy, shopIterator, matchedItem, shopsFoundList))
-                        : CompletableFuture.completedFuture(null));
+                // Async, not just off the region thread for its own sake: QuickShop's
+                // queryShopInventoryCacheInDatabase() (used inside finalizeMatchedShop) asserts its
+                // caller is already off the main/region thread and throws otherwise.
+                .thenComposeAsync(matchedItem -> matchedItem != null
+                        ? finalizeMatchedShop(toBuy, shopIterator, matchedItem, shopsFoundList)
+                        : CompletableFuture.completedFuture(null), VirtualThreadScheduler.executor());
     }
 
     private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {
@@ -177,6 +182,15 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
         if (maxDistance <= 0) return true;
         if (!shopLocation.getWorld().equals(playerLocation.getWorld())) return true;
         return shopLocation.distanceSquared(playerLocation) <= (double) maxDistance * maxDistance;
+    }
+
+    /**
+     * Replaces {@code Shop#getPrice()}, deprecated for removal in QuickShop-Hikari 6.3.0.0.
+     * {@code Shop} became generic there but {@code ShopManager} still hands out raw {@code Shop},
+     * so {@code price()} erases to {@code Object} and needs the cast.
+     */
+    private static double getShopPrice(@NotNull Shop shop) {
+        return (Double) shop.price();
     }
 
     /**
@@ -190,7 +204,7 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
             return true;
         }
 
-        double price = shop.getPrice();
+        double price = getShopPrice(shop);
         double itemAmount = shop.getItem().getAmount();
         double pricePerTransaction = price * itemAmount;
 
@@ -400,7 +414,6 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     private int getRemainingStockOrSpaceFromShopCache(Shop shop, boolean fetchRemainingStock) {
         if (isQSHikariShopCacheImplemented) {
             // New feature available
-            Util.ensureThread(true);
             int stockOrSpace = (fetchRemainingStock ? shop.getRemainingStock() : shop.getRemainingSpace());
             Logger.logDebugInfo("Stock/Space from cache: " + stockOrSpace);
             return stockOrSpace;
@@ -440,37 +453,101 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     }
 
     /**
-     * Runs on a virtual thread (see {@link #processShopMatchFuture}), so this must not touch
-     * any Bukkit/QuickShop API that fires an event or otherwise requires the main thread -
-     * {@code matchedItem} is passed in rather than re-read via {@code shopIterator.getItem()}.
+     * Resolves a matched shop's stock/space, applies the empty/full and owner-balance filters, and
+     * appends it to the results.
+     * <p>
+     * The continuation is pinned to a virtual thread because the upstream stage completes on a
+     * QuickShop region or database thread, neither of which should run the economy lookup in
+     * {@link #isOwnerHavingEnoughBalance}. {@code matchedItem} is passed in rather than re-read via
+     * {@code shopIterator.getItem()}, which fires a {@code ShopItemEvent} and must stay on the
+     * region thread where the match was evaluated.
      */
-    private void finalizeMatchedShop(boolean toBuy, Shop shopIterator, ItemStack matchedItem, List<FoundShopItemModel> shopsFoundList) {
+    private CompletableFuture<Void> finalizeMatchedShop(boolean toBuy, Shop shopIterator, ItemStack matchedItem, List<FoundShopItemModel> shopsFoundList) {
         Logger.logDebugInfo("Shop match found: " + shopIterator.bukkitLocation());
-        // check for stock / space
-        int stockOrSpace = (toBuy ? getRemainingStockOrSpaceFromShopCache(shopIterator, true)
-                : getRemainingStockOrSpaceFromShopCache(shopIterator, false));
-        if (stockOrSpace == 0 && !isShopChunkLoaded(shopIterator)) {
-            // The cached/DB-backed stock value can be stale (or never populated) for a shop whose
-            // chunk isn't currently loaded - force a live read by loading the chunk on its
-            // owning region thread instead of trusting the cache. See issue #111.
-            stockOrSpace = fetchLiveStockOrSpaceForUnloadedChunk(shopIterator, toBuy);
+        return resolveStockOrSpaceAsync(shopIterator, toBuy)
+                .thenAcceptAsync(stockOrSpace -> {
+                    if (isShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
+                        return;
+                    }
+                    // check if owner has enough balance for buying shops
+                    if (!toBuy && !isOwnerHavingEnoughBalance(shopIterator)) {
+                        Logger.logDebugInfo("Shop Owner is poor");
+                        return;
+                    }
+                    shopsFoundList.add(new FoundShopItemModel(
+                            getShopPrice(shopIterator),
+                            QSApi.processStockOrSpace(stockOrSpace),
+                            shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
+                            shopIterator.bukkitLocation(),
+                            matchedItem,
+                            toBuy
+                    ));
+                }, VirtualThreadScheduler.executor())
+                .exceptionally(ex -> {
+                    Logger.logWarning("Skipping shop during search due to error ("
+                            + ex.getClass().getSimpleName() + "): " + ex.getMessage());
+                    return null;
+                });
+    }
+
+    /**
+     * Resolves a matched shop's stock (buying) or space (selling), preferring the cheapest source:
+     * unlimited shop, then a live read if the chunk is loaded, then QuickShop's persisted inventory
+     * count cache, and only then a chunk force-load (see issue #111). Never blocks.
+     * <p>
+     * Unlimited is checked first both because {@link QSApi#processStockOrSpace(int)} maps its
+     * {@code -1} to {@link Integer#MAX_VALUE} and because it removes the ambiguity in QuickShop's
+     * {@code -1} count-cache sentinel, which conflates "unlimited" with "never calculated".
+     */
+    private CompletableFuture<Integer> resolveStockOrSpaceAsync(Shop shop, boolean toBuy) {
+        if (shop.isUnlimited()) {
+            return CompletableFuture.completedFuture(-1);
         }
-        if(isShopToBeIgnoredForFullOrEmpty(stockOrSpace)) {
-            return;
+        if (isShopChunkLoaded(shop)) {
+            // No getRemainingSpaceAsync() counterpart exists, so the sell path stays synchronous.
+            return toBuy
+                    ? shop.getRemainingStockAsync().orTimeout(STOCK_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                            .exceptionally(ex -> logAndDefault("Live stock read failed", shop, ex, 0))
+                    : VirtualThreadScheduler.supplyAsync(() -> getRemainingStockOrSpaceFromShopCache(shop, false));
         }
-        // check if owner has enough balance for buying shops
-        if(!toBuy && !isOwnerHavingEnoughBalance(shopIterator)) {
-            Logger.logDebugInfo("Shop Owner is poor");
-            return;
-        }
-        shopsFoundList.add(new FoundShopItemModel(
-                shopIterator.getPrice(),
-                QSApi.processStockOrSpace(stockOrSpace),
-                shopIterator.getOwner().getUniqueIdOptional().orElse(new UUID(0, 0)),
-                shopIterator.bukkitLocation(),
-                matchedItem,
-                toBuy
-        ));
+        return readStockOrSpaceFromQsCountCacheAsync(shop, toBuy)
+                .thenComposeAsync(cachedValue -> {
+                    if (cachedValue >= 0) {
+                        return CompletableFuture.completedFuture(cachedValue);
+                    }
+                    Logger.logDebugInfo("Falling back to chunk force-load for shop: " + shop.getShopId());
+                    return VirtualThreadScheduler.supplyAsync(
+                            () -> fetchLiveStockOrSpaceForUnloadedChunk(shop, toBuy));
+                }, VirtualThreadScheduler.executor());
+    }
+
+    /**
+     * Reads stock/space from QuickShop's persisted inventory count cache, which survives the chunk
+     * being unloaded.
+     * <p>
+     * Any negative result means "unusable, ask someone else". QuickShop documents {@code -1} as
+     * "never calculated or unlimited" and {@code -2} as "not cached yet", but a third case occurs
+     * in practice: {@code InternalListener#shopInventoryCalc} writes both stock and space on every
+     * {@code ShopInventoryCalculateEvent}, and {@code ContainerShop} fires that event with
+     * {@code -1} in whichever field it did not just compute - so a stock calculation clobbers the
+     * cached space and vice versa.
+     */
+    private CompletableFuture<Integer> readStockOrSpaceFromQsCountCacheAsync(Shop shop, boolean toBuy) {
+        return api.getShopManager()
+                .queryShopInventoryCacheInDatabase(shop)
+                .orTimeout(STOCK_READ_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+                .thenApplyAsync(countCache -> {
+                    int cachedValue = (toBuy ? countCache.getStock() : countCache.getSpace());
+                    Logger.logDebugInfo("QS inventory count cache for shop " + shop.getShopId() + ": " + cachedValue);
+                    return cachedValue;
+                }, VirtualThreadScheduler.executor())
+                .exceptionally(ex -> logAndDefault("Failed to read QS inventory count cache", shop, ex, -2));
+    }
+
+    private static int logAndDefault(String what, Shop shop, Throwable ex, int fallback) {
+        Logger.logDebugInfo(what + " for shop " + shop.getShopId() + ": "
+                + ex.getClass().getSimpleName() + " - " + ex.getMessage());
+        return fallback;
     }
 
     private boolean isShopChunkLoaded(Shop shop) {
