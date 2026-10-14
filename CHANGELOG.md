@@ -1,3 +1,8 @@
+## Release 2.0.8.3
+
+### What's new for server owners
+- **Admins can now hide/reveal any player's shop**: players with `finditem.admin` can use `/finditem hideshop` and `/finditem revealshop` on shops they don't own.
+
 ## Release 2.0.8.2
 
 ### What's new for server owners

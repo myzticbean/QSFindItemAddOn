@@ -145,7 +145,7 @@ public class CmdExecutorHandler {
      */
     public void handleHideShop(CommandSender commandSender) {
         if(commandSender instanceof Player player) {
-            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) || PlayerPermsEnum.isAdmin(player)) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 3);
                 Logger.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
                 hideHikariShop((com.ghostchu.quickshop.api.shop.Shop) FindItemAddOn.getQsApiInstance().findShopAtLocation(playerLookAtBlock), player);
@@ -164,7 +164,7 @@ public class CmdExecutorHandler {
      */
     public void handleRevealShop(CommandSender commandSender) {
         if (commandSender instanceof Player player) {
-            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value())) {
+            if(player.hasPermission(PlayerPermsEnum.FINDITEM_HIDESHOP.value()) || PlayerPermsEnum.isAdmin(player)) {
                 Block playerLookAtBlock = player.getTargetBlock(null, 5);
                 if(playerLookAtBlock != null) {
                     Logger.logDebugInfo("TargetBlock found: " + playerLookAtBlock.getType());
@@ -232,8 +232,8 @@ public class CmdExecutorHandler {
     private void hideHikariShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             QSHikariAPIHandler qsHikariAPIHandler = (QSHikariAPIHandler) FindItemAddOn.getQsApiInstance();
-            // check if command runner same as shop owner
-            if(qsHikariAPIHandler.isShopOwnerCommandRunner(player, shop)) {
+            // shop owner or admin
+            if(qsHikariAPIHandler.isShopOwnerCommandRunner(player, shop) || PlayerPermsEnum.isAdmin(player)) {
                 if(!HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, true);
                     PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_HIDE_SUCCESS_MSG);
@@ -256,8 +256,8 @@ public class CmdExecutorHandler {
     private void revealShop(com.ghostchu.quickshop.api.shop.Shop shop, Player player) {
         if(shop != null) {
             QSHikariAPIHandler qsHikariAPIHandler = (QSHikariAPIHandler) FindItemAddOn.getQsApiInstance();
-            // check if command runner same as shop owner
-            if(qsHikariAPIHandler.isShopOwnerCommandRunner(player, shop)) {
+            // shop owner or admin
+            if(qsHikariAPIHandler.isShopOwnerCommandRunner(player, shop) || PlayerPermsEnum.isAdmin(player)) {
                 if(HiddenShopStorageUtil.isShopHidden(shop)) {
                     HiddenShopStorageUtil.handleShopSearchVisibilityAsync(shop, false);
                     PlayerUtil.sendMessage(player, getPluginPrefix() + FindItemAddOn.getConfigProvider().FIND_ITEM_CMD_SHOP_REVEAL_SUCCESS_MSG);

@@ -9,7 +9,7 @@ Bukkit/Paper plugin that adds a `/finditem` command for searching items across a
 ## Build & Run
 
 - Build: `mvn clean package` — produces the shaded jar in `target/`.
-- There are **no unit tests** in this repository; `mvn test` is a no-op. Verification is done by dropping the jar into a Paper/Folia server with QuickShop-Hikari installed.
+- Tests: JUnit 5 + Mockito under `src/test/java`, run by `mvn test` (and therefore by `mvn package` and both CI workflows). Plugin statics (`FindItemAddOn.getQsApiInstance()`, `getConfigProvider()`, `getPlatformBridge()`, `HiddenShopStorageUtil`) are faked with `mockStatic`; Surefire loads Mockito as a `-javaagent` for this. Any test that mocks a QuickShop-Hikari API type must call `FakeBukkit.install()` first — `Shop`'s static initializer looks up the QS plugin through `Bukkit.getServicesManager()`. Coverage is still thin, so real verification remains dropping the jar into a Paper/Folia server with QuickShop-Hikari installed.
 - `maven-shade-plugin` relocates `com.tcoded.folialib` → `io.myzticbean.finditemaddon.shaded.folialib` and `org.bstats` → `...shaded.metrics`. Never reference unshaded packages in new code.
 - `pom.xml` has commented-out `<outputDirectory>` entries in `maven-jar-plugin` intended to auto-copy the jar into a local test server's `plugins/` folder — uncomment the relevant one for your OS when iterating locally, but **never commit it uncommented**; both `.github/workflows/*.yml` fail the build immediately if it's active (a real incident: this shipped active once and broke CI by placing the jar outside `target/`).
 - One system-scope dependency lives in `lib/Residence5.1.5.1.jar` (not on any Maven repo) — keep that file in place.

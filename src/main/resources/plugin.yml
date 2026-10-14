@@ -25,7 +25,7 @@ permissions:
     description: For OP. Enables use of '/finditemadmin reload' to reload the config
     default: op
   finditem.admin:
-    description: For OP. Enables use of all admin commands
+    description: For OP. Enables use of all admin commands, and hiding/revealing any player's shop
     default: op
   finditem.shoptp:
     description: If 'allow-direct-shop-tp' is enabled in config, players require this permission to be able to teleport
