@@ -7,6 +7,9 @@ import org.bukkit.World;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -27,9 +30,15 @@ class ShopSearchActivityStorageUtilTest {
         FakeBukkit.install();
     }
 
+    /** Location only weakly references its World, so mocks must be held here or GC makes getWorld() throw "World unloaded". */
+    private static final Map<String, World> WORLDS = new HashMap<>();
+
     private static Location location(String worldName, double x, double y, double z) {
-        World world = mock(World.class);
-        when(world.getName()).thenReturn(worldName);
+        World world = WORLDS.computeIfAbsent(worldName, name -> {
+            World w = mock(World.class);
+            when(w.getName()).thenReturn(name);
+            return w;
+        });
         return new Location(world, x, y, z);
     }
 
