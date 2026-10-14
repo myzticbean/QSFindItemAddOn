@@ -1,5 +1,5 @@
 # Shop Search AddOn for QuickShop
-### Version: 2.0.8.3-RELEASE
+### Version: 2.0.8.3-SNAPSHOT
 
 An unofficial add-on for [QuickShop-Hikari](https://www.spigotmc.org/resources/100125/) that gives your players an in-game `/finditem` command to search every shop on the server at once, instead of walking around hoping to spot the right sign.
 
