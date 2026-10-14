@@ -2,6 +2,12 @@
 
 ### What's new for server owners
 - **Admins can now hide/reveal any player's shop**: players with `finditem.admin` can use `/finditem hideshop` and `/finditem revealshop` on shops they don't own.
+- **Much less server lag when running `/finditem` on servers with many shops**: every search used to check each shop's hidden status by scanning the full list of shops, so the cost grew with the square of your shop count and landed on the main thread in a single tick. That check is now an instant lookup, and shops that don't sell the searched item are filtered out before the more expensive permission checks run.
+- Fixed the "last page" button opening an empty page when the number of results was an exact multiple of 45 (e.g. 90 or 450 shops).
+
+### Changes (technical)
+- `ShopSearchActivityStorageUtil` keeps a location index alongside `globalShopsList`; `isShopHidden`, `getPlayerVisitCount`, `getShopOwnerUUID`, visit tracking and hide/reveal now use O(1) lookups instead of linear scans
+- Search match phase now runs as one region task over all shops instead of one scheduler task, future and timeout per shop, with the match checks reordered cheapest/most selective first
 
 ## Release 2.0.8.2
 

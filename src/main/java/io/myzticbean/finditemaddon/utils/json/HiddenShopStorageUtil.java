@@ -26,7 +26,6 @@ import io.myzticbean.finditemaddon.models.ShopSearchActivityModel;
 import io.myzticbean.finditemaddon.utils.async.VirtualThreadScheduler;
 import io.myzticbean.finditemaddon.utils.log.Logger;
 import lombok.experimental.UtilityClass;
-import org.bukkit.Location;
 import org.maxgamer.quickshop.api.shop.Shop;
 
 import java.io.File;
@@ -38,7 +37,6 @@ import java.io.Reader;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -57,21 +55,9 @@ public class HiddenShopStorageUtil {
     @Deprecated(since = "v2.0.7.7")
     public static void handleShopSearchVisibilityAsync(Shop shop, boolean hideShop) {
         FindItemAddOn.getScheduler().runAsync((t) -> {
-            Iterator<ShopSearchActivityModel> shopSearchActivityIterator = ShopSearchActivityStorageUtil.getGlobalShopsList().iterator();
-            int i = 0;
-            while(shopSearchActivityIterator.hasNext()) {
-                ShopSearchActivityModel shopSearchActivity = shopSearchActivityIterator.next();
-                Location shopLocation = shop.getLocation();
-                if(shopSearchActivity.compareWith(
-                        shopLocation.getWorld().getName(),
-                        shopLocation.getX(),
-                        shopLocation.getY(),
-                        shopLocation.getZ()
-                )) {
-                    ShopSearchActivityStorageUtil.getGlobalShopsList().get(i).setHiddenFromSearch(hideShop);
-                    break;
-                }
-                i++;
+            ShopSearchActivityModel shopSearchActivity = ShopSearchActivityStorageUtil.findShop(shop.getLocation());
+            if (shopSearchActivity != null) {
+                shopSearchActivity.setHiddenFromSearch(hideShop);
             }
         });
     }
@@ -82,23 +68,9 @@ public class HiddenShopStorageUtil {
      */
     public static void handleShopSearchVisibilityAsync(com.ghostchu.quickshop.api.shop.Shop shop, boolean hideShop) {
         VirtualThreadScheduler.runTaskAsync(() -> {
-            Iterator<ShopSearchActivityModel> shopSearchActivityIterator = ShopSearchActivityStorageUtil.getGlobalShopsList().iterator();
-            int i = 0;
-            while(shopSearchActivityIterator.hasNext()) {
-                ShopSearchActivityModel shopSearchActivity = shopSearchActivityIterator.next();
-                Location shopLocation = shop.bukkitLocation();
-                if(shopSearchActivity.compareWith(
-                        shopLocation.getWorld().getName(),
-                        shopLocation.getX(),
-                        shopLocation.getY(),
-                        shopLocation.getZ()
-                )) {
-                    ShopSearchActivityStorageUtil.getGlobalShopsList()
-                            .get(i)
-                            .setHiddenFromSearch(hideShop);
-                    break;
-                }
-                i++;
+            ShopSearchActivityModel shopSearchActivity = ShopSearchActivityStorageUtil.findShop(shop.bukkitLocation());
+            if (shopSearchActivity != null) {
+                shopSearchActivity.setHiddenFromSearch(hideShop);
             }
         });
     }
@@ -109,23 +81,8 @@ public class HiddenShopStorageUtil {
      * @return
      */
     public static boolean isShopHidden(Shop shop) {
-        for(ShopSearchActivityModel shopSearchActivity : ShopSearchActivityStorageUtil.getGlobalShopsList()) {
-            Location shopLocation = shop.getLocation();
-            if(shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                if(shopSearchActivity.isHiddenFromSearch()) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-        return false;
+        ShopSearchActivityModel shopSearchActivity = ShopSearchActivityStorageUtil.findShop(shop.getLocation());
+        return shopSearchActivity != null && shopSearchActivity.isHiddenFromSearch();
     }
 
     /**
@@ -134,23 +91,8 @@ public class HiddenShopStorageUtil {
      * @return
      */
     public static boolean isShopHidden(com.ghostchu.quickshop.api.shop.Shop shop) {
-        for(ShopSearchActivityModel shopSearchActivity : ShopSearchActivityStorageUtil.getGlobalShopsList()) {
-            Location shopLocation = shop.bukkitLocation();
-            if(shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                if(shopSearchActivity.isHiddenFromSearch()) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-        }
-        return false;
+        ShopSearchActivityModel shopSearchActivity = ShopSearchActivityStorageUtil.findShop(shop.bukkitLocation());
+        return shopSearchActivity != null && shopSearchActivity.isHiddenFromSearch();
     }
 
     public static void loadHiddenShopsFromFile() {

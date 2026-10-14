@@ -40,6 +40,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -115,9 +116,11 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
             List<FoundShopItemModel> shopsFoundList = new CopyOnWriteArrayList<>();
             List<Shop> allShops = fetchAllShopsFromQS();
             Logger.logDebugInfo(QS_TOTAL_SHOPS_ON_SERVER + allShops.size());
+            // Still on a virtual thread here, as finalizeMatchedShop requires: QuickShop's
+            // queryShopInventoryCacheInDatabase() asserts its caller is off the main/region thread.
             List<CompletableFuture<Void>> futures = new ArrayList<>();
-            for (Shop shopIterator : allShops) {
-                futures.add(processShopMatchFuture(itemFilter, toBuy, shopIterator, shopsFoundList, searchingPlayer));
+            for (Map.Entry<Shop, ItemStack> match : findMatchingShops(itemFilter, allShops, searchingPlayer).join()) {
+                futures.add(finalizeMatchedShop(toBuy, match.getKey(), match.getValue(), shopsFoundList));
             }
             CompletableFuture.allOf(futures.toArray(new CompletableFuture[0])).join();
             List<FoundShopItemModel> sortedShops = handleShopSorting(toBuy, shopsFoundList);
@@ -127,54 +130,63 @@ public class QSHikariAPIHandler implements QSApi<QuickShopAPI, Shop> {
     }
 
     /**
-     * Checks permission and evaluates the item filter/match for a single shop on the entity's
-     * region thread (via the Folia-safe scheduler), since {@code itemFilter}, the BentoBox lock
-     * check, and {@code Shop#getItem()} touch Bukkit/QuickShop APIs (shop item, meta, location -
+     * Evaluates every shop against the search in a single task on the searching player's region
+     * thread (via the Folia-safe scheduler), since {@code itemFilter}, the permission and BentoBox lock
+     * checks, and {@code Shop#getItem()} touch Bukkit/QuickShop APIs (shop item, meta, location -
      * {@code getItem()} fires a {@code ShopItemEvent} internally) that are not safe to call
-     * off-thread ({@link BuiltInShopPermission#SEARCH}). The matched item is captured here, on the
-     * main thread, so the async phase below never has to call {@code getItem()} again.
+     * off-thread ({@link BuiltInShopPermission#SEARCH}). One task for all shops rather than one per
+     * shop avoids allocating a scheduler task, future and timeout per shop on the main thread.
+     * The matched item is captured here, so the async phase never has to call {@code getItem()} again.
      * <p>
-     * If matched, stock/space is then read and the shop is added to the list on a virtual thread
-     * (see {@link #resolveStockOrSpace}). As of QuickShop-Hikari 6.3.0.0 the stock/space getters no
-     * longer assert they are off the main thread - {@code getRemainingStock()} performs its own
-     * region hop internally - but running off-region is still what we want, so that the search does
-     * not occupy a region thread for the duration.
-     * <p>
-     * Any failure for a single shop is logged and skipped rather than failing the whole search.
+     * Stock/space is then read on virtual threads (see {@link #finalizeMatchedShop}). Any failure for a
+     * single shop is logged and skipped rather than failing the whole search.
+     *
+     * @return matched shops with their items, or an empty list if the task did not run in time
      */
-    private CompletableFuture<Void> processShopMatchFuture(Predicate<Shop> itemFilter, boolean toBuy, Shop shopIterator,
-                                                             List<FoundShopItemModel> shopsFoundList, Player searchingPlayer) {
-        CompletableFuture<ItemStack> matchFuture = new CompletableFuture<>();
+    private CompletableFuture<List<Map.Entry<Shop, ItemStack>>> findMatchingShops(Predicate<Shop> itemFilter, List<Shop> shops,
+                                                                                 Player searchingPlayer) {
+        CompletableFuture<List<Map.Entry<Shop, ItemStack>>> matchesFuture = new CompletableFuture<>();
         FindItemAddOn.getScheduler().runAtEntity(searchingPlayer, _ -> {
-            try {
-                boolean isMatch = shopIterator.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
-                        && !FindItemAddOn.getConfigProvider().getBlacklistedWorlds().contains(shopIterator.bukkitLocation().getWorld())
-                        && !HiddenShopStorageUtil.isShopHidden(shopIterator)
-                        && isWithinSearchDistance(shopIterator.bukkitLocation(), searchingPlayer.getLocation())
-                        && itemFilter.test(shopIterator)
-                        && !isShopInLockedBentoboxIsland(shopIterator, searchingPlayer);
-                matchFuture.complete(isMatch ? shopIterator.getItem() : null);
-            } catch (Exception e) {
-                matchFuture.completeExceptionally(e);
+            List<World> blacklistedWorlds = FindItemAddOn.getConfigProvider().getBlacklistedWorlds();
+            Location playerLocation = searchingPlayer.getLocation();
+            List<Map.Entry<Shop, ItemStack>> matches = new ArrayList<>();
+            for (Shop shop : shops) {
+                try {
+                    if (isShopMatch(shop, itemFilter, searchingPlayer, playerLocation, blacklistedWorlds)) {
+                        matches.add(Map.entry(shop, shop.getItem()));
+                    }
+                } catch (Exception e) {
+                    Logger.logWarning("Skipping shop during search due to error (" + e.getClass().getSimpleName() + "): " + e.getMessage());
+                }
             }
+            matchesFuture.complete(matches);
         });
         // If the player disconnects before the scheduler fires, the future would never
-        // complete and allOf().join() would block the virtual thread indefinitely.
-        return matchFuture.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
+        // complete and join() would block the virtual thread indefinitely.
+        return matchesFuture.orTimeout(PERMISSION_CHECK_TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .exceptionally(ex -> {
                     if (ex instanceof TimeoutException) {
                         Logger.logDebugInfo("Shop search processing timed out for player: " + searchingPlayer.getName());
                     } else {
-                        Logger.logWarning("Skipping shop during search due to error (" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
+                        Logger.logWarning("Shop search failed (" + ex.getClass().getSimpleName() + "): " + ex.getMessage());
                     }
-                    return null;
-                })
-                // Async, not just off the region thread for its own sake: QuickShop's
-                // queryShopInventoryCacheInDatabase() (used inside finalizeMatchedShop) asserts its
-                // caller is already off the main/region thread and throws otherwise.
-                .thenComposeAsync(matchedItem -> matchedItem != null
-                        ? finalizeMatchedShop(toBuy, shopIterator, matchedItem, shopsFoundList)
-                        : CompletableFuture.completedFuture(null), VirtualThreadScheduler.executor());
+                    return List.of();
+                });
+    }
+
+    /**
+     * Cheapest and most selective checks first, so most shops are rejected before
+     * QuickShop's comparatively expensive permission check runs.
+     */
+    private boolean isShopMatch(Shop shop, Predicate<Shop> itemFilter, Player searchingPlayer,
+                                Location playerLocation, List<World> blacklistedWorlds) {
+        Location shopLocation = shop.bukkitLocation();
+        return !blacklistedWorlds.contains(shopLocation.getWorld())
+                && isWithinSearchDistance(shopLocation, playerLocation)
+                && !HiddenShopStorageUtil.isShopHidden(shop)
+                && itemFilter.test(shop)
+                && shop.playerAuthorize(searchingPlayer.getUniqueId(), BuiltInShopPermission.SEARCH)
+                && !isShopInLockedBentoboxIsland(shop, searchingPlayer);
     }
 
     private boolean isWithinSearchDistance(Location shopLocation, Location playerLocation) {

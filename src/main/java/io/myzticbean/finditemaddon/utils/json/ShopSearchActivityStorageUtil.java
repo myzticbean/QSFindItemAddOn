@@ -44,6 +44,7 @@ import java.io.Reader;
 import java.io.Writer;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -58,7 +59,48 @@ public class ShopSearchActivityStorageUtil {
     private static final Map<String, Long> cooldowns = new HashMap<>();
 
     @Getter
-    private static List<ShopSearchActivityModel> globalShopsList = new CopyOnWriteArrayList<>();
+    private static volatile List<ShopSearchActivityModel> globalShopsList = new CopyOnWriteArrayList<>();
+
+    /**
+     * Location index over {@link #globalShopsList}, so per-shop lookups (run once per shop on every search)
+     * are O(1) instead of a scan of every shop on the server. Holds the first entry per location, which is
+     * what the linear scans it replaced returned. Only mutated alongside the list, in this class.
+     */
+    private static volatile Map<LocationKey, ShopSearchActivityModel> shopsByLocation = new ConcurrentHashMap<>();
+
+    /** Matches {@link ShopSearchActivityModel#compareWith(String, double, double, double)}: case-insensitive world, exact coordinates. */
+    private record LocationKey(String worldName, double x, double y, double z) {
+        static LocationKey of(String worldName, double x, double y, double z) {
+            // "+ 0.0" folds -0.0 into 0.0: record equality compares doubles bitwise, compareWith() uses ==
+            return new LocationKey(worldName.toLowerCase(Locale.ROOT), x + 0.0, y + 0.0, z + 0.0);
+        }
+
+        static LocationKey of(Location location) {
+            return of(location.getWorld().getName(), location.getX(), location.getY(), location.getZ());
+        }
+    }
+
+    /**
+     * @return the stored entry for the shop at this location, or null if there is none
+     */
+    @Nullable
+    public static ShopSearchActivityModel findShop(@NotNull Location shopLocation) {
+        return shopsByLocation.get(LocationKey.of(shopLocation));
+    }
+
+    private static void setGlobalShopsList(List<ShopSearchActivityModel> shops) {
+        Map<LocationKey, ShopSearchActivityModel> index = new ConcurrentHashMap<>(shops.size() * 2);
+        shops.forEach(shop -> addToIndex(index, shop));
+        globalShopsList = new CopyOnWriteArrayList<>(shops);
+        shopsByLocation = index;
+    }
+
+    private static void addToIndex(Map<LocationKey, ShopSearchActivityModel> index, ShopSearchActivityModel shop) {
+        // compareWith() never matches a null world name, so neither does the index
+        if (shop.getWorldName() != null) {
+            index.putIfAbsent(LocationKey.of(shop.getWorldName(), shop.getX(), shop.getY(), shop.getZ()), shop);
+        }
+    }
 
     /**
      * Returns true if cooldown is not present
@@ -66,38 +108,30 @@ public class ShopSearchActivityStorageUtil {
      * @return
      */
     private static boolean handleCooldownIfPresent(Location shopLocation, Player player) {
+        ShopSearchActivityModel shopSearchActivity = findShop(shopLocation);
+        if (shopSearchActivity != null) {
+            List<PlayerShopVisitModel> playerShopVisitList = shopSearchActivity.getPlayerVisitList()
+                    .stream()
+                    .filter(p -> p.getPlayerUUID().equals(player.getUniqueId()))
+                    .sorted(Comparator.comparing(PlayerShopVisitModel::getVisitDateTime))
+                    .collect(Collectors.toCollection(ArrayList::new));
 
-        // New logic
-        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-            if(shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                List<PlayerShopVisitModel> playerShopVisitList = shopSearchActivity.getPlayerVisitList()
-                        .stream()
-                        .filter(p -> p.getPlayerUUID().equals(player.getUniqueId()))
-                        .sorted(Comparator.comparing(PlayerShopVisitModel::getVisitDateTime))
-                        .collect(Collectors.toCollection(ArrayList::new));
-
-                boolean isCooldownTimeElapsed;
-                if(playerShopVisitList.size() > 0) {
-                    isCooldownTimeElapsed = Instant.now().minusSeconds(
-                            FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60)
-                            .isAfter(playerShopVisitList.get(playerShopVisitList.size() - 1).getVisitDateTime());
-                }
-                else {
-                    isCooldownTimeElapsed = true;
-                }
-                if(isCooldownTimeElapsed) {
-                    Logger.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " is out of cooldown"));
-                    return true;
-                }
-                else {
-                    Logger.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " still has cooldown"));
-                    return false;
-                }
+            boolean isCooldownTimeElapsed;
+            if(playerShopVisitList.size() > 0) {
+                isCooldownTimeElapsed = Instant.now().minusSeconds(
+                        FindItemAddOn.getConfigProvider().SHOP_PLAYER_VISIT_COOLDOWN_IN_MINUTES * 60)
+                        .isAfter(playerShopVisitList.get(playerShopVisitList.size() - 1).getVisitDateTime());
+            }
+            else {
+                isCooldownTimeElapsed = true;
+            }
+            if(isCooldownTimeElapsed) {
+                Logger.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " is out of cooldown"));
+                return true;
+            }
+            else {
+                Logger.logDebugInfo(ColorTranslator.translateColorCodes("&6" + player.getName() + " still has cooldown"));
+                return false;
             }
         }
         Logger.logDebugInfo(ColorTranslator.translateColorCodes("&6Shop not found, returning false for cooldown check"));
@@ -105,7 +139,7 @@ public class ShopSearchActivityStorageUtil {
     }
 
     public static void syncShops() {
-        globalShopsList = FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList);
+        setGlobalShopsList(FindItemAddOn.getQsApiInstance().syncShopsListForStorage(globalShopsList));
     }
 
     /**
@@ -136,6 +170,7 @@ public class ShopSearchActivityStorageUtil {
                 false
         );
         globalShopsList.add(shopModel);
+        addToIndex(shopsByLocation, shopModel);
     }
 
     /**
@@ -155,6 +190,7 @@ public class ShopSearchActivityStorageUtil {
                 false
         );
         globalShopsList.add(shopModel);
+        addToIndex(shopsByLocation, shopModel);
     }
 
     /**
@@ -162,12 +198,14 @@ public class ShopSearchActivityStorageUtil {
      * @param shop
      */
     public static void removeShop(com.ghostchu.quickshop.api.shop.Shop shop) {
+        Location shopLocation = shop.bukkitLocation();
         globalShopsList.removeIf(shopSearchActivity -> shopSearchActivity.compareWith(
-                shop.bukkitLocation().getWorld().getName(),
-                shop.bukkitLocation().getX(),
-                shop.bukkitLocation().getY(),
-                shop.bukkitLocation().getZ()
+                shopLocation.getWorld().getName(),
+                shopLocation.getX(),
+                shopLocation.getY(),
+                shopLocation.getZ()
         ));
+        shopsByLocation.remove(LocationKey.of(shopLocation));
     }
 
     public static void loadShopsFromFile() {
@@ -179,12 +217,12 @@ public class ShopSearchActivityStorageUtil {
                 ShopSearchActivityModel[] shopsArray = gson.fromJson(reader, ShopSearchActivityModel[].class);
                 if(shopsArray != null) {
                     // Filter out any null elements from the array
-                    globalShopsList = Arrays.stream(shopsArray)
+                    setGlobalShopsList(Arrays.stream(shopsArray)
                             .filter(Objects::nonNull)
-                            .collect(Collectors.toCollection(CopyOnWriteArrayList::new));
+                            .toList());
                 }
                 else {
-                    globalShopsList = new CopyOnWriteArrayList<>();
+                    setGlobalShopsList(List.of());
                 }
                 Logger.logInfo("Loaded shops from file");
             } catch (FileNotFoundException e) {
@@ -250,81 +288,47 @@ public class ShopSearchActivityStorageUtil {
     public static void addPlayerVisitEntryAsync(Location shopLocation, Player visitingPlayer) {
         VirtualThreadScheduler.runTaskAsync(() -> {
             if(handleCooldownIfPresent(shopLocation, visitingPlayer)) {
-                Iterator<ShopSearchActivityModel> shopSearchActivityIterator = globalShopsList.iterator();
-                int i = 0;
-                while(shopSearchActivityIterator.hasNext()) {
-                    ShopSearchActivityModel shopSearchActivity = shopSearchActivityIterator.next();
-                    if(shopSearchActivity.compareWith(
-                            shopLocation.getWorld().getName(),
-                            shopLocation.getX(),
-                            shopLocation.getY(),
-                            shopLocation.getZ()
-                    )) {
-                        PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
-                        playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
-                        playerShopVisit.setVisitDateTime();
-                        globalShopsList.get(i).getPlayerVisitList().add(playerShopVisit);
-                        Logger.logDebugInfo("Added new player visit entry at " + shopLocation);
-                        break;
-                    }
-                    i++;
+                ShopSearchActivityModel shopSearchActivity = findShop(shopLocation);
+                if (shopSearchActivity != null) {
+                    PlayerShopVisitModel playerShopVisit = new PlayerShopVisitModel();
+                    playerShopVisit.setPlayerUUID(visitingPlayer.getUniqueId());
+                    playerShopVisit.setVisitDateTime();
+                    shopSearchActivity.getPlayerVisitList().add(playerShopVisit);
+                    Logger.logDebugInfo("Added new player visit entry at " + shopLocation);
                 }
             }
         });
     }
 
     public static int getPlayerVisitCount(Location shopLocation) {
-        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-            if (shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                return shopSearchActivity.getPlayerVisitList().size();
-            }
-        }
-        return 0;
+        ShopSearchActivityModel shopSearchActivity = findShop(shopLocation);
+        return shopSearchActivity != null ? shopSearchActivity.getPlayerVisitList().size() : 0;
     }
 
     @Nullable
     @Deprecated
     public static OfflinePlayer getShopOwner(@NotNull Location shopLocation) {
-        for(ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-            if (shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                return Bukkit.getOfflinePlayer(UUID.fromString(shopSearchActivity.getShopOwnerUUID()));
-            }
-        }
-        return null;
+        ShopSearchActivityModel shopSearchActivity = findShop(shopLocation);
+        return shopSearchActivity != null
+                ? Bukkit.getOfflinePlayer(UUID.fromString(shopSearchActivity.getShopOwnerUUID()))
+                : null;
     }
 
     @Nullable
     public static UUID getShopOwnerUUID(@NotNull Location shopLocation) {
-        for (ShopSearchActivityModel shopSearchActivity : globalShopsList) {
-            if (shopSearchActivity.compareWith(
-                    shopLocation.getWorld().getName(),
-                    shopLocation.getX(),
-                    shopLocation.getY(),
-                    shopLocation.getZ()
-            )) {
-                String uuidStr = shopSearchActivity.getShopOwnerUUID();
-                try {
-                    return UUID.fromString(uuidStr);
-                } catch (IllegalArgumentException _) {
-                    if (!FindItemAddOn.isQSReremakeInstalled()) {
-                        UUID uuid = FindItemAddOn.getQsApiInstance().convertNameToUuid(uuidStr);
-                        int index = globalShopsList.indexOf(shopSearchActivity);
-                        globalShopsList.get(index).setShopOwnerUUID(uuid.toString());
-                    }
-                }
-                return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
+        ShopSearchActivityModel shopSearchActivity = findShop(shopLocation);
+        if (shopSearchActivity == null) {
+            return null;
+        }
+        String uuidStr = shopSearchActivity.getShopOwnerUUID();
+        try {
+            return UUID.fromString(uuidStr);
+        } catch (IllegalArgumentException _) {
+            if (!FindItemAddOn.isQSReremakeInstalled()) {
+                UUID uuid = FindItemAddOn.getQsApiInstance().convertNameToUuid(uuidStr);
+                shopSearchActivity.setShopOwnerUUID(uuid.toString());
             }
         }
-        return null;
+        return UUID.fromString(shopSearchActivity.getShopOwnerUUID());
     }
 }

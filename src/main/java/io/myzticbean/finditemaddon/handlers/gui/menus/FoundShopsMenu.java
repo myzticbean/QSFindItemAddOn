@@ -400,14 +400,9 @@ public class FoundShopsMenu extends PaginatedMenu {
     private void handleLastPageClick(InventoryClickEvent event) {
         int listSize = super.playerMenuUtility.getPlayerShopSearchResult().size();
         if (!((index + 1) >= listSize)) {
-            double totalPages = listSize / MAX_ITEMS_PER_PAGE;
-            if (totalPages % 10 == 0) {
-                page = (int) Math.floor(totalPages);
-                Logger.logDebugInfo("Floor page value: " + page);
-            } else {
-                page = (int) Math.ceil(totalPages);
-                Logger.logDebugInfo("Ceiling page value: " + page);
-            }
+            // Pages are 0-indexed: the last page is the one holding the last item
+            page = (listSize - 1) / MAX_ITEMS_PER_PAGE;
+            Logger.logDebugInfo("Last page value: " + page);
             super.open(super.playerMenuUtility.getPlayerShopSearchResult());
         } else {
             if (!StringUtils.isEmpty(configProvider.SHOP_NAV_LAST_PAGE_ALERT_MSG)) {
